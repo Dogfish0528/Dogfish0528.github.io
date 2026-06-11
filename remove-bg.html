@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dogfish 的 AI 去背實驗室</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.3/dist/browser/imglyRemoveBackground.js"></script>
-    
     <style>
         body {
             background-color: #1e1e1e;
@@ -26,7 +24,7 @@
             display: inline-block;
             margin-bottom: 20px;
         }
-        input[type="file"] { display: none; } /* 隱藏醜醜的預設上傳按鈕 */
+        input[type="file"] { display: none; }
         #status { color: #f39c12; font-weight: bold; font-size: 1.2em; margin-bottom: 20px;}
         
         .image-container {
@@ -41,7 +39,8 @@
             max-width: 100%;
             border-radius: 8px;
             border: 2px dashed #555;
-            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADFJREFUOE9jZCASMDKgmHGIiYn5T4RmxoEhyoBRDYA2HkI2BqMmkMQmD1oOhmgA0joAAC+bEwkXl1/qAAAAAElFTkSuQmCC') repeat; /* 透明方格背景 */
+            /* 透明方格背景，讓去背效果更明顯 */
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADFJREFUOE9jZCASMDKgmHGIiYn5T4RmxoEhyoBRDYA2HkI2BqMmkMQmD1oOhmgA0joAAC+bEwkXl1/qAAAAAElFTkSuQmCC') repeat; 
         }
     </style>
 </head>
@@ -68,7 +67,10 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        // 1. 使用現代的 import 語法從雲端載入 AI 模組
+        import imglyRemoveBackground from 'https://unpkg.com/@imgly/background-removal/dist/browser/imglyRemoveBackground.mjs';
+
         const uploadInput = document.getElementById('upload');
         const originalImg = document.getElementById('original');
         const resultImg = document.getElementById('result');
@@ -78,31 +80,35 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            // 1. 顯示原始圖片
+            // 顯示原始圖片
             const objectURL = URL.createObjectURL(file);
             originalImg.src = objectURL;
             originalImg.style.display = 'block';
             
-            // 隱藏舊的結果
             resultImg.style.display = 'none';
             statusText.style.color = "#f39c12";
-            statusText.innerText = '⏳ AI 正在思考中... (初次載入模型約需 5-10 秒，請勿關閉網頁)';
+            statusText.innerText = '⏳ AI 正在思考中... (初次載入模型約需 5-15 秒，請勿關閉網頁)';
 
             try {
-                // 2. 呼叫魔法：執行 AI 去背
-                const imageBlob = await imglyRemoveBackground(file);
+                // 2. 關鍵設定：告訴 AI 去哪裡下載它的模型大腦
+                const config = {
+                    publicPath: 'https://unpkg.com/@imgly/background-removal/dist/'
+                };
+
+                // 3. 執行去背魔法
+                const imageBlob = await imglyRemoveBackground(file, config);
                 const resultURL = URL.createObjectURL(imageBlob);
 
-                // 3. 顯示完成的去背圖片
+                // 顯示結果
                 resultImg.src = resultURL;
                 resultImg.style.display = 'block';
                 statusText.style.color = "#00ff00";
                 statusText.innerText = '✅ 去背完成！你可以右鍵另存圖片。';
                 
             } catch (error) {
-                console.error(error);
+                console.error("去背失敗的詳細原因：", error);
                 statusText.style.color = "#ff4444";
-                statusText.innerText = '❌ 發生錯誤，可能圖片太大或瀏覽器不支援。';
+                statusText.innerText = '❌ 發生錯誤，請按 F12 查看 Console。';
             }
         });
     </script>
