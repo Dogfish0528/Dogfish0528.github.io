@@ -100,23 +100,18 @@
                 resultImg.style.display = 'none';
                 
                 statusText.style.color = "#f39c12";
-                statusText.innerText = '⏳ AI 正在思考中... (正在連線下載模型)';
+                statusText.innerText = '⏳ AI 正在思考中... (初次載入大約需要幾十秒下載大腦模型，請耐心等候)';
 
                 try {
                     console.log("🔵 系統檢查 3：準備呼叫雲端 AI 模組...");
                     
-                    // 【關鍵修復】使用 esm.sh 這個專門為瀏覽器自動打包的超強 CDN，並鎖定最穩定的 1.4.3 版本
                     const module = await import('https://esm.sh/@imgly/background-removal@1.4.3');
                     const imglyRemoveBackground = module.default;
                     
-                    console.log("🟣 系統檢查 4：AI 模組下載成功！開始執行去背運算 (約需幾十秒)...");
+                    console.log("🟣 系統檢查 4：AI 模組就緒！開始執行去背運算...");
 
-                    // 模型資源 (.wasm 和 .onnx 檔案) 的路徑依然交給穩定的 jsdelivr
-                    const config = {
-                        publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.3/dist/'
-                    };
-
-                    const imageBlob = await imglyRemoveBackground(file, config);
+                    // 【關鍵魔法】我們不給 config 了！讓套件自動去官方的 CDN 抓大腦模型！
+                    const imageBlob = await imglyRemoveBackground(file);
                     const resultURL = URL.createObjectURL(imageBlob);
 
                     resultImg.src = resultURL;
