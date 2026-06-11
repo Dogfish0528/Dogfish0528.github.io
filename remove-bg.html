@@ -80,7 +80,6 @@
     </div>
 
     <script>
-        // 【關鍵修復】DOMContentLoaded 確保網頁全部元素載入後才執行 JavaScript
         document.addEventListener('DOMContentLoaded', () => {
             console.log("🟢 系統檢查 1：網頁元素載入完畢，腳本已啟動！");
 
@@ -106,13 +105,15 @@
                 try {
                     console.log("🔵 系統檢查 3：準備呼叫雲端 AI 模組...");
                     
-                    const module = await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/dist/browser/imglyRemoveBackground.mjs');
+                    // 【關鍵修復】使用 esm.sh 這個專門為瀏覽器自動打包的超強 CDN，並鎖定最穩定的 1.4.3 版本
+                    const module = await import('https://esm.sh/@imgly/background-removal@1.4.3');
                     const imglyRemoveBackground = module.default;
                     
                     console.log("🟣 系統檢查 4：AI 模組下載成功！開始執行去背運算 (約需幾十秒)...");
 
+                    // 模型資源 (.wasm 和 .onnx 檔案) 的路徑依然交給穩定的 jsdelivr
                     const config = {
-                        publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/dist/'
+                        publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.3/dist/'
                     };
 
                     const imageBlob = await imglyRemoveBackground(file, config);
