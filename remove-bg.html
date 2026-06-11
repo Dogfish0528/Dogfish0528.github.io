@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dogfish 的 AI 去背實驗室</title>
-    
     <style>
         body {
             background-color: #1e1e1e;
@@ -14,6 +13,15 @@
             padding: 40px 20px;
         }
         h1 { color: #00a8ff; }
+        .nav-btn {
+            background-color: #444;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
         .upload-btn {
             background-color: #00a8ff;
             color: white;
@@ -46,6 +54,10 @@
 </head>
 <body>
 
+    <div>
+        <a href="index.html" class="nav-btn">🏠 回到首頁</a>
+    </div>
+
     <h1>✨ 瀏覽器端 AI 圖片去背</h1>
     <p>（所有運算皆在你的裝置上完成，不侵犯隱私！）</p>
 
@@ -68,8 +80,8 @@
     </div>
 
     <script type="module">
-        // 1. 使用現代的 import 語法從雲端載入 AI 模組
-        import imglyRemoveBackground from 'https://unpkg.com/@imgly/background-removal/dist/browser/imglyRemoveBackground.mjs';
+        // 使用指定的 @1.7.0 版本避開 CORS 錯誤
+        import imglyRemoveBackground from 'https://unpkg.com/@imgly/background-removal@1.7.0/dist/browser/imglyRemoveBackground.mjs';
 
         const uploadInput = document.getElementById('upload');
         const originalImg = document.getElementById('original');
@@ -87,15 +99,15 @@
             
             resultImg.style.display = 'none';
             statusText.style.color = "#f39c12";
-            statusText.innerText = '⏳ AI 正在思考中... (初次載入模型約需 5-15 秒，請勿關閉網頁)';
+            statusText.innerText = '⏳ AI 正在思考中... (正在下載模型，請稍候)';
 
             try {
-                // 2. 關鍵設定：告訴 AI 去哪裡下載它的模型大腦
+                // 模型下載路徑也加上 @1.7.0
                 const config = {
-                    publicPath: 'https://unpkg.com/@imgly/background-removal/dist/'
+                    publicPath: 'https://unpkg.com/@imgly/background-removal@1.7.0/dist/'
                 };
 
-                // 3. 執行去背魔法
+                // 執行去背魔法
                 const imageBlob = await imglyRemoveBackground(file, config);
                 const resultURL = URL.createObjectURL(imageBlob);
 
