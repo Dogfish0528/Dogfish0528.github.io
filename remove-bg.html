@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dogfish 的 AI 去背實驗室</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.3/dist/browser/imglyRemoveBackground.js"></script>
+    
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        h1 { color: #00a8ff; }
+        .upload-btn {
+            background-color: #00a8ff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        input[type="file"] { display: none; } /* 隱藏醜醜的預設上傳按鈕 */
+        #status { color: #f39c12; font-weight: bold; font-size: 1.2em; margin-bottom: 20px;}
+        
+        .image-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .image-box { max-width: 45%; min-width: 300px; }
+        img {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 2px dashed #555;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADFJREFUOE9jZCASMDKgmHGIiYn5T4RmxoEhyoBRDYA2HkI2BqMmkMQmD1oOhmgA0joAAC+bEwkXl1/qAAAAAElFTkSuQmCC') repeat; /* 透明方格背景 */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>✨ 瀏覽器端 AI 圖片去背</h1>
+    <p>（所有運算皆在你的裝置上完成，不侵犯隱私！）</p>
+
+    <label class="upload-btn">
+        選擇圖片
+        <input type="file" id="upload" accept="image/*">
+    </label>
+
+    <div id="status">等待上傳圖片...</div>
+
+    <div class="image-container">
+        <div class="image-box">
+            <h3>原始圖片</h3>
+            <img id="original" src="" style="display:none;">
+        </div>
+        <div class="image-box">
+            <h3>去背結果</h3>
+            <img id="result" src="" style="display:none;">
+        </div>
+    </div>
+
+    <script>
+        const uploadInput = document.getElementById('upload');
+        const originalImg = document.getElementById('original');
+        const resultImg = document.getElementById('result');
+        const statusText = document.getElementById('status');
+
+        uploadInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // 1. 顯示原始圖片
+            const objectURL = URL.createObjectURL(file);
+            originalImg.src = objectURL;
+            originalImg.style.display = 'block';
+            
+            // 隱藏舊的結果
+            resultImg.style.display = 'none';
+            statusText.style.color = "#f39c12";
+            statusText.innerText = '⏳ AI 正在思考中... (初次載入模型約需 5-10 秒，請勿關閉網頁)';
+
+            try {
+                // 2. 呼叫魔法：執行 AI 去背
+                const imageBlob = await imglyRemoveBackground(file);
+                const resultURL = URL.createObjectURL(imageBlob);
+
+                // 3. 顯示完成的去背圖片
+                resultImg.src = resultURL;
+                resultImg.style.display = 'block';
+                statusText.style.color = "#00ff00";
+                statusText.innerText = '✅ 去背完成！你可以右鍵另存圖片。';
+                
+            } catch (error) {
+                console.error(error);
+                statusText.style.color = "#ff4444";
+                statusText.innerText = '❌ 發生錯誤，可能圖片太大或瀏覽器不支援。';
+            }
+        });
+    </script>
+
+</body>
+</html>
