@@ -47,7 +47,6 @@
             max-width: 100%;
             border-radius: 8px;
             border: 2px dashed #555;
-            /* 透明方格背景，讓去背效果更明顯 */
             background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADFJREFUOE9jZCASMDKgmHGIiYn5T4RmxoEhyoBRDYA2HkI2BqMmkMQmD1oOhmgA0joAAC+bEwkXl1/qAAAAAElFTkSuQmCC') repeat; 
         }
     </style>
@@ -80,50 +79,5 @@
     </div>
 
     <script type="module">
-        // 使用指定的 @1.7.0 版本避開 CORS 錯誤
-        import imglyRemoveBackground from 'https://unpkg.com/@imgly/background-removal@1.7.0/dist/browser/imglyRemoveBackground.mjs';
-
-        const uploadInput = document.getElementById('upload');
-        const originalImg = document.getElementById('original');
-        const resultImg = document.getElementById('result');
-        const statusText = document.getElementById('status');
-
-        uploadInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            // 顯示原始圖片
-            const objectURL = URL.createObjectURL(file);
-            originalImg.src = objectURL;
-            originalImg.style.display = 'block';
-            
-            resultImg.style.display = 'none';
-            statusText.style.color = "#f39c12";
-            statusText.innerText = '⏳ AI 正在思考中... (正在下載模型，請稍候)';
-
-            try {
-                // 模型下載路徑也加上 @1.7.0
-                const config = {
-                    publicPath: 'https://unpkg.com/@imgly/background-removal@1.7.0/dist/'
-                };
-
-                // 執行去背魔法
-                const imageBlob = await imglyRemoveBackground(file, config);
-                const resultURL = URL.createObjectURL(imageBlob);
-
-                // 顯示結果
-                resultImg.src = resultURL;
-                resultImg.style.display = 'block';
-                statusText.style.color = "#00ff00";
-                statusText.innerText = '✅ 去背完成！你可以右鍵另存圖片。';
-                
-            } catch (error) {
-                console.error("去背失敗的詳細原因：", error);
-                statusText.style.color = "#ff4444";
-                statusText.innerText = '❌ 發生錯誤，請按 F12 查看 Console。';
-            }
-        });
-    </script>
-
-</body>
-</html>
+        // 1. 【關鍵修復】全面換成 jsdelivr 這個對 CORS 更友善的雲端主機
+        import imglyRemoveBackground from
