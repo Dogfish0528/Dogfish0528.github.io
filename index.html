@@ -3,26 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dogfish Studio | v4.0 極速按鈕版</title>
+    <title>Dogfish Studio | v5.0</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* 🌟 輕量化深色電競風，移除卡頓的毛玻璃 */
         :root {
-            --primary: #00e5ff;
-            --secondary: #2979ff;
-            --accent: #ff1744;
-            --bg-dark: #0a0a0c;
-            --panel-bg: #151518;
-            --border-color: #2a2a35;
+            --primary: #00e5ff; --secondary: #2979ff; --accent: #ff1744;
+            --bg-dark: #0a0a0c; --panel-bg: #151518; --border-color: #2a2a35;
             --font-main: 'Noto Sans TC', sans-serif;
         }
 
         body { background-color: var(--bg-dark); color: #ffffff; font-family: var(--font-main); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
-        
         .solid-panel { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
 
-        /* 導覽列 */
         .navbar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: #0a0a0cf0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 1000; }
         .navbar .logo { font-size: 1.2em; font-weight: 800; display: flex; align-items: center; gap: 10px; }
         .logo-text { color: var(--primary); }
@@ -34,17 +27,16 @@
         .btn-nav.active { background: var(--secondary); color: white; }
         
         .btn-login { background: #1a1a24; border: 1px solid #333; }
-        .btn-logout { background: #2a0810; color: #ff1744; font-size: 0.8em; padding: 4px 12px; border-radius: 8px; border: 1px solid #ff1744; cursor: pointer; font-weight: 700; transition: 0.2s; }
+        .btn-logout { background: #2a0810; color: #ff1744; font-size: 0.8em; padding: 4px 12px; border-radius: 8px; border: 1px solid #ff1744; cursor: pointer; font-weight: 700; }
         .btn-logout:hover { background: #ff1744; color: white; }
         .btn-action { background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; }
         .btn-action:hover { background: #00b8d4; }
-        .btn-del { background: #2a0810; color: #ff1744; border: 1px solid #ff1744; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: 0.2s; }
-        .btn-del:hover { background: #ff1744; color: white; }
+        .btn-del { background: #ff1744; color: white; border: 1px solid #ff1744; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 800; transition: 0.2s; box-shadow: 0 0 10px rgba(255,23,68,0.3); }
+        .btn-del:hover { background: #d50000; }
 
         #top-right-profile { display: none; align-items: center; gap: 10px; padding: 4px 12px; border-radius: 8px; background: #151518; border: 1px solid var(--border-color); }
         #top-right-profile img { width: 28px; height: 28px; border-radius: 50%; }
 
-        /* 主容器 */
         .main-container { max-width: 1050px; margin: 90px auto 50px; padding: 0 20px; }
         .page-panel { display: none; padding: 30px; }
         .page-panel.active { display: block; animation: fadeIn 0.3s ease; }
@@ -52,46 +44,35 @@
         
         .page-title { font-size: 2em; font-weight: 900; margin-top: 0; margin-bottom: 25px; color: white; }
 
-        /* 輸入框 */
         .input-box { background: #000; border: 1px solid var(--border-color); color: white; padding: 10px 14px; font-size: 0.95em; border-radius: 6px; margin: 5px; outline: none; transition: 0.2s; }
         .input-box:focus { border-color: var(--primary); }
-        
         #upload-section { display: none; background: #1a0810; border-color: #4a101d; padding: 20px; margin-bottom: 30px; }
 
-        /* 分類標籤 */
         .category-tabs { display: flex; gap: 10px; margin: 20px 0; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; }
         .tab-btn { background: #0a0a0c; color: #a0a0ab; border: 1px solid var(--border-color); padding: 8px 18px; font-weight: 700; border-radius: 20px; cursor: pointer; transition: 0.2s; }
         .tab-btn.active { background: white; color: #000; border-color: white; }
         
-        /* 素材卡片網格 */
         .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
         .material-item { background: var(--panel-bg); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px; transition: 0.2s; position: relative; }
         .material-item:hover { border-color: var(--primary); transform: translateY(-3px); }
         
-        /* 🌟 修復圖片拉長問題 */
         .album-art-wrapper { width: 100%; aspect-ratio: 1/1; border-radius: 8px; background: #050505; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; border: 1px solid #222; }
-        .album-art-img { width: 100%; height: 100%; object-fit: contain; } /* 改為 contain 避免裁切與拉長 */
+        .album-art-img { width: 100%; height: 100%; object-fit: contain; }
         .default-vinyl { width: 60%; height: 60%; border-radius: 50%; background: radial-gradient(circle, #111 20%, #222 21%, #111 40%, #1a1a1a 60%, var(--secondary) 80%, #111 81%); border: 4px solid #000; animation: spin 4s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
         .mat-type-tag { font-size: 0.7em; padding: 4px 8px; border-radius: 6px; background: #000; color: white; font-weight: 800; position: absolute; top: 10px; left: 10px; z-index: 10; border: 1px solid #333; }
         
-        /* 🌟 Myinstants 實體音效按鈕專屬樣式 */
+        /* 實體音效按鈕 */
         .sfx-card { align-items: center; justify-content: center; text-align: center; padding: 30px 20px; }
         .sfx-push-btn {
             width: 130px; height: 130px; border-radius: 50%;
-            background-color: #ff1744; /* 預設紅色 */
-            background-size: cover; background-position: center;
-            box-shadow: 0 12px 0 #8e001c, 0 15px 20px rgba(0,0,0,0.5); /* 3D 陰影厚度 */
-            border: 4px solid #fff;
-            cursor: pointer; outline: none; transition: 0.1s;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px;
+            background-color: #ff1744; background-size: cover; background-position: center;
+            box-shadow: 0 12px 0 #8e001c, 0 15px 20px rgba(0,0,0,0.5);
+            border: 4px solid #fff; cursor: pointer; outline: none; transition: 0.1s;
+            margin: 0 auto 20px; display: block;
         }
-        .sfx-push-btn:active {
-            transform: translateY(10px); /* 壓下去的動畫 */
-            box-shadow: 0 2px 0 #8e001c, 0 5px 10px rgba(0,0,0,0.5);
-        }
+        .sfx-push-btn:active { transform: translateY(10px); box-shadow: 0 2px 0 #8e001c, 0 5px 10px rgba(0,0,0,0.5); }
         
         .btn-dl { text-align: center; background: #1a1a24; color: white; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: 700; flex-grow: 1; transition: 0.2s; border: 1px solid #333; }
         .btn-dl:hover { background: var(--secondary); border-color: var(--secondary); }
@@ -101,9 +82,9 @@
         .modal-content { background: #111; padding: 30px; border-radius: 16px; max-width: 600px; width: 90%; border: 1px solid #333; text-align: left; position: relative; max-height: 80vh; overflow-y: auto; }
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.8em; cursor: pointer; color: #888; transition: 0.2s; }
         .modal-close:hover { color: white; }
-        .track-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px; border-bottom: 1px solid #222; border-radius: 8px; transition: 0.2s; }
+        .track-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 15px 12px; border-bottom: 1px solid #222; border-radius: 8px; transition: 0.2s; }
         .track-row:hover { background: #1a1a24; }
-        .btn-track-dl { background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 4px 12px; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.85em; }
+        .btn-track-dl { background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.85em; }
         .btn-track-dl:hover { background: var(--primary); color: #000; }
 
         audio { outline: none; border-radius: 8px; width: 100%; height: 35px; }
@@ -115,7 +96,7 @@
     <div class="navbar">
         <div class="logo">
             <span class="logo-text">Dogfish Studio</span>
-            <span class="version-badge">v4.0 極速版</span>
+            <span class="version-badge">v5.0 雲端試聽版</span>
         </div>
         <div class="nav-links">
             <button class="btn-nav active" onclick="switchPage('blog')">博客大廳</button>
@@ -133,14 +114,16 @@
     </div>
 
     <div class="main-container">
+        <!-- 博客區 -->
         <div id="page-blog" class="page-panel solid-panel active">
             <h2 class="page-title">歡迎來到我的實驗室</h2>
             <div style="background: #151518; padding: 20px; border-left: 4px solid var(--primary); border-radius: 8px; margin-bottom: 20px;">
-                <h3 style="margin-top:0;">🚀 v4.0 重大更新</h3>
-                <p style="color: #aaa;">1. 移除了耗能的特效，解決瀏覽器卡頓。<br>2. 圖片改為「等比縮放」，解決拉長破圖問題。<br>3. <b>音效庫迎來了 Myinstants 實體 3D 打擊按鈕！</b><br>4. 溫馨提醒：Google Drive 會阻擋音樂線上試聽，建議貼上 Discord 或 Myinstants 的 MP3 直連網址！</p>
+                <h3 style="margin-top:0;">🚀 v5.0 重大更新</h3>
+                <p style="color: #aaa;">1. <b>修復封面圖片破圖</b>：補回了 Google Drive 網址自動轉換圖片的黑科技！<br>2. <b>雲端音樂強制試聽</b>：導入了 Google 官方的 Iframe 播放器，現在存在雲端的音樂也能 100% 線上試聽了！<br>3. <b>刪除按鈕強化</b>：管理員的刪除按鈕變得超級醒目，音樂專輯請「點進去專輯清單」後即可刪除單首歌曲。</p>
             </div>
         </div>
 
+        <!-- 素材區 -->
         <div id="page-materials" class="page-panel solid-panel">
             <h2 class="page-title">共享素材庫</h2>
             
@@ -160,7 +143,7 @@
                         <input type="url" id="mat-cover-url" class="input-box" placeholder="可選：封面圖片連結" style="width: 160px;">
                     </div>
                     
-                    <input type="url" id="mat-url" class="input-box" placeholder="檔案/MP3 直連網址" style="width: 220px;">
+                    <input type="url" id="mat-url" class="input-box" placeholder="檔案/MP3 雲端網址" style="width: 220px;">
                     <button id="add-mat-btn" class="btn-action">發布</button>
                 </div>
                 <p id="upload-status" style="color: var(--primary); font-size: 0.9em; margin-top: 10px; margin-bottom: 0; font-weight: 700;"></p>
@@ -179,17 +162,12 @@
         <div id="page-tools" class="page-panel solid-panel">
             <h2 class="page-title">AI 去背工具</h2>
             <div style="text-align: center; padding: 20px 0;">
-                <label class="btn-action" style="cursor: pointer; display: inline-block;">
-                    選擇圖片執行去背
-                    <input type="file" id="upload-file" accept="image/*" style="display:none;">
-                </label>
+                <label class="btn-action" style="cursor: pointer; display: inline-block;">選擇圖片執行去背<input type="file" id="upload-file" accept="image/*" style="display:none;"></label>
                 <div id="ai-status" style="color: var(--secondary); margin: 20px 0;">等待上傳...</div>
-                <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
-                    <img id="img-original" src="" style="display:none; max-width: 45%; border-radius: 8px;">
-                    <img id="img-result" src="" style="display:none; max-width: 45%; border-radius: 8px;">
-                </div>
+                <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;"><img id="img-original" style="display:none; max-width: 45%;"><img id="img-result" style="display:none; max-width: 45%;"></div>
             </div>
         </div>
+        
         <div id="page-admin" class="page-panel solid-panel">
             <h2 class="page-title" style="color: var(--accent);">權限控制台</h2>
             <div style="display: flex; gap: 10px;">
@@ -201,6 +179,7 @@
         </div>
     </div>
 
+    <!-- 專輯曲目彈窗 -->
     <div id="album-modal" class="spotify-modal">
         <div class="modal-content">
             <span id="modal-close-btn" class="modal-close">&times;</span>
@@ -211,10 +190,12 @@
                     <span style="font-size: 0.9em; color: #888;">Dogfish Studio</span>
                 </div>
             </div>
+            <!-- 曲目列表容器 -->
             <div id="modal-track-list" style="margin-top: 15px;"></div>
         </div>
     </div>
 
+    <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
@@ -226,7 +207,7 @@
 
         let fetchedMaterialsList = []; let currentActiveTab = "全部"; let isUserAdmin = false; 
 
-        // 🌟 動態欄位切換：音效時改為填寫顏色/圖片
+        // 動態欄位
         document.getElementById('mat-type-select').addEventListener('change', (e) => {
             const dynamicFields = document.getElementById('dynamic-fields');
             if (e.target.value === "音樂") {
@@ -237,18 +218,34 @@
                 `;
                 updateAlbumSuggestions();
             } else if (e.target.value === "音效") {
-                dynamicFields.innerHTML = `
-                    <input type="text" id="mat-btn-style" class="input-box" placeholder="按鈕顏色(如#ff0000)或圖片網址" style="width: 280px;">
-                `;
-            } else {
-                dynamicFields.innerHTML = ``;
-            }
+                dynamicFields.innerHTML = `<input type="text" id="mat-btn-style" class="input-box" placeholder="按鈕顏色(如#ff0000)或圖片網址" style="width: 280px;">`;
+            } else { dynamicFields.innerHTML = ``; }
         });
 
-        function getOptimalAudioUrl(url) {
-            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-            if (match) return `https://docs.google.com/uc?export=download&id=${match[1]}`;
+        // 🌟 核心防破圖黑科技重新上線！
+        function extractGDriveId(url) {
+            if (!url) return null;
+            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            return match ? match[1] : null;
+        }
+
+        function getOptimalImageUrl(url) {
+            if (!url) return "";
+            const id = extractGDriveId(url);
+            if (id) return `https://drive.google.com/thumbnail?id=${id}&sz=w800`;
             return url;
+        }
+
+        // 🌟 雲端強制試聽器 (轉換成 Iframe 或 原生 Audio)
+        function getAudioPlayerHTML(url) {
+            if (!url) return "";
+            const id = extractGDriveId(url);
+            if (id) {
+                // 如果是 Google Drive 連結，強制使用 Iframe 子母畫面播放！
+                return `<iframe src="https://drive.google.com/file/d/${id}/preview" width="100%" height="65" style="border:none; border-radius:8px; margin-top:5px;"></iframe>`;
+            }
+            // 一般 MP3 直連
+            return `<audio controls src="${url}" style="width:100%; height:35px; margin-top:5px;"></audio>`;
         }
 
         fetchMaterialsFromCloud();
@@ -300,14 +297,17 @@
         });
 
         window.deleteMaterial = async function(id) {
-            if (!confirm("確定刪除？")) return;
+            if (!confirm("🚨 警告：確定要徹底刪除這個素材嗎？")) return;
             await deleteDoc(doc(db, "categorized_materials", id));
+            document.getElementById('album-modal').style.display = 'none'; // 刪除後關閉視窗避免殘留
             fetchMaterialsFromCloud();
         };
 
         window.playSFX = function(url) {
-            const audio = new Audio(getOptimalAudioUrl(url));
-            audio.play().catch(e => alert('瀏覽器阻擋播放或連結失效。'));
+            const id = extractGDriveId(url);
+            let playUrl = id ? `https://docs.google.com/uc?export=download&id=${id}` : url;
+            const audio = new Audio(playUrl);
+            audio.play().catch(e => alert('此音效需要另開分頁播放，或瀏覽器阻擋。'));
         };
 
         async function fetchMaterialsFromCloud() {
@@ -325,7 +325,6 @@
             uniqueAlbums.forEach(album => { const option = document.createElement('option'); option.value = album; datalist.appendChild(option); });
         }
 
-        // 🌟 核心渲染：包含全部頁面同時顯示專輯與按鈕
         function renderMaterialsByFilter() {
             const container = document.getElementById('material-container'); container.innerHTML = '';
 
@@ -335,12 +334,16 @@
                     if (item.category !== "音樂") return;
                     let albName = item.albumName || "未分類單曲";
                     if (!albums[albName]) albums[albName] = { name: albName, coverUrl: item.coverUrl || "", tracks: [] };
+                    // 🌟 修正：只有當專輯還沒有封面時，才把新封面的直連塞進去
                     if (!albums[albName].coverUrl && item.coverUrl) albums[albName].coverUrl = item.coverUrl;
                     albums[albName].tracks.push(item);
                 });
                 Object.values(albums).forEach(album => {
                     const itemCard = document.createElement('div'); itemCard.className = 'material-item'; itemCard.style.cursor = 'pointer';
-                    let coverHTML = album.coverUrl ? `<img class="album-art-img" src="${album.coverUrl}" onerror="this.outerHTML='<div class=\\'default-vinyl\\'></div>'">` : `<div class="default-vinyl"></div>`;
+                    // 🌟 經過 API 防破圖轉換
+                    let finalCover = getOptimalImageUrl(album.coverUrl);
+                    let coverHTML = finalCover ? `<img class="album-art-img" src="${finalCover}" onerror="this.outerHTML='<div class=\\'default-vinyl\\'></div>'">` : `<div class="default-vinyl"></div>`;
+                    
                     itemCard.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div>${coverHTML}</div>
                         <div><strong style="font-size:1.1em; display:block;">${album.name}</strong><span style="font-size:0.8em; color:#888;">🎵 ${album.tracks.length} 首</span></div>`;
                     itemCard.addEventListener('click', () => openAlbumModal(album));
@@ -351,18 +354,18 @@
             const renderSFXButtons = () => {
                 fetchedMaterialsList.filter(i => i.category === "音效").forEach(data => {
                     const itemCard = document.createElement('div'); itemCard.className = 'material-item sfx-card';
-                    
-                    // 🌟 判斷自訂顏色或圖片
                     let btnStyleCode = `background-color: #ff1744; box-shadow: 0 12px 0 #8e001c, 0 15px 20px rgba(0,0,0,0.5);`;
                     if (data.btnStyle) {
                         if (data.btnStyle.startsWith('http')) {
-                            btnStyleCode = `background-image: url('${data.btnStyle}'); box-shadow: 0 12px 0 #333, 0 15px 20px rgba(0,0,0,0.5); border: none;`;
+                            let imgUrl = getOptimalImageUrl(data.btnStyle);
+                            btnStyleCode = `background-image: url('${imgUrl}'); box-shadow: 0 12px 0 #333, 0 15px 20px rgba(0,0,0,0.5); border: none;`;
                         } else {
                             btnStyleCode = `background-color: ${data.btnStyle}; box-shadow: 0 12px 0 #111, 0 15px 20px rgba(0,0,0,0.5);`;
                         }
                     }
 
-                    let deleteBtnHTML = isUserAdmin ? `<button onclick="deleteMaterial('${data.id}')" class="btn-del" style="margin-top:10px;">🗑️ 刪除</button>` : '';
+                    // 🌟 音效卡片上的巨大刪除按鈕
+                    let deleteBtnHTML = isUserAdmin ? `<button onclick="deleteMaterial('${data.id}')" class="btn-del" style="margin-top:10px; width: 100%;">🗑️ 刪除此音效</button>` : '';
                     itemCard.innerHTML = `
                         <button class="sfx-push-btn" style="${btnStyleCode}" onclick="playSFX('${data.fileUrl}')"></button>
                         <strong style="font-size:1.2em; display:block;">${data.fileName}</strong>
@@ -375,7 +378,10 @@
             const renderGIFs = () => {
                 fetchedMaterialsList.filter(i => i.category === "GIF").forEach(data => {
                     const itemCard = document.createElement('div'); itemCard.className = 'material-item';
-                    let coverHTML = `<img class="album-art-img" src="${data.fileUrl}" onerror="this.outerHTML='<div style=\\'padding:20px;color:#888;\\'>無法預覽</div>'">`;
+                    let imgUrl = getOptimalImageUrl(data.fileUrl);
+                    let coverHTML = `<img class="album-art-img" src="${imgUrl}" onerror="this.outerHTML='<div style=\\'padding:20px;color:#888;\\'>無法預覽</div>'">`;
+                    
+                    // 🌟 GIF 卡片上的刪除按鈕
                     let deleteBtnHTML = isUserAdmin ? `<button onclick="deleteMaterial('${data.id}')" class="btn-del">🗑️</button>` : '';
                     itemCard.innerHTML = `
                         <div class="album-art-wrapper"><div class="mat-type-tag">🖼️ GIF</div>${coverHTML}</div>
@@ -386,7 +392,6 @@
                 });
             };
 
-            // 根據頁籤決定渲染哪些東西
             if (currentActiveTab === "全部") { renderMusicAlbums(); renderSFXButtons(); renderGIFs(); }
             else if (currentActiveTab === "音樂") { renderMusicAlbums(); }
             else if (currentActiveTab === "音效") { renderSFXButtons(); }
@@ -396,22 +401,34 @@
         function openAlbumModal(album) {
             const modal = document.getElementById('album-modal');
             document.getElementById('modal-album-title').innerText = album.name;
-            document.getElementById('modal-album-cover-space').innerHTML = album.coverUrl ? `<img src="${album.coverUrl}" style="width:100px; height:100px; object-fit:contain;">` : `<div class="default-vinyl" style="width:80px;height:80px;"></div>`;
+            
+            let finalCover = getOptimalImageUrl(album.coverUrl);
+            document.getElementById('modal-album-cover-space').innerHTML = finalCover ? `<img src="${finalCover}" style="width:100px; height:100px; object-fit:contain;">` : `<div class="default-vinyl" style="width:80px;height:80px;"></div>`;
+            
             const listContainer = document.getElementById('modal-track-list'); listContainer.innerHTML = '';
             
             album.tracks.forEach((track, index) => {
                 const row = document.createElement('div'); row.className = 'track-row';
-                let finalAudioUrl = getOptimalAudioUrl(track.fileUrl);
-                let deleteBtnHTML = isUserAdmin ? `<button onclick="deleteMaterial('${track.id}')" class="btn-del">🗑️</button>` : '';
+                
+                // 🌟 呼叫 Iframe 或 Audio 試聽器
+                let playerHTML = getAudioPlayerHTML(track.fileUrl);
+                
+                // 🌟 專輯內每一首歌的刪除按鈕 (非常醒目)
+                let deleteBtnHTML = isUserAdmin ? `<button onclick="deleteMaterial('${track.id}')" class="btn-del">🗑️ 刪除歌曲</button>` : '';
+                
                 row.innerHTML = `
-                    <div style="flex:1; min-width:120px;">
-                        <span style="color:var(--primary); font-weight:800; margin-right:10px;">${String(index+1).padStart(2,'0')}</span>
-                        <span style="font-weight:700;">${track.fileName}</span>
+                    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div>
+                            <span style="color:var(--primary); font-weight:800; margin-right:10px;">${String(index+1).padStart(2,'0')}</span>
+                            <span style="font-weight:700; font-size:1.1em;">${track.fileName}</span>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <a href="${track.fileUrl}" target="_blank" class="btn-track-dl">下載 MP3</a>
+                            ${deleteBtnHTML}
+                        </div>
                     </div>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <audio controls src="${finalAudioUrl}" style="width:180px;"></audio>
-                        <a href="${finalAudioUrl}" target="_blank" class="btn-track-dl">下載</a>
-                        ${deleteBtnHTML}
+                    <div style="width: 100%;">
+                        ${playerHTML}
                     </div>
                 `;
                 listContainer.appendChild(row);
@@ -419,7 +436,7 @@
             modal.style.display = 'flex';
         }
 
-        document.getElementById('modal-close-btn').addEventListener('click', () => { document.getElementById('album-modal').style.display = 'none'; document.querySelectorAll('#modal-track-list audio').forEach(a => a.pause()); });
+        document.getElementById('modal-close-btn').addEventListener('click', () => { document.getElementById('album-modal').style.display = 'none'; });
         const tabButtons = document.querySelectorAll('.tab-btn');
         tabButtons.forEach(button => { button.addEventListener('click', () => { tabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); currentActiveTab = button.getAttribute('data-target'); renderMaterialsByFilter(); }); });
         window.switchPage = function(pageId) { document.querySelectorAll('.page-panel').forEach(panel => panel.classList.remove('active')); document.querySelectorAll('.btn-nav').forEach(btn => btn.classList.remove('active')); document.getElementById(`page-${pageId}`).classList.add('active'); const activeNavBtn = Array.from(document.querySelectorAll('.btn-nav')).find(btn => btn.getAttribute('onclick')?.includes(pageId)); if (activeNavBtn) activeNavBtn.classList.add('active'); }
