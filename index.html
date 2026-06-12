@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dogfish0528 的專屬實驗室</title>
-    <link class="js-meta-favicon" rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <style>
         body {
             background-color: #121212;
@@ -80,7 +80,7 @@
         .panel { display: none; margin-top: 30px; padding-top: 25px; border-top: 1px solid #333; text-align: left; }
         .panel-title { color: #00a8ff; text-align: center; margin-bottom: 15px; font-size: 1.5em; }
         
-        /* 🌟 分類分頁標籤樣式 (Tabs) */
+        /* 分類分頁標籤樣式 */
         .category-tabs {
             display: flex;
             justify-content: center;
@@ -170,7 +170,7 @@
         
         <div id="login-section" style="margin-top: 50px; padding: 20px 0;">
             <p style="color: #aaa; font-size: 1.1em; margin-bottom: 25px;">歡迎來到核心實驗室，請先登入以解鎖功能與雲端素材共享庫。</p>
-            <button id="login-btn" class="btn btn-google">🔑 使用 Google 帳號入</button>
+            <button id="login-btn" class="btn btn-google">🔑 使用 Google 帳號登入</button>
         </div>
 
         <div id="materials-panel" class="panel">
@@ -200,8 +200,7 @@
                 <button class="tab-btn" data-target="GIF">🖼️ GIF</button>
             </div>
 
-            <div id="material-container" class="material-list">
-                </div>
+            <div id="material-container" class="material-list"></div>
         </div>
 
         <div id="tools-panel" class="panel">
@@ -239,8 +238,9 @@
     </div>
 
     <script type="module">
+        // 🌟 核心改動：導入符合所有內建瀏覽器規範的 Redirect 模組
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        import { getAuth, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -265,10 +265,10 @@
         const toolsPanel = document.getElementById('tools-panel');
         const adminPanel = document.getElementById('admin-panel');
 
-        // 全域變數，用來快取從雲端抓下來的素材資料
         let fetchedMaterialsList = [];
         let currentActiveTab = "全部";
 
+        // Firebase 狀態監聽（Redirect 回來後會自動在此抓到 user）
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 loginSection.style.display = 'none';
@@ -314,7 +314,7 @@
             }
         });
 
-        // ================= 🚀 網址自動破解解析器 =================
+        // ================= 🚀 修正後的網址自動破解解析器 =================
         function convertToDirectDownload(url) {
             url = url.trim();
             if (url.includes("drive.google.com")) {
@@ -325,6 +325,10 @@
             }
             if (url.includes("dropbox.com")) {
                 return url.replace("?dl=0", "?dl=1").replace("&dl=0", "&dl=1");
+            }
+            if (url.includes("onedrive.live.com")) {
+                // 🌟 修正點：將原先報錯的 .append 修正為正確的字串加號
+                return url.replace("resid=", "resid=").replace("redir=1", "") + "&download=1";
             }
             return url;
         }
@@ -338,7 +342,6 @@
         const materialContainer = document.getElementById('material-container');
         const tabButtons = document.querySelectorAll('.tab-btn');
 
-        // 發布新素材
         addMatBtn.addEventListener('click', async () => {
             const name = matNameInput.value.trim();
             const type = matTypeSelect.value;
@@ -355,10 +358,9 @@
             const directUrl = convertToDirectDownload(rawUrl);
 
             try {
-                // 將資料存入帶有 category 分類欄位的雲端資料庫中
                 await addDoc(collection(db, "categorized_materials"), {
                     fileName: name,
-                    category: type, // 儲存像是 '音樂', '音效', 'GIF'
+                    category: type, 
                     fileUrl: directUrl,
                     uploaderName: auth.currentUser.displayName,
                     timestamp: serverTimestamp()
@@ -368,37 +370,33 @@
                 uploadStatus.style.color = "#00ff00";
                 matNameInput.value = "";
                 matUrlInput.value = "";
-                fetchMaterialsFromCloud(); // 重新向雲端拉取最新資料
+                fetchMaterialsFromCloud(); 
             } catch (error) {
                 uploadStatus.innerText = "❌ 儲存失敗，請確認資料庫 Rules 規則。";
                 uploadStatus.style.color = "#ff4444";
             }
         });
 
-        // 從雲端抓取所有素材資料
         async function fetchMaterialsFromCloud() {
             try {
                 materialContainer.innerHTML = '<p style="text-align:center; color:#777; width:100%;">正在連線雲端資料庫...</p>';
                 const q = query(collection(db, "categorized_materials"), orderBy("timestamp", "desc"));
                 const querySnapshot = await getDocs(q);
                 
-                fetchedMaterialsList = []; // 清空舊暫存
+                fetchedMaterialsList = []; 
                 querySnapshot.forEach((doc) => {
                     fetchedMaterialsList.push(doc.data());
                 });
 
-                // 抓完後直接進行一次渲染
                 renderMaterialsByFilter();
             } catch (error) {
                 materialContainer.innerHTML = '<p style="text-align:center; color:#ff4444; width:100%;">無法讀取雲端清單。</p>';
             }
         }
 
-        // 依照目前選擇的 Tab 分類過濾並渲染畫面
         function renderMaterialsByFilter() {
             materialContainer.innerHTML = '';
 
-            // 進行條件過濾
             const filteredList = fetchedMaterialsList.filter(item => {
                 if (currentActiveTab === "全部") return true;
                 return item.category === currentActiveTab;
@@ -409,12 +407,10 @@
                 return;
             }
 
-            // 動態生成素材卡片
             filteredList.forEach(data => {
                 const itemCard = document.createElement('div');
                 itemCard.className = 'material-item';
                 
-                // 根據分類加上不同的符號標籤
                 let icon = "📄";
                 if (data.category === "音樂") icon = "🎵";
                 if (data.category === "音效") icon = "🔊";
@@ -434,24 +430,60 @@
             });
         }
 
-        // 監聽分頁標籤切換按鈕
         tabButtons.forEach(button => {
             button.addEventListener('click', (e) => {
-                // 移除其他按鈕的 active 樣式，並加到目前被點擊的按鈕
                 tabButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
-
-                // 改變目前選定的分類項目，重新渲染
                 currentActiveTab = button.getAttribute('data-target');
                 renderMaterialsByFilter();
             });
         });
 
-        // ================= 🔑 權限管理員設定 =================
-        document.getElementById('login-btn').addEventListener('click', async () => { try { await signInWithPopup(auth, provider); } catch(e) { alert(e.message); } });
+        // ================= 🔑 升級為超高相容性的 Redirect 登入觸發 =================
+        document.getElementById('login-btn').addEventListener('click', async () => { 
+            try { 
+                await signInWithRedirect(auth, provider); 
+            } catch (e) { 
+                alert("登入觸發失敗: " + e.message); 
+            } 
+        });
+        
         document.getElementById('logout-btn').addEventListener('click', async () => { await signOut(auth); });
 
         document.getElementById('save-role-btn').addEventListener('click', async () => {
             const email = document.getElementById('target-email').value.trim().toLowerCase();
             const role = document.getElementById('target-role').value;
-            const statusLabel = document.getElementById
+            const statusLabel = document.getElementById('admin-action-status');
+
+            if (!email) { alert("請輸入 Email"); return; }
+            statusLabel.innerText = "寫入中...";
+            try {
+                await setDoc(doc(db, "permissions", email), { role: role, updatedBy: auth.currentUser.email, timestamp: new Date() });
+                statusLabel.innerText = `✅ 成功將 ${email} 設定為 [${role}]！`;
+                document.getElementById('target-email').value = "";
+            } catch (e) { statusLabel.innerText = "❌ 寫入失敗"; }
+        });
+
+        // 本機去背工具
+        const uploadFile = document.getElementById('upload-file');
+        const imgOriginal = document.getElementById('img-original');
+        const imgResult = document.getElementById('img-result');
+        const aiStatus = document.getElementById('ai-status');
+
+        uploadFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            imgOriginal.src = URL.createObjectURL(file); imgOriginal.style.display = 'block';
+            imgResult.style.display = 'none';
+            aiStatus.innerText = '⏳ 本機 AI 正在進行邊緣去背運算...';
+            try {
+                const module = await import('https://esm.sh/@imgly/background-removal@1.4.3');
+                const imglyRemoveBackground = module.default;
+                const imageBlob = await imglyRemoveBackground(file);
+                imgResult.src = URL.createObjectURL(imageBlob); imgResult.style.display = 'block';
+                aiStatus.innerText = '✅ 去背成功！';
+            } catch (error) { aiStatus.innerText = '❌ 運算發生錯誤。'; }
+        });
+    </script>
+</body>
+</html>
