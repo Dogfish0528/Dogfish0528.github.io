@@ -3,47 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dogfish 的專屬網站</title>
+    <title>Dogfish0528 的專屬實驗室</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <style>
         body {
             background-color: #121212;
             color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             text-align: center;
-            padding-top: 15vh;
+            margin: 0;
+            padding: 40px 20px;
         }
-        h1 {
-            color: #00a8ff;
-            font-size: 3em;
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-        p {
-            font-size: 1.2em;
-            color: #aaaaaa;
+        h1 { color: #00a8ff; margin-bottom: 10px; }
+        .status-bar {
+            font-size: 1.1em;
+            margin-bottom: 20px;
         }
-        .lab-btn {
-            display: inline-block;
-            margin-top: 40px;
-            padding: 15px 30px;
-            font-size: 1.5em;
+        .user-profile {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #00a8ff;
+            margin-bottom: 10px;
+        }
+        .btn {
+            padding: 12px 24px;
+            font-size: 1.1em;
             font-weight: bold;
-            color: white;
-            background: linear-gradient(45deg, #ff007a, #7a00ff);
             border: none;
-            border-radius: 50px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-block;
             text-decoration: none;
-            transition: transform 0.2s;
+            margin: 10px;
         }
-        .lab-btn:hover {
-            transform: scale(1.05);
+        .btn-google { background-color: #df4b3b; color: white; }
+        .btn-google:hover { background-color: #c53727; }
+        .btn-logout { background-color: #555; color: white; }
+        .btn-logout:hover { background-color: #444; }
+        .btn-upload { background-color: #00a8ff; color: white; }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .badge-admin { background: #ff007a; color: white; }
+        .badge-user { background: #444; color: #aaa; }
+        
+        /* 區塊權限控制 */
+        #tools-panel { display: none; margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; }
+        #admin-panel { display: none; margin-top: 30px; border-top: 2px dashed #ff007a; padding-top: 20px; }
+        
+        /* AI 去背實驗室內嵌樣式 */
+        input[type="file"] { display: none; }
+        #ai-status { color: #f39c12; font-weight: bold; font-size: 1.2em; margin: 15px 0; }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .image-box { max-width: 45%; min-width: 280px; }
+        img {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 2px dashed #555;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADFJREFUOE9jZCASMDKgmHGIiYn5T4RmxoEhyoBRDYA2HkI2BqMmkMQmD1oOhmgA0joAAC+bEwkXl1/qAAAAAElFTkSuQmCC') repeat; 
         }
     </style>
 </head>
 <body>
-    <h1>歡迎來到 dogfish 的基地</h1>
-    <p>這是我親手打造的專屬網站！</p>
-    <p>🚀 伺服器運作正常</p>
 
-    <a href="remove-bg.html" class="lab-btn">✨ 進入 AI 去背實驗室</a>
+    <div class="container">
+        <h1>✨ Dogfish0528 的個人主站</h1>
+        <p class="status-bar">系統狀態：<span id="auth-status" style="color: #ff4444;">未登入會員 (功能鎖定)</span></p>
 
+        <button id="login-btn" class="btn btn-google">🔑 使用 Google 帳號登入</button>
+
+        <div id="profile-card" class="user-profile">
+            <img id="user-img" class="user-avatar" src="" alt="Avatar"><br>
+            <span id="user-role" class="badge">權限審查中...</span>
+            <p>歡迎回來，<span id="user-name" style="color:#00a8ff; font-weight:bold;"></span>！</p>
+            <p style="font-size: 0.85em; color: #888; background: #151515; padding: 8px; border-radius: 4px; display: inline-block;">
+                你的 UID: <span id="user-uid" style="color: #f39c12; font-family: monospace;"></span>
+            </p>
+            <br>
+            <button id="logout-btn" class="btn btn-logout">🚪 登出帳號</button>
+        </div>
+
+        <div id="tools-panel">
+            <h2 style="color: #00a8ff;">🖼️ 瀏覽器端 AI 圖片去背實驗室</h2>
+            <p>（運算皆在本機端執行，安全不侵犯隱私）</p>
+            
+            <label class="btn btn-upload">
+                選擇圖片並開始去背
+                <input type="file" id="upload-file" accept="image/*">
+            </label>
+            
+            <div id="ai-status">等待上傳圖片...</div>
+            
+            <div class="image-container">
+                <div class="image-box">
+                    <h3>原始圖片</h3>
+                    <img id="img-original" src="" style="display:none;">
+                </div>
+                <div class="image-box">
+                    <h3>去背結果</h3>
+                    <img id="img-result" src="" style="display:none;">
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-panel">
+            <h2 style="color: #ff007a;">👑 最高管理員控制台 (dogfish 專屬)</h2>
+            <div style="background: #252525; padding: 20px; border-radius: 8px; color: #ff007a; font-family: monospace; text-align: left; border-left: 4px solid #ff007a;">
+                <p>⚙️ [系統日誌] 核心權限驗證通過。全權限指揮官已就位。</p>
+                <p>📊 [網站數據] 目前正在 GitHub Pages 穩定運行中。</p>
+                <p>🛠️ 未來你可以在這放各式各樣的管理外掛、指令面板或專屬秘密通道！</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+
+        // 自動代入你剛剛拿到的專屬金鑰
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI",
+            authDomain: "dogfish-website.firebaseapp.com",
+            projectId: "dogfish-website",
+            storageBucket: "dogfish-website.firebasestorage.app",
+            messagingSenderId: "50151191843",
+            appId: "1:50151191843:web:32fd3c7a51c7a21722de96"
+        };
+
+        // ⚠️ 填入你的管理員 UID。第一次登入後，複製畫面上顯示的 UID 貼到這裡，再推上 GitHub 即可！
+        const ADMIN_UID = "把你的_UID_貼在這裡";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const profileCard = document.getElementById('profile-card');
+        const authStatus = document.getElementById('auth-status');
+        const toolsPanel = document.getElementById('tools-panel');
+        const adminPanel = document.getElementById('admin-panel');
+
+        // 會員登入狀態動態分流
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginBtn.style.display = 'none';
+                profileCard.style.display = 'block';
+                authStatus.innerText = "驗證成功 (功能已解鎖)";
+                authStatus.style.color = "#00ff00";
+                
+                document.getElementById('user-img').src = user.photoURL;
+                document.getElementById('user-name').innerText = user.displayName;
+                document.getElementById('user-uid').innerText = user.uid;
+
+                if (user.uid === ADMIN_UID) {
+                    const roleBadge = document.getElementById('user-role');
+                    roleBadge.innerText = "👑 最高管理員";
+                    roleBadge.className = "badge badge-admin";
+                    adminPanel.style.display = 'block';
+                    toolsPanel.style.display = 'block';
+                } else {
+                    const roleBadge = document.getElementById('user-role');
+                    roleBadge.innerText = "👤 一般會員";
+                    roleBadge.className = "badge badge-user";
+                    adminPanel.style.display = 'none';
+                    toolsPanel.style.display = 'block';
+                }
+            } else {
+                loginBtn.style.display = 'inline-block';
+                profileCard.style.display = 'none';
+                toolsPanel.style.display = 'none';
+                adminPanel.style.display = 'none';
+                authStatus.innerText = "未登入會員 (功能鎖定)";
+                authStatus.style.color = "#ff4444";
+            }
+        });
+
+        loginBtn.addEventListener('click', async () => {
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                alert("登入失敗，請確認 Firebase Authentication 中已啟用 Google 登入功能！\n錯誤原因: " + error.message);
+            }
+        });
+
+        logoutBtn.addEventListener('click', async () => { await signOut(auth); });
+
+        // 🖼️ 揉合 esm.sh 完美版 AI 去背邏輯
+        const uploadFile = document.getElementById('upload-file');
+        const imgOriginal = document.getElementById('img-original');
+        const imgResult = document.getElementById('img-result');
+        const aiStatus = document.getElementById('ai-status');
+
+        uploadFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            imgOriginal.src = URL.createObjectURL(file);
+            imgOriginal.style.display = 'block';
+            imgResult.style.display = 'none';
+            
+            aiStatus.style.color = "#f39c12";
+            aiStatus.innerText = '⏳ AI 正在思考中... (初次載入需耗時下載模型，請稍候)';
+
+            try {
+                // 採用最穩固的 esm.sh 1.4.3 動態載入
+                const module = await import('https://esm.sh/@imgly/background-removal@1.4.3');
+                const imglyRemoveBackground = module.default;
+                
+                aiStatus.innerText = '🟣 AI 模組下載成功！開始執行去背運算...';
+
+                // 自動抓取官方大腦模型，不給予自訂路徑以防崩潰
+                const imageBlob = await imglyRemoveBackground(file);
+                
+                imgResult.src = URL.createObjectURL(imageBlob);
+                imgResult.style.display = 'block';
+                aiStatus.style.color = "#00ff00";
+                aiStatus.innerText = '✅ 去背完成！你可以按右鍵另存圖片囉。';
+                
+            } catch (error) {
+                console.error(error);
+                aiStatus.style.color = "#ff4444";
+                aiStatus.innerText = '❌ 運算發生錯誤，詳細原因請見 Console 紅字。';
+            }
+        });
+    </script>
 </body>
 </html>
