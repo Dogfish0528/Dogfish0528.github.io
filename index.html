@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dogfish 的個人博客與實驗室</title>
+    <title>Dogfish 的個人博客與 Spotify 級實驗室</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <style>
         body {
@@ -53,7 +53,7 @@
         .btn-logout { background-color: #444; color: #eee; font-size: 0.8em; padding: 4px 10px; border-radius: 15px; border: 1px solid #555; cursor: pointer; margin-top: 5px; }
         .btn-logout:hover { background-color: #ff3333; color: white; border-color: #ff3333; }
 
-        /* 右上角頭貼小區塊 */
+        /* 右上角狀態區 */
         #top-right-profile { display: none; align-items: center; gap: 10px; background: #252525; padding: 4px 12px; border-radius: 20px; border: 1px solid #444; }
         #top-right-profile img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #ff007a; }
         #tr-name { font-size: 0.85em; font-weight: bold; }
@@ -73,14 +73,14 @@
         #upload-section { display: none; background: #1a0f14; padding: 20px; border-radius: 10px; margin-bottom: 25px; border: 1px dashed #ff007a; }
         .input-box { background: #121212; border: 1px solid #444; color: white; padding: 10px; font-size: 1em; border-radius: 6px; margin: 5px; }
 
-        /* 📦 素材共享庫與音樂卡片優化 */
+        /* 📦 素材共享庫與卡片設計 */
         .category-tabs { display: flex; gap: 10px; margin: 20px 0; border-bottom: 2px solid #333; padding-bottom: 10px; }
         .tab-btn { background: #252525; color: #aaa; border: 1px solid #444; padding: 6px 16px; font-size: 0.9em; font-weight: bold; border-radius: 20px; cursor: pointer; }
         .tab-btn.active { background: #00a8ff; color: #121212; border-color: #00a8ff; }
         
         .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         
-        /* ✨ 精緻音樂盒卡片設計 */
+        /* 專輯/素材卡片外觀 */
         .material-item { 
             background: #252525; 
             padding: 15px; 
@@ -94,7 +94,6 @@
         }
         .material-item:hover { transform: translateY(-3px); border-color: #00a8ff; }
         
-        /* 專輯封面外觀 */
         .album-art-wrapper {
             width: 100%;
             height: 160px;
@@ -107,12 +106,9 @@
             position: relative;
             border: 1px solid #333;
         }
-        .album-art-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        /* 預設黑膠唱片旋轉特效 */
+        .album-art-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* 黑膠唱片動畫 */
         .default-vinyl {
             width: 80px;
             height: 80px;
@@ -124,8 +120,48 @@
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
         .mat-type-tag { font-size: 0.75em; padding: 3px 8px; border-radius: 4px; background: #121212; color: #00a8ff; font-weight: bold; position: absolute; top: 10px; left: 10px; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
-        .material-item a { text-align: center; background: #00ff7f; color: #121212; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; display: block; transition: 0.2s; }
-        .material-item a:hover { background: #00cc66; }
+        .material-item .btn-dl { text-align: center; background: #00ff7f; color: #121212; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; display: block; transition: 0.2s; }
+        .material-item .btn-dl:hover { background: #00cc66; }
+
+        /* 🌟 Spotify 風格彈出清單視窗 (Modal) */
+        .spotify-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 520px;
+            width: 90%;
+            border: 1px solid #444;
+            text-align: left;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5em; cursor: pointer; color: #aaa; transition: 0.2s; }
+        .modal-close:hover { color: white; }
+        .track-list-wrapper { margin-top: 15px; }
+        .track-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 8px;
+            border-bottom: 1px solid #2d2d2d;
+            transition: 0.2s;
+            border-radius: 6px;
+        }
+        .track-row:hover { background: rgba(255,255,255,0.05); }
+        .btn-track-dl { background: #00ff7f; color: #121212; padding: 6px 14px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.85em; transition: 0.2s; }
+        .btn-track-dl:hover { background: #00cc66; transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -158,7 +194,7 @@
             </div>
             <div class="blog-post">
                 <h3>🚀 最新網站更新公告</h3>
-                <p>功能全面微調優化！現在素材上傳面板已經直接整合進「素材專區」中，只要站長登入即可即時上傳。同時音樂與音效上架新增了智慧專輯封面功能，視覺效果大幅提升！</p>
+                <p>真・Spotify 級專輯系統正式開通！現在音樂分類將全面改為「專輯盒子」外觀，點擊任一專輯即可展開內含的完整歌曲軌道。音效與 GIF 依然保持單檔直接下載，介面更加專業強大！</p>
             </div>
         </div>
 
@@ -184,27 +220,32 @@
             <div id="upload-section">
                 <p style="color: #ff007a; margin-top: 0; font-weight: bold; font-size: 1.1em;">➕ 站長專屬快速上架素材</p>
                 <div style="display: flex; flex-wrap: wrap; gap: 5px; align-items: center;">
-                    <input type="text" id="mat-name" class="input-box" placeholder="素材名稱" style="width: 150px;">
+                    <input type="text" id="mat-name" class="input-box" placeholder="單曲或素材名稱" style="width: 140px;">
                     <select id="mat-type-select" class="input-box" style="cursor: pointer; background: #121212;">
-                        <option value="音樂">🎵 音樂</option>
+                        <option value="音樂">🎵 音樂 (Spotify 專輯流)</option>
                         <option value="音效">🔊 音效</option>
                         <option value="GIF">🖼️ GIF</option>
                     </select>
-                    <input type="url" id="mat-url" class="input-box" placeholder="貼上雲端空間分享連結" style="width: 230px;">
-                    <input type="url" id="mat-cover-url" class="input-box" placeholder="可選：貼上封面圖片網址" style="width: 200px;">
+                    
+                    <div id="music-fields" style="display: inline-block;">
+                        <input type="text" id="mat-album" class="input-box" placeholder="專輯名稱 (例如：Phonk精選)" style="width: 160px;">
+                    </div>
+                    
+                    <input type="url" id="mat-url" class="input-box" placeholder="貼上雲端檔案分享連結" style="width: 210px;">
+                    <input type="url" id="mat-cover-url" class="input-box" placeholder="可選：貼上封面圖片網址" style="width: 180px;">
                     
                     <button id="add-mat-btn" class="btn-action" style="background:#ff007a; padding: 10px 18px;">發布上架</button>
                 </div>
                 <p id="upload-status" style="color: #00ff00; font-size: 0.9em; margin-top: 10px; margin-bottom: 0;"></p>
             </div>
 
-            <p style="color: #aaa; margin-bottom: 20px;">免登入自由下載，點擊下方分類標籤快速切換：</p>
+            <p style="color: #aaa; margin-bottom: 20px;">免登入自由下載，音樂類別點擊封面即可展開 Spotify 級曲目清單：</p>
             
             <div class="category-tabs">
                 <button class="tab-btn active" data-target="全部">顯示全部</button>
-                <button class="tab-btn" data-target="音樂">🎵 音樂</button>
-                <button class="tab-btn" data-target="音效">🔊 音效</button>
-                <button class="tab-btn" data-target="GIF">🖼️ GIF</button>
+                <button class="tab-btn" data-target="音樂">🎵 音樂專輯區</button>
+                <button class="tab-btn" data-target="音效">🔊 音效庫</button>
+                <button class="tab-btn" data-target="GIF">🖼️ GIF 動圖</button>
             </div>
 
             <div id="material-container" class="material-list"></div>
@@ -230,6 +271,22 @@
 
     </div>
 
+    <div id="album-modal" class="spotify-modal">
+        <div class="modal-content">
+            <span id="modal-close-btn" class="modal-close">&times;</span>
+            <div style="display: flex; align-items: center; gap: 20px; border-bottom: 1px solid #444; padding-bottom: 15px;">
+                <div id="modal-album-cover-space"></div>
+                <div>
+                    <span style="color: #00a8ff; font-size: 0.8em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">ALBUM</span>
+                    <h3 id="modal-album-title" style="margin: 5px 0 0; font-size: 1.4em; color: white;">專輯名稱</h3>
+                    <span style="font-size: 0.85em; color: #888;">犬齒巨鯊個人工作站發布</span>
+                </div>
+            </div>
+            <div class="track-list-wrapper" id="modal-track-list">
+                </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
@@ -244,7 +301,7 @@
             appId: "1:501551191843:web:32fd3c7a51c7a21722de96"
         };
 
-        const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1"; // 你的創世神專屬 UID
+        const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1"; 
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -254,39 +311,37 @@
         let fetchedMaterialsList = [];
         let currentActiveTab = "全部";
 
-        // 預先拉取雲端素材
+        // 動態切換上傳類型的附加輸入框
+        document.getElementById('mat-type-select').addEventListener('change', (e) => {
+            document.getElementById('music-fields').style.display = e.target.value === "音樂" ? "inline-block" : "none";
+        });
+
         fetchMaterialsFromCloud();
 
         // 監聽管理員身份狀態流
         onAuthStateChanged(auth, (user) => {
             if (user && user.uid === CREATOR_UID) {
-                // 站長確認登入
                 document.getElementById('login-btn').style.display = 'none';
                 document.getElementById('top-right-profile').style.display = 'flex';
-                document.getElementById('upload-section').style.display = 'block'; // 在素材專區解鎖上傳
-                document.getElementById('nav-admin-btn').style.display = 'inline-block'; // 解鎖獨立管理後台分頁
+                document.getElementById('upload-section').style.display = 'block'; 
+                document.getElementById('nav-admin-btn').style.display = 'inline-block'; 
                 
                 document.getElementById('tr-img').src = user.photoURL;
                 document.getElementById('tr-name').innerText = user.displayName;
             } else {
-                // 未登入或一般人狀態
                 document.getElementById('login-btn').style.display = 'inline-block';
                 document.getElementById('top-right-profile').style.display = 'none';
                 document.getElementById('upload-section').style.display = 'none'; 
                 document.getElementById('nav-admin-btn').style.display = 'none';
-                if (document.getElementById('page-admin').classList.contains('active')) {
-                    switchPage('blog');
-                }
+                if (document.getElementById('page-admin').classList.contains('active')) switchPage('blog');
             }
         });
 
-        // 登入與登出事件
         document.getElementById('login-btn').addEventListener('click', () => { 
             signInWithPopup(auth, provider).then(() => switchPage('materials')).catch(e => alert("登入失敗: " + e.message)); 
         });
         document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth).then(() => switchPage('blog')); });
 
-        // 雲端直連格式自動轉換
         function convertToDirectDownload(url) {
             url = url.trim();
             if (url.includes("drive.google.com")) {
@@ -298,119 +353,158 @@
             return url;
         }
 
-        // 站長在素材區直接點擊發布上架
+        // 儲存並上架素材
         document.getElementById('add-mat-btn').addEventListener('click', async () => {
             const name = document.getElementById('mat-name').value.trim();
             const type = document.getElementById('mat-type-select').value;
             const rawUrl = document.getElementById('mat-url').value.trim();
             const coverUrl = document.getElementById('mat-cover-url').value.trim();
+            const albumName = document.getElementById('mat-album').value.trim();
             const statusLabel = document.getElementById('upload-status');
 
             if (!name || !rawUrl) { alert("請完整填寫素材欄位！"); return; }
-            statusLabel.style.color = "#f39c12";
-            statusLabel.innerText = "⏳ 正在處理直連通道並同步雲端...";
+            statusLabel.style.color = "#f39c12"; statusLabel.innerText = "⏳ 正在分析直連並打包至雲端...";
             
             try {
                 await addDoc(collection(db, "categorized_materials"), {
                     fileName: name,
                     category: type, 
                     fileUrl: convertToDirectDownload(rawUrl),
-                    coverUrl: coverUrl || "", // 存入自訂封面圖片網址
+                    coverUrl: coverUrl || "", 
+                    albumName: type === "音樂" ? (albumName || "單曲與未分類") : "", // 存入專輯分組欄位
                     uploaderName: auth.currentUser.displayName,
                     timestamp: serverTimestamp()
                 });
-                statusLabel.style.color = "#00ff00";
-                statusLabel.innerText = `✅ [${type}] "${name}" 已成功發布在下方！`;
+                statusLabel.style.color = "#00ff00"; statusLabel.innerText = `✅ [${type}] "${name}" 上架成功！`;
                 document.getElementById('mat-name').value = "";
                 document.getElementById('mat-url').value = "";
                 document.getElementById('mat-cover-url').value = "";
                 fetchMaterialsFromCloud(); 
-            } catch (error) {
-                statusLabel.style.color = "#ff4444";
-                statusLabel.innerText = "❌ 發布失敗，請確認 Firestore 權限。";
-            }
+            } catch (error) { statusLabel.style.color = "#ff4444"; statusLabel.innerText = "❌ 發布失敗。"; }
         });
 
-        // 👑 管理後台：動態指派使用者權限
+        // 儲存權限
         document.getElementById('save-role-btn').addEventListener('click', async () => {
             const email = document.getElementById('target-email').value.trim().toLowerCase();
             const role = document.getElementById('target-role').value;
             const actionStatus = document.getElementById('admin-action-status');
-
             if (!email) { alert("請輸入對方的 Email！"); return; }
-            actionStatus.style.color = "#f39c12";
-            actionStatus.innerText = "⏳ 正在同步修改雲端權限資料庫...";
-
             try {
-                await setDoc(doc(db, "permissions", email), {
-                    role: role,
-                    updatedBy: auth.currentUser.email,
-                    timestamp: new Date()
-                });
-                actionStatus.style.color = "#00ff00";
-                actionStatus.innerText = `✅ 變更成功！已將 ${email} 的權限修改為 [${role}]。`;
-                document.getElementById('target-email').value = "";
-            } catch (e) {
-                actionStatus.style.color = "#ff4444";
-                actionStatus.innerText = "❌ 修改失敗，請確認資料庫 Rules 規則。";
-            }
+                await setDoc(doc(db, "permissions", email), { role: role, updatedBy: auth.currentUser.email, timestamp: new Date() });
+                actionStatus.innerText = `✅ 成功將 ${email} 修改為 [${role}]。`;
+            } catch (e) { actionStatus.innerText = "❌ 失敗。"; }
         });
 
-        // 從雲端載入清單
         async function fetchMaterialsFromCloud() {
-            const container = document.getElementById('material-container');
             try {
                 const q = query(collection(db, "categorized_materials"), orderBy("timestamp", "desc"));
                 const querySnapshot = await getDocs(q);
                 fetchedMaterialsList = []; 
                 querySnapshot.forEach((doc) => { fetchedMaterialsList.push(doc.data()); });
                 renderMaterialsByFilter();
-            } catch (error) {
-                container.innerHTML = '<p style="text-align:center; color:#ff4444; width:100%;">無法讀取雲端素材清單。</p>';
-            }
+            } catch (error) { console.error(error); }
         }
 
-        // 渲染卡片介面
+        // 🌟 核心分組過濾渲染：完美呈現 Spotify 專輯盒子
         function renderMaterialsByFilter() {
             const container = document.getElementById('material-container');
             container.innerHTML = '';
 
-            const filteredList = fetchedMaterialsList.filter(item => {
-                if (currentActiveTab === "全部") return true;
-                return item.category === currentActiveTab;
-            });
+            // 1. 如果選取的是「音樂專輯區」，執行 Spotify 分組運算
+            if (currentActiveTab === "音樂") {
+                const albums = {};
+                fetchedMaterialsList.forEach(item => {
+                    if (item.category !== "音樂") return;
+                    const albName = item.albumName || "單曲與未分類";
+                    if (!albums[albName]) {
+                        albums[albName] = { name: albName, coverUrl: item.coverUrl || "", tracks: [] };
+                    }
+                    if (!albums[albName].coverUrl && item.coverUrl) albums[albName].coverUrl = item.coverUrl;
+                    albums[albName].tracks.push(item);
+                });
 
-            if (filteredList.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:#777; width:100%;">目前 [${currentActiveTab}] 分類下沒有任何素材。</p>`;
-                return;
-            }
-
-            filteredList.forEach(data => {
-                const itemCard = document.createElement('div');
-                itemCard.className = 'material-item';
-                let icon = data.category === "音樂" ? "🎵" : (data.category === "音效" ? "🔊" : "🖼️");
-
-                // 智慧封面判斷：有填網址用網址，沒填就動態生成酷炫旋轉黑膠唱片
-                let coverHTML = `<div class="default-vinyl"></div>`;
-                if (data.coverUrl && data.coverUrl.trim() !== "") {
-                    coverHTML = `<img class="album-art-img" src="${data.coverUrl}" alt="Cover">`;
+                if (Object.keys(albums).length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#777; width:100%;">目前沒有任何音樂專輯。</p>';
+                    return;
                 }
 
-                itemCard.innerHTML = `
-                    <div class="album-art-wrapper">
-                        <div class="mat-type-tag">${icon} ${data.category}</div>
-                        ${coverHTML}
-                    </div>
-                    <div style="flex-grow: 1; text-align: left;">
-                        <strong style="color: #fff; word-break: break-all; font-size: 1em; display: block; margin-bottom: 5px;">${data.fileName}</strong>
-                    </div>
-                    <div><a href="${data.fileUrl}" target="_blank">⬇️ 直接下載</a></div>
-                `;
-                container.appendChild(itemCard);
-            });
+                Object.values(albums).forEach(album => {
+                    const itemCard = document.createElement('div');
+                    itemCard.className = 'material-item';
+                    itemCard.style.cursor = 'pointer';
+                    let coverHTML = album.coverUrl ? `<img class="album-art-img" src="${album.coverUrl}">` : `<div class="default-vinyl"></div>`;
+
+                    itemCard.innerHTML = `
+                        <div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div>${coverHTML}</div>
+                        <div style="text-align: left;"><strong style="color: #fff; font-size: 1.05em; display: block; margin-bottom: 4px;">${album.name}</strong>
+                        <span style="font-size: 0.85em; color: #888;">🎵 內含 ${album.tracks.length} 首曲目</span></div>
+                        <div style="text-align: center; color: #00a8ff; font-weight: bold; font-size: 0.85em;">點擊展開專輯 ➔</div>
+                    `;
+                    // 點擊專輯盒子，跳出 Spotify 曲目視窗
+                    itemCard.addEventListener('click', () => openAlbumModal(album));
+                    container.appendChild(itemCard);
+                });
+            } else {
+                // 2. 全部、音效、GIF 項目，走一般的單檔直載卡片排版
+                const filteredList = fetchedMaterialsList.filter(item => {
+                    if (currentActiveTab === "全部") return true;
+                    return item.category === currentActiveTab;
+                });
+
+                if (filteredList.length === 0) {
+                    container.innerHTML = `<p style="text-align:center; color:#777; width:100%;">此分類目前空空如也。</p>`;
+                    return;
+                }
+
+                filteredList.forEach(data => {
+                    const itemCard = document.createElement('div');
+                    itemCard.className = 'material-item';
+                    let icon = data.category === "音樂" ? "🎵" : (data.category === "音效" ? "🔊" : "🖼️");
+                    let coverHTML = data.coverUrl ? `<img class="album-art-img" src="${data.coverUrl}">` : `<div class="default-vinyl"></div>`;
+                    let titleText = data.category === "音樂" ? `[${data.albumName}] ${data.fileName}` : data.fileName;
+
+                    itemCard.innerHTML = `
+                        <div class="album-art-wrapper"><div class="mat-type-tag">${icon} ${data.category}</div>${coverHTML}</div>
+                        <div style="text-align: left;"><strong style="color: #fff; word-break: break-all; font-size: 1em; display: block;">${titleText}</strong></div>
+                        <div><a href="${data.fileUrl}" target="_blank" class="btn-dl">⬇️ 直接下載</a></div>
+                    `;
+                    container.appendChild(itemCard);
+                });
+            }
         }
 
-        // 分類標籤點擊切換
+        // 🌟 喚起 Spotify 彈出視窗
+        function openAlbumModal(album) {
+            const modal = document.getElementById('album-modal');
+            document.getElementById('modal-album-title').innerText = album.name;
+            document.getElementById('modal-album-cover-space').innerHTML = album.coverUrl ? 
+                `<img src="${album.coverUrl}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #444;">` : 
+                `<div class="default-vinyl" style="width: 80px; height: 80px;"></div>`;
+
+            const listContainer = document.getElementById('modal-track-list');
+            listContainer.innerHTML = '';
+            
+            // 像 Spotify 一樣，把裡面的歌一條一條依序排出來！
+            album.tracks.forEach((track, index) => {
+                const row = document.createElement('div');
+                row.className = 'track-row';
+                row.innerHTML = `
+                    <div style="max-width: 70%; text-align: left;">
+                        <span style="color: #00a8ff; font-weight: bold; margin-right: 10px; font-family: monospace;">${String(index + 1).padStart(2, '0')}</span>
+                        <span style="color: #fff; font-size: 0.95em;">${track.fileName}</span>
+                    </div>
+                    <a href="${track.fileUrl}" target="_blank" class="btn-track-dl">⬇️ 下載</a>
+                `;
+                listContainer.appendChild(row);
+            });
+            modal.style.display = 'flex';
+        }
+
+        // 關閉視窗事件
+        document.getElementById('modal-close-btn').addEventListener('click', () => { document.getElementById('album-modal').style.display = 'none'; });
+        document.getElementById('album-modal').addEventListener('click', (e) => { if (e.target === document.getElementById('album-modal')) document.getElementById('album-modal').style.display = 'none'; });
+
+        // 分類標籤切換
         const tabButtons = document.querySelectorAll('.tab-btn');
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -421,34 +515,25 @@
             });
         });
 
-        // 全網網頁單頁面切換 (SPA 邏輯)
+        // 網頁單頁面路由
         window.switchPage = function(pageId) {
             document.querySelectorAll('.page-panel').forEach(panel => panel.classList.remove('active'));
             document.querySelectorAll('.btn-nav').forEach(btn => btn.classList.remove('active'));
-            
             document.getElementById(`page-${pageId}`).classList.add('active');
-            
             const activeNavBtn = Array.from(document.querySelectorAll('.btn-nav')).find(btn => btn.getAttribute('onclick')?.includes(pageId));
             if (activeNavBtn) activeNavBtn.classList.add('active');
         }
 
-        // 本機 AI 去背工具
+        // 本機 AI 去背
         document.getElementById('upload-file').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const original = document.getElementById('img-original');
-            const result = document.getElementById('img-result');
-            const status = document.getElementById('ai-status');
-            
-            original.src = URL.createObjectURL(file); original.style.display = 'block';
-            result.style.display = 'none';
+            const file = e.target.files[0]; if (!file) return;
+            const original = document.getElementById('img-original'); const result = document.getElementById('img-result'); const status = document.getElementById('ai-status');
+            original.src = URL.createObjectURL(file); original.style.display = 'block'; result.style.display = 'none';
             status.innerText = '⏳ 本機 AI 正在進行邊緣去背運算...';
             try {
                 const module = await import('https://esm.sh/@imgly/background-removal@1.4.3');
-                const imglyRemoveBackground = module.default;
-                const imageBlob = await imglyRemoveBackground(file);
-                result.src = URL.createObjectURL(imageBlob); result.style.display = 'block';
-                status.innerText = '✅ 去背成功！';
+                const imageBlob = await module.default(file);
+                result.src = URL.createObjectURL(imageBlob); result.style.display = 'block'; status.innerText = '✅ 去背成功！';
             } catch (error) { status.innerText = '❌ 運算發生錯誤。'; }
         });
     </script>
