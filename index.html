@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dogfish0528 的專屬實驗室</title>
+    <title>Dogfish0528 的素材共享實驗室</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <style>
         body {
@@ -24,7 +24,7 @@
         }
         h1 { color: #00a8ff; margin-bottom: 5px; }
         
-        /* 右上角精緻登入狀態卡 */
+        /* 站長專屬狀態卡 */
         #top-right-profile {
             position: absolute;
             top: 15px;
@@ -40,118 +40,41 @@
             backdrop-filter: blur(5px);
             z-index: 999;
         }
-        #top-right-profile img {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            border: 2px solid #00a8ff;
-        }
+        #top-right-profile img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #ff007a; }
         .user-info-text { text-align: left; }
         #tr-name { font-weight: bold; font-size: 0.9em; color: #fff; }
+        .badge-admin { background: #ff007a; color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.75em; font-weight: bold; }
         
-        /* 按鈕基本樣式 */
-        .btn {
-            padding: 10px 20px;
-            font-size: 1em;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-            display: inline-block;
-            margin: 5px;
-            text-decoration: none;
-        }
-        .btn-google { background-color: #df4b3b; color: white; font-size: 1.2em; padding: 12px 26px; }
-        .btn-google:hover { background-color: #c53727; transform: translateY(-1px); }
+        /* 按鈕樣式 */
+        .btn { padding: 10px 20px; font-size: 1em; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; display: inline-block; margin: 5px; text-decoration: none; }
+        .btn-google { background-color: #333; color: white; font-size: 0.9em; padding: 8px 16px; border: 1px solid #555; }
+        .btn-google:hover { background-color: #444; }
         .btn-logout { background-color: #444; color: #eee; font-size: 0.8em; padding: 5px 12px; border-radius: 20px; border: 1px solid #555; }
         .btn-logout:hover { background-color: #ff3333; color: white; border-color: #ff3333; }
         .btn-action { background-color: #00a8ff; color: white; }
         .btn-action:hover { background-color: #0086cc; }
-        .btn-admin { background-color: #ff007a; color: white; padding: 8px 16px; }
         
-        /* 身分徽章 */
-        .badge { padding: 3px 10px; border-radius: 20px; font-size: 0.75em; font-weight: bold; display: inline-block; margin-top: 2px; }
-        .badge-admin { background: #ff007a; color: white; }
-        .badge-creator { background: #9b59b6; color: white; }
-        .badge-vip { background: #f1c40f; color: #121212; }
-        .badge-user { background: #555; color: #ccc; }
-        
-        .panel { display: none; margin-top: 30px; padding-top: 25px; border-top: 1px solid #333; text-align: left; }
+        .panel { margin-top: 30px; padding-top: 25px; border-top: 1px solid #333; text-align: left; }
         .panel-title { color: #00a8ff; text-align: center; margin-bottom: 15px; font-size: 1.5em; }
         
-        /* 分類分頁標籤樣式 */
-        .category-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-        }
-        .tab-btn {
-            background: #252525;
-            color: #aaa;
-            border: 1px solid #444;
-            padding: 8px 20px;
-            font-size: 1em;
-            font-weight: bold;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        /* 隱藏區塊預設樣式 */
+        #upload-section, #admin-panel { display: none; }
+        
+        /* 分類標籤 */
+        .category-tabs { display: flex; justify-content: center; gap: 10px; margin: 20px 0; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .tab-btn { background: #252525; color: #aaa; border: 1px solid #444; padding: 8px 20px; font-size: 1em; font-weight: bold; border-radius: 20px; cursor: pointer; transition: 0.2s; }
         .tab-btn:hover { color: white; border-color: #00a8ff; }
-        .tab-btn.active {
-            background: #00a8ff;
-            color: #121212;
-            border-color: #00a8ff;
-        }
+        .tab-btn.active { background: #00a8ff; color: #121212; border-color: #00a8ff; }
 
-        /* 素材卡片排版 */
-        .material-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
-            margin-top: 10px;
-        }
-        .material-item {
-            background: #252525;
-            padding: 18px;
-            border-radius: 10px;
-            border: 1px solid #3c3c3c;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            transition: 0.3s;
-        }
+        /* 素材清單網格 */
+        .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-top: 10px; }
+        .material-item { background: #252525; padding: 18px; border-radius: 10px; border: 1px solid #3c3c3c; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: 0.3s; }
         .material-item:hover { transform: translateY(-3px); border-color: #00a8ff; }
-        .material-item span { font-size: 0.8em; color: #888; margin-top: 6px; }
-        .material-item .mat-type-tag {
-            align-self: flex-start;
-            font-size: 0.7em;
-            padding: 2px 8px;
-            border-radius: 4px;
-            background: #333;
-            color: #00a8ff;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        .material-item a {
-            margin-top: 12px;
-            text-align: center;
-            background: #00ff7f;
-            color: #121212;
-            padding: 10px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.2s;
-        }
+        .mat-type-tag { align-self: flex-start; font-size: 0.75em; padding: 3px 8px; border-radius: 4px; background: #333; color: #00a8ff; font-weight: bold; margin-bottom: 8px; }
+        .material-item a { margin-top: 12px; text-align: center; background: #00ff7f; color: #121212; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; transition: 0.2s; }
         .material-item a:hover { background: #00cc66; }
         
         .input-box { background: #121212; border: 1px solid #444; color: white; padding: 10px; font-size: 1em; border-radius: 6px; margin: 5px; }
-        input[type="file"] { display: none; }
     </style>
 </head>
 <body>
@@ -160,37 +83,35 @@
         <img id="tr-img" src="" alt="Avatar">
         <div class="user-info-text">
             <div id="tr-name">讀取中...</div>
-            <div id="tr-badge-space"></div>
+            <div class="badge-admin">👑 站長已登入</div>
         </div>
         <button id="logout-btn" class="btn btn-logout">🚪 登出</button>
     </div>
 
     <div class="container">
-        <h1>✨ Dogfish0528 的個人主站</h1>
+        <h1>✨ Dogfish0528 的素材共享實驗室</h1>
         
-        <div id="login-section" style="margin-top: 50px; padding: 20px 0;">
-            <p style="color: #aaa; font-size: 1.1em; margin-bottom: 25px;">歡迎來到核心實驗室，請先登入以解鎖功能與雲端素材共享庫。</p>
-            <button id="login-btn" class="btn btn-google">🔑 使用 Google 帳號登入</button>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button id="login-btn" class="btn btn-google">🔑 站長專用登入</button>
         </div>
 
-        <div id="materials-panel" class="panel">
-            <h2 class="panel-title">📦 雲端多功能分類素材專區</h2>
+        <div id="materials-panel" class="panel" style="border-top: none; margin-top: 0; padding-top: 0;">
+            <h2 class="panel-title">📦 免費分類素材專區</h2>
+            <p style="text-align: center; color: #aaa;">無需登入，點擊下方分類即可直接下載！</p>
             
-            <div style="text-align: center; background: #252525; padding: 20px; border-radius: 10px; margin-bottom: 15px; border: 1px dashed #444;">
-                <p style="color: #ccc; margin-top: 0;">貼上你的雲端空間分享連結，並選擇對應的素材類型發布給所有人：</p>
+            <div id="upload-section" style="text-align: center; background: #1a0f14; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #ff007a;">
+                <p style="color: #ff007a; margin-top: 0; font-weight: bold;">👑 站長素材發布中心</p>
                 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; align-items: center;">
-                    <input type="text" id="mat-name" class="input-box" placeholder="素材名稱 (例如：重低音 Funk)" style="width: 200px;">
-                    
-                    <select id="mat-type-select" class="input-box" style="background: #121212; cursor: pointer;">
-                        <option value="音樂">🎵 音樂 (Music)</option>
-                        <option value="音效">🔊 音效 (SFX)</option>
-                        <option value="GIF">🖼️ GIF 動圖</option>
+                    <input type="text" id="mat-name" class="input-box" placeholder="素材名稱" style="width: 180px;">
+                    <select id="mat-type-select" class="input-box" style="cursor: pointer;">
+                        <option value="音樂">🎵 音樂</option>
+                        <option value="音效">🔊 音效</option>
+                        <option value="GIF">🖼️ GIF</option>
                     </select>
-                    
-                    <input type="url" id="mat-url" class="input-box" placeholder="請貼上雲端分享連結路徑" style="width: 280px;">
-                    <button id="add-mat-btn" class="btn btn-action">➕ 分享素材</button>
+                    <input type="url" id="mat-url" class="input-box" placeholder="貼上雲端分享連結" style="width: 280px;">
+                    <button id="add-mat-btn" class="btn btn-action" style="background:#ff007a;">➕ 發布</button>
                 </div>
-                <p id="upload-status" style="color: #f39c12; font-weight: bold; margin-bottom: 0; margin-top: 10px; font-size: 0.95em;"></p>
+                <p id="upload-status" style="color: #00ff00; font-size: 0.9em; margin-top: 10px;"></p>
             </div>
             
             <div class="category-tabs">
@@ -217,185 +138,118 @@
                 </div>
             </div>
         </div>
-
-        <div id="admin-panel" class="panel" style="border-top: 2px dashed #ff007a;">
-            <h2 style="color: #ff007a; text-align: center; font-size: 1.5em;">👑 最高管理員帳戶權限控制台</h2>
-            <div style="background: #252525; padding: 20px; border-radius: 8px; border-left: 4px solid #ff007a;">
-                <p style="color: #ff007a; font-weight: bold; margin-top: 0; font-size: 1.05em;">🎯 動態指派全站使用者帳戶類型：</p>
-                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 5px;">
-                    <input type="email" id="target-email" class="input-box" placeholder="請輸入對方的電子郵件 (Email)" style="width: 250px;">
-                    <select id="target-role" class="input-box" style="background: #121212;">
-                        <option value="user">👤 一般會員 (user)</option>
-                        <option value="vip">⭐ VIP 尊榮會員 (vip)</option>
-                        <option value="creator">🎬 核心創作者 (creator)</option>
-                        <option value="admin">👑 最高管理員 (admin)</option>
-                    </select>
-                    <button id="save-role-btn" class="btn btn-admin">💾 儲存權限設定</button>
-                </div>
-                <p id="admin-action-status" style="color: #00ff00; font-size: 0.9em; margin-top: 10px; font-family: monospace;"></p>
-            </div>
-        </div>
     </div>
 
     <script type="module">
-        // 🌟 核心改動：導入符合所有內建瀏覽器規範的 Redirect 模組
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getAuth, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
+        // 🌟 已根據你的截圖修正了 messagingSenderId 與 appId！
         const firebaseConfig = {
             apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI",
             authDomain: "dogfish-website.firebaseapp.com",
             projectId: "dogfish-website",
             storageBucket: "dogfish-website.firebasestorage.app",
-            messagingSenderId: "50151191843",
-            appId: "1:50151191843:web:32fd3c7a51c7a21722de96"
+            messagingSenderId: "501551191843",
+            appId: "1:501551191843:web:32fd3c7a51c7a21722de96"
         };
 
-        const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1";
+        const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1"; // 你的專屬站長 UID
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const loginSection = document.getElementById('login-section');
-        const topRightProfile = document.getElementById('top-right-profile');
-        const materialsPanel = document.getElementById('materials-panel');
-        const toolsPanel = document.getElementById('tools-panel');
-        const adminPanel = document.getElementById('admin-panel');
-
         let fetchedMaterialsList = [];
         let currentActiveTab = "全部";
 
-        // Firebase 狀態監聽（Redirect 回來後會自動在此抓到 user）
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                loginSection.style.display = 'none';
-                topRightProfile.style.display = 'flex';
-                materialsPanel.style.display = 'block';
-                toolsPanel.style.display = 'block';
+        // 🌟 網頁一打開，無論有沒有登入，立刻從雲端抓取素材給大家看！
+        fetchMaterialsFromCloud();
+
+        // 監聽站長登入狀態
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.uid === CREATOR_UID) {
+                // 如果是站長登入
+                document.getElementById('login-btn').style.display = 'none';
+                document.getElementById('top-right-profile').style.display = 'flex';
+                document.getElementById('upload-section').style.display = 'block'; // 解鎖上傳區
                 
                 document.getElementById('tr-img').src = user.photoURL;
                 document.getElementById('tr-name').innerText = user.displayName;
-
-                let userRole = "user"; 
-                if (user.uid === CREATOR_UID) {
-                    userRole = "admin"; 
-                } else {
-                    try {
-                        const docSnap = await getDoc(doc(db, "permissions", user.email.toLowerCase()));
-                        if (docSnap.exists()) userRole = docSnap.data().role;
-                    } catch (e) { console.error(e); }
-                }
-
-                const badgeSpace = document.getElementById('tr-badge-space');
-                if (userRole === "admin") {
-                    badgeSpace.innerHTML = '<span class="badge badge-admin">👑 最高管理員</span>';
-                    adminPanel.style.display = 'block'; 
-                } else if (userRole === "creator") {
-                    badgeSpace.innerHTML = '<span class="badge badge-creator">🎬 核心創作者</span>';
-                    adminPanel.style.display = 'none';
-                } else if (userRole === "vip") {
-                    badgeSpace.innerHTML = '<span class="badge badge-vip">⭐ VIP 尊榮會員</span>';
-                    adminPanel.style.display = 'none';
-                } else {
-                    badgeSpace.innerHTML = '<span class="badge badge-user">👤 一般會員</span>';
-                    adminPanel.style.display = 'none';
-                }
-
-                fetchMaterialsFromCloud();
             } else {
-                loginSection.style.display = 'block';
-                topRightProfile.style.display = 'none';
-                materialsPanel.style.display = 'none';
-                toolsPanel.style.display = 'none';
-                adminPanel.style.display = 'none';
+                // 一般人或未登入
+                document.getElementById('login-btn').style.display = 'inline-block';
+                document.getElementById('top-right-profile').style.display = 'none';
+                document.getElementById('upload-section').style.display = 'none'; // 隱藏上傳區
             }
         });
 
-        // ================= 🚀 修正後的網址自動破解解析器 =================
+        // 登入按鈕 (採用 Redirect 保證 100% 成功)
+        document.getElementById('login-btn').addEventListener('click', () => { 
+            signInWithRedirect(auth, provider).catch(e => alert("登入錯誤: " + e.message)); 
+        });
+        document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); });
+
+        // 網址轉換器 (破解雲端硬碟變直接下載)
         function convertToDirectDownload(url) {
             url = url.trim();
             if (url.includes("drive.google.com")) {
                 const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-                if (match && match[1]) {
-                    return `https://drive.google.com/uc?export=download&id=${match[1]}`;
-                }
+                if (match && match[1]) return `https://drive.google.com/uc?export=download&id=${match[1]}`;
             }
-            if (url.includes("dropbox.com")) {
-                return url.replace("?dl=0", "?dl=1").replace("&dl=0", "&dl=1");
-            }
-            if (url.includes("onedrive.live.com")) {
-                // 🌟 修正點：將原先報錯的 .append 修正為正確的字串加號
-                return url.replace("resid=", "resid=").replace("redir=1", "") + "&download=1";
-            }
+            if (url.includes("dropbox.com")) return url.replace("?dl=0", "?dl=1").replace("&dl=0", "&dl=1");
+            if (url.includes("onedrive.live.com")) return url.replace("resid=", "resid=").replace("redir=1", "") + "&download=1";
             return url;
         }
 
-        // ================= 📦 分類素材庫核心控制邏輯 =================
-        const addMatBtn = document.getElementById('add-mat-btn');
-        const matNameInput = document.getElementById('mat-name');
-        const matTypeSelect = document.getElementById('mat-type-select');
-        const matUrlInput = document.getElementById('mat-url');
-        const uploadStatus = document.getElementById('upload-status');
-        const materialContainer = document.getElementById('material-container');
-        const tabButtons = document.querySelectorAll('.tab-btn');
+        // 站長發布新素材
+        document.getElementById('add-mat-btn').addEventListener('click', async () => {
+            const name = document.getElementById('mat-name').value.trim();
+            const type = document.getElementById('mat-type-select').value;
+            const rawUrl = document.getElementById('mat-url').value.trim();
+            const statusLabel = document.getElementById('upload-status');
 
-        addMatBtn.addEventListener('click', async () => {
-            const name = matNameInput.value.trim();
-            const type = matTypeSelect.value;
-            const rawUrl = matUrlInput.value.trim();
-
-            if (!name || !rawUrl) {
-                alert("請填寫素材名稱與分享網址！");
-                return;
-            }
-
-            uploadStatus.innerText = "⏳ 正在分析格式並將分類同步至雲端...";
-            uploadStatus.style.color = "#f39c12";
-
-            const directUrl = convertToDirectDownload(rawUrl);
-
+            if (!name || !rawUrl) { alert("請填寫素材名稱與分享網址！"); return; }
+            statusLabel.innerText = "⏳ 發布中...";
+            
             try {
                 await addDoc(collection(db, "categorized_materials"), {
                     fileName: name,
                     category: type, 
-                    fileUrl: directUrl,
+                    fileUrl: convertToDirectDownload(rawUrl),
                     uploaderName: auth.currentUser.displayName,
                     timestamp: serverTimestamp()
                 });
-
-                uploadStatus.innerText = `✅ [${type}] 素材上架成功！`;
-                uploadStatus.style.color = "#00ff00";
-                matNameInput.value = "";
-                matUrlInput.value = "";
-                fetchMaterialsFromCloud(); 
+                statusLabel.innerText = `✅ 上架成功！`;
+                document.getElementById('mat-name').value = "";
+                document.getElementById('mat-url').value = "";
+                fetchMaterialsFromCloud(); // 重新整理列表
             } catch (error) {
-                uploadStatus.innerText = "❌ 儲存失敗，請確認資料庫 Rules 規則。";
-                uploadStatus.style.color = "#ff4444";
+                statusLabel.innerText = "❌ 發布失敗，請確認資料庫規則。";
             }
         });
 
+        // 抓取雲端素材並分類渲染
         async function fetchMaterialsFromCloud() {
+            const container = document.getElementById('material-container');
             try {
-                materialContainer.innerHTML = '<p style="text-align:center; color:#777; width:100%;">正在連線雲端資料庫...</p>';
+                container.innerHTML = '<p style="text-align:center; color:#777; width:100%;">正在載入素材庫...</p>';
                 const q = query(collection(db, "categorized_materials"), orderBy("timestamp", "desc"));
                 const querySnapshot = await getDocs(q);
                 
                 fetchedMaterialsList = []; 
-                querySnapshot.forEach((doc) => {
-                    fetchedMaterialsList.push(doc.data());
-                });
-
+                querySnapshot.forEach((doc) => { fetchedMaterialsList.push(doc.data()); });
                 renderMaterialsByFilter();
             } catch (error) {
-                materialContainer.innerHTML = '<p style="text-align:center; color:#ff4444; width:100%;">無法讀取雲端清單。</p>';
+                container.innerHTML = '<p style="text-align:center; color:#ff4444; width:100%;">無法讀取雲端清單。</p>';
             }
         }
 
         function renderMaterialsByFilter() {
-            materialContainer.innerHTML = '';
+            const container = document.getElementById('material-container');
+            container.innerHTML = '';
 
             const filteredList = fetchedMaterialsList.filter(item => {
                 if (currentActiveTab === "全部") return true;
@@ -403,35 +257,30 @@
             });
 
             if (filteredList.length === 0) {
-                materialContainer.innerHTML = `<p style="text-align:center; color:#777; width:100%;">目前 [${currentActiveTab}] 分類下還沒有任何素材。</p>`;
+                container.innerHTML = `<p style="text-align:center; color:#777; width:100%;">目前 [${currentActiveTab}] 分類下還沒有任何素材。</p>`;
                 return;
             }
 
             filteredList.forEach(data => {
                 const itemCard = document.createElement('div');
                 itemCard.className = 'material-item';
-                
-                let icon = "📄";
-                if (data.category === "音樂") icon = "🎵";
-                if (data.category === "音效") icon = "🔊";
-                if (data.category === "GIF") icon = "🖼️";
+                let icon = data.category === "音樂" ? "🎵" : (data.category === "音效" ? "🔊" : "🖼️");
 
                 itemCard.innerHTML = `
                     <div>
                         <div class="mat-type-tag">${icon} ${data.category}</div>
                         <strong style="color: #fff; word-break: break-all; font-size: 1.05em;">${data.fileName}</strong>
                     </div>
-                    <div>
-                        <span style="display:block; margin-bottom: 2px;">👤 分享者: ${data.uploaderName}</span>
-                        <a href="${data.fileUrl}" target="_blank">⬇️ 點擊直接下載</a>
-                    </div>
+                    <div><a href="${data.fileUrl}" target="_blank">⬇️ 直接下載</a></div>
                 `;
-                materialContainer.appendChild(itemCard);
+                container.appendChild(itemCard);
             });
         }
 
+        // 綁定分類標籤切換
+        const tabButtons = document.querySelectorAll('.tab-btn');
         tabButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
+            button.addEventListener('click', () => {
                 tabButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
                 currentActiveTab = button.getAttribute('data-target');
@@ -439,50 +288,24 @@
             });
         });
 
-        // ================= 🔑 升級為超高相容性的 Redirect 登入觸發 =================
-        document.getElementById('login-btn').addEventListener('click', async () => { 
-            try { 
-                await signInWithRedirect(auth, provider); 
-            } catch (e) { 
-                alert("登入觸發失敗: " + e.message); 
-            } 
-        });
-        
-        document.getElementById('logout-btn').addEventListener('click', async () => { await signOut(auth); });
-
-        document.getElementById('save-role-btn').addEventListener('click', async () => {
-            const email = document.getElementById('target-email').value.trim().toLowerCase();
-            const role = document.getElementById('target-role').value;
-            const statusLabel = document.getElementById('admin-action-status');
-
-            if (!email) { alert("請輸入 Email"); return; }
-            statusLabel.innerText = "寫入中...";
-            try {
-                await setDoc(doc(db, "permissions", email), { role: role, updatedBy: auth.currentUser.email, timestamp: new Date() });
-                statusLabel.innerText = `✅ 成功將 ${email} 設定為 [${role}]！`;
-                document.getElementById('target-email').value = "";
-            } catch (e) { statusLabel.innerText = "❌ 寫入失敗"; }
-        });
-
         // 本機去背工具
-        const uploadFile = document.getElementById('upload-file');
-        const imgOriginal = document.getElementById('img-original');
-        const imgResult = document.getElementById('img-result');
-        const aiStatus = document.getElementById('ai-status');
-
-        uploadFile.addEventListener('change', async (e) => {
+        document.getElementById('upload-file').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            imgOriginal.src = URL.createObjectURL(file); imgOriginal.style.display = 'block';
-            imgResult.style.display = 'none';
-            aiStatus.innerText = '⏳ 本機 AI 正在進行邊緣去背運算...';
+            const original = document.getElementById('img-original');
+            const result = document.getElementById('img-result');
+            const status = document.getElementById('ai-status');
+            
+            original.src = URL.createObjectURL(file); original.style.display = 'block';
+            result.style.display = 'none';
+            status.innerText = '⏳ 本機 AI 正在進行邊緣去背運算...';
             try {
                 const module = await import('https://esm.sh/@imgly/background-removal@1.4.3');
                 const imglyRemoveBackground = module.default;
                 const imageBlob = await imglyRemoveBackground(file);
-                imgResult.src = URL.createObjectURL(imageBlob); imgResult.style.display = 'block';
-                aiStatus.innerText = '✅ 去背成功！';
-            } catch (error) { aiStatus.innerText = '❌ 運算發生錯誤。'; }
+                result.src = URL.createObjectURL(imageBlob); result.style.display = 'block';
+                status.innerText = '✅ 去背成功！';
+            } catch (error) { status.innerText = '❌ 運算發生錯誤。'; }
         });
     </script>
 </body>
