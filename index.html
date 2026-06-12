@@ -24,7 +24,7 @@
         }
         h1 { color: #00a8ff; margin-bottom: 5px; }
         
-        /* 站長專屬狀態卡 */
+        /* 站長專屬右上角狀態卡 */
         #top-right-profile {
             position: absolute;
             top: 15px;
@@ -47,8 +47,8 @@
         
         /* 按鈕樣式 */
         .btn { padding: 10px 20px; font-size: 1em; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; display: inline-block; margin: 5px; text-decoration: none; }
-        .btn-google { background-color: #333; color: white; font-size: 0.9em; padding: 8px 16px; border: 1px solid #555; }
-        .btn-google:hover { background-color: #444; }
+        .btn-google { background-color: #252525; color: #aaa; font-size: 0.9em; padding: 8px 16px; border: 1px solid #444; border-radius: 20px; }
+        .btn-google:hover { background-color: #333; color: white; border-color: #ff007a; }
         .btn-logout { background-color: #444; color: #eee; font-size: 0.8em; padding: 5px 12px; border-radius: 20px; border: 1px solid #555; }
         .btn-logout:hover { background-color: #ff3333; color: white; border-color: #ff3333; }
         .btn-action { background-color: #00a8ff; color: white; }
@@ -58,7 +58,7 @@
         .panel-title { color: #00a8ff; text-align: center; margin-bottom: 15px; font-size: 1.5em; }
         
         /* 隱藏區塊預設樣式 */
-        #upload-section, #admin-panel { display: none; }
+        #upload-section { display: none; }
         
         /* 分類標籤 */
         .category-tabs { display: flex; justify-content: center; gap: 10px; margin: 20px 0; border-bottom: 2px solid #333; padding-bottom: 10px; }
@@ -83,7 +83,7 @@
         <img id="tr-img" src="" alt="Avatar">
         <div class="user-info-text">
             <div id="tr-name">讀取中...</div>
-            <div class="badge-admin">👑 站長已登入</div>
+            <div class="badge-admin">👑 創世神站長</div>
         </div>
         <button id="logout-btn" class="btn btn-logout">🚪 登出</button>
     </div>
@@ -92,24 +92,24 @@
         <h1>✨ Dogfish0528 的素材共享實驗室</h1>
         
         <div style="text-align: center; margin-bottom: 20px;">
-            <button id="login-btn" class="btn btn-google">🔑 站長專用登入</button>
+            <button id="login-btn" class="btn btn-google">🔑 站長專用 Google 登入</button>
         </div>
 
         <div id="materials-panel" class="panel" style="border-top: none; margin-top: 0; padding-top: 0;">
-            <h2 class="panel-title">📦 免費分類素材專區</h2>
-            <p style="text-align: center; color: #aaa;">無需登入，點擊下方分類即可直接下載！</p>
+            <h2 class="panel-title">📦 共享素材專區</h2>
+            <p style="text-align: center; color: #aaa;">免登入自由下載，點擊下方分類快速切換：</p>
             
             <div id="upload-section" style="text-align: center; background: #1a0f14; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #ff007a;">
-                <p style="color: #ff007a; margin-top: 0; font-weight: bold;">👑 站長素材發布中心</p>
+                <p style="color: #ff007a; margin-top: 0; font-weight: bold;">👑 最高管理員素材發布面板</p>
                 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; align-items: center;">
-                    <input type="text" id="mat-name" class="input-box" placeholder="素材名稱" style="width: 180px;">
+                    <input type="text" id="mat-name" class="input-box" placeholder="輸入素材名稱" style="width: 180px;">
                     <select id="mat-type-select" class="input-box" style="cursor: pointer;">
                         <option value="音樂">🎵 音樂</option>
                         <option value="音效">🔊 音效</option>
                         <option value="GIF">🖼️ GIF</option>
                     </select>
-                    <input type="url" id="mat-url" class="input-box" placeholder="貼上雲端分享連結" style="width: 280px;">
-                    <button id="add-mat-btn" class="btn btn-action" style="background:#ff007a;">➕ 發布</button>
+                    <input type="url" id="mat-url" class="input-box" placeholder="貼上雲端分享連結 (自動破解直連)" style="width: 280px;">
+                    <button id="add-mat-btn" class="btn btn-action" style="background:#ff007a;">➕ 儲存並發布</button>
                 </div>
                 <p id="upload-status" style="color: #00ff00; font-size: 0.9em; margin-top: 10px;"></p>
             </div>
@@ -142,10 +142,10 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getAuth, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        // 🌟 改回最穩定、不怕反覆登出的 Popup 彈窗模組
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
-        // 🌟 已根據你的截圖修正了 messagingSenderId 與 appId！
         const firebaseConfig = {
             apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI",
             authDomain: "dogfish-website.firebaseapp.com",
@@ -155,7 +155,7 @@
             appId: "1:501551191843:web:32fd3c7a51c7a21722de96"
         };
 
-        const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1"; // 你的專屬站長 UID
+        const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1"; // 創世神 dogfish 專屬 UID
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -165,34 +165,37 @@
         let fetchedMaterialsList = [];
         let currentActiveTab = "全部";
 
-        // 🌟 網頁一打開，無論有沒有登入，立刻從雲端抓取素材給大家看！
+        // 🌟 核心邏輯：一進網頁，不管有沒有登入，直接把雲端素材載入給大家下載！
         fetchMaterialsFromCloud();
 
-        // 監聽站長登入狀態
+        // 監聽登入狀態流
         onAuthStateChanged(auth, (user) => {
             if (user && user.uid === CREATOR_UID) {
-                // 如果是站長登入
+                // 如果是創世神站長登入
                 document.getElementById('login-btn').style.display = 'none';
                 document.getElementById('top-right-profile').style.display = 'flex';
-                document.getElementById('upload-section').style.display = 'block'; // 解鎖上傳區
+                document.getElementById('upload-section').style.display = 'block'; // 打開上傳控制台
                 
                 document.getElementById('tr-img').src = user.photoURL;
                 document.getElementById('tr-name').innerText = user.displayName;
             } else {
-                // 一般人或未登入
+                // 未登入或是其他人，隱藏所有上傳權限，只留純下載介面
                 document.getElementById('login-btn').style.display = 'inline-block';
                 document.getElementById('top-right-profile').style.display = 'none';
-                document.getElementById('upload-section').style.display = 'none'; // 隱藏上傳區
+                document.getElementById('upload-section').style.display = 'none'; // 鎖死隱藏上傳區
             }
         });
 
-        // 登入按鈕 (採用 Redirect 保證 100% 成功)
+        // 彈出視窗登入：一秒彈窗，登出後再點也絕對順暢觸發！
         document.getElementById('login-btn').addEventListener('click', () => { 
-            signInWithRedirect(auth, provider).catch(e => alert("登入錯誤: " + e.message)); 
+            signInWithPopup(auth, provider).catch(e => alert("登入錯誤: " + e.message)); 
         });
-        document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); });
+        
+        document.getElementById('logout-btn').addEventListener('click', () => { 
+            signOut(auth).catch(e => alert("登出錯誤: " + e.message)); 
+        });
 
-        // 網址轉換器 (破解雲端硬碟變直接下載)
+        // 智慧型網址直連轉換器
         function convertToDirectDownload(url) {
             url = url.trim();
             if (url.includes("drive.google.com")) {
@@ -204,15 +207,16 @@
             return url;
         }
 
-        // 站長發布新素材
+        // 站長儲存並發布素材
         document.getElementById('add-mat-btn').addEventListener('click', async () => {
             const name = document.getElementById('mat-name').value.trim();
             const type = document.getElementById('mat-type-select').value;
             const rawUrl = document.getElementById('mat-url').value.trim();
             const statusLabel = document.getElementById('upload-status');
 
-            if (!name || !rawUrl) { alert("請填寫素材名稱與分享網址！"); return; }
-            statusLabel.innerText = "⏳ 發布中...";
+            if (!name || !rawUrl) { alert("請完整填寫素材名稱與分享網址！"); return; }
+            statusLabel.style.color = "#f39c12";
+            statusLabel.innerText = "⏳ 正在處理直連路徑並上傳資料庫...";
             
             try {
                 await addDoc(collection(db, "categorized_materials"), {
@@ -222,20 +226,22 @@
                     uploaderName: auth.currentUser.displayName,
                     timestamp: serverTimestamp()
                 });
-                statusLabel.innerText = `✅ 上架成功！`;
+                statusLabel.style.color = "#00ff00";
+                statusLabel.innerText = `✅ [${type}] 素材上架成功！`;
                 document.getElementById('mat-name').value = "";
                 document.getElementById('mat-url').value = "";
                 fetchMaterialsFromCloud(); // 重新整理列表
             } catch (error) {
+                statusLabel.style.color = "#ff4444";
                 statusLabel.innerText = "❌ 發布失敗，請確認資料庫規則。";
             }
         });
 
-        // 抓取雲端素材並分類渲染
+        // 從雲端讀取素材清單
         async function fetchMaterialsFromCloud() {
             const container = document.getElementById('material-container');
             try {
-                container.innerHTML = '<p style="text-align:center; color:#777; width:100%;">正在載入素材庫...</p>';
+                container.innerHTML = '<p style="text-align:center; color:#777; width:100%;">正在連線雲端資料庫...</p>';
                 const q = query(collection(db, "categorized_materials"), orderBy("timestamp", "desc"));
                 const querySnapshot = await getDocs(q);
                 
@@ -247,6 +253,7 @@
             }
         }
 
+        // 分類過濾渲染
         function renderMaterialsByFilter() {
             const container = document.getElementById('material-container');
             container.innerHTML = '';
@@ -257,7 +264,7 @@
             });
 
             if (filteredList.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:#777; width:100%;">目前 [${currentActiveTab}] 分類下還沒有任何素材。</p>`;
+                container.innerHTML = `<p style="text-align:center; color:#777; width:100%;">目前 [${currentActiveTab}] 分類下沒有任何素材。</p>`;
                 return;
             }
 
@@ -277,7 +284,7 @@
             });
         }
 
-        // 綁定分類標籤切換
+        // 分頁切換監聽
         const tabButtons = document.querySelectorAll('.tab-btn');
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -288,7 +295,7 @@
             });
         });
 
-        // 本機去背工具
+        // 本機 AI 去背工具
         document.getElementById('upload-file').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
