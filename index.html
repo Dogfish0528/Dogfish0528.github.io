@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dogfish Studio | v7.0 Spotify 版</title>
+    <title>Dogfish Studio | v7.1</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1db954; /* 換成 Spotify 經典綠 */
+            --primary: #1db954; 
             --secondary: #1ed760;
             --accent: #ff1744;
             --bg-dark: #121212;
@@ -84,7 +84,6 @@
         .sfx-push-btn { width: 120px; height: 120px; border-radius: 50%; background-size: cover; background-position: center; border: 4px solid #fff; margin: 0 auto 20px; display: block; transition: 0.1s; }
         .sfx-push-btn:active { transform: translateY(8px) !important; box-shadow: 0 2px 0 #111, 0 5px 10px rgba(0,0,0,0.5) !important; }
 
-        /* Spotify 彈出清單 */
         .spotify-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal-content { background: linear-gradient(to bottom, #333 0%, #121212 30%); padding: 30px; border-radius: 12px; max-width: 650px; width: 90%; text-align: left; position: relative; max-height: 75vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
         .modal-close { position: absolute; top: 20px; right: 25px; font-size: 1.8em; color: #b3b3b3; transition: 0.2s; }
@@ -94,7 +93,7 @@
         .track-num { color: #b3b3b3; font-weight: 700; width: 30px; text-align: center; }
         .track-row:hover .track-num { color: white; }
 
-        /* 🌟 全域音樂播放器 (Global Player) */
+        /* 全域音樂播放器 */
         #global-player {
             position: fixed; bottom: 0; left: 0; right: 0; height: var(--player-height);
             background: #181818; border-top: 1px solid #282828;
@@ -110,11 +109,9 @@
         .gp-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 15px; }
         .gp-control-btn { background: transparent; border: none; color: #b3b3b3; font-size: 1.5em; transition: 0.2s; }
         .gp-control-btn:hover { color: white; transform: scale(1.1); }
-        /* 使用原生播放器控制時間軸，隱藏下載與選單按鈕 */
         #gp-audio { width: 400px; height: 40px; outline: none; border-radius: 30px; }
         #gp-audio::-webkit-media-controls-panel { background-color: #282828; color: white; }
 
-        /* Toast 彈窗 */
         #toast-container { position: fixed; top: 80px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: #282828; color: white; padding: 12px 20px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.5); font-weight: 700; animation: slideIn 0.3s forwards, fadeOut 0.3s forwards 2.7s; opacity: 0; transform: translateX(100%); }
         .toast.error { border-left-color: var(--accent); }
@@ -129,7 +126,7 @@
     <div class="navbar">
         <div class="logo">
             <span class="logo-text">Dogfish Studio</span>
-            <span class="version-badge">v7.0 Spotify 版</span>
+            <span class="version-badge">v7.1 除錯版</span>
         </div>
         <div class="nav-links">
             <button class="btn-nav active" onclick="switchPage('blog')">大廳</button>
@@ -147,20 +144,18 @@
     </div>
 
     <div class="main-container">
-        <!-- 博客區 -->
         <div id="page-blog" class="page-panel solid-panel active">
             <h2 class="page-title">歡迎來到個人音樂站</h2>
             <div style="background: #282828; padding: 20px; border-left: 4px solid var(--primary); border-radius: 8px;">
-                <h3 style="margin-top:0;">🚀 v7.0 史詩級更新：Spotify 全域播放器</h3>
+                <h3 style="margin-top:0;">🚀 v7.1 臭蟲修復與升級</h3>
                 <p style="color: #b3b3b3;">
-                    1. <b>自定義曲目順序</b>：上傳音樂時可自訂排序。<b>新歌順序預設為 2</b>，永遠排在主打歌下面！<br>
-                    2. <b>全域音樂播放器</b>：底部新增固定播放器。點擊專輯的「播放」按鈕，音樂將在背景無縫連播，換頁也不中斷！<br>
-                    3. <b>一鍵連播整張專輯</b>：進入專輯畫面，可直接點擊播放整張專輯，自帶上一首/下一首功能！
+                    1. <b>修復曲目順序遺失問題</b>：現在切換分類，順序輸入框不會再離家出走了！<br>
+                    2. <b>修復播放按鈕死機問題</b>：已完全解決點擊播放沒有反應或顯示遭阻擋的程式錯誤。<br>
+                    3. <b>🌟 溫馨提示</b>：Google 雲端硬碟會嚴格阻擋全域背景播放器，如果音樂一直無法播放，建議將 MP3 傳到 <b>Discord</b> 或其他圖床，並使用其直連網址！
                 </p>
             </div>
         </div>
 
-        <!-- 素材區 -->
         <div id="page-materials" class="page-panel solid-panel">
             <h2 class="page-title">共享素材庫</h2>
             
@@ -177,7 +172,6 @@
                     <div id="dynamic-fields" style="display: inline-flex; gap: 8px;">
                         <input type="text" id="mat-album" class="input-box" list="album-suggestions" placeholder="專輯名稱" style="width: 140px;">
                         <datalist id="album-suggestions"></datalist>
-                        <!-- 🌟 關鍵新增：曲目順序，預設為 2 -->
                         <input type="number" id="mat-order" class="input-box" placeholder="順序" value="2" style="width: 50px;" title="曲目順序 (預設 2)">
                         <input type="url" id="mat-cover-url" class="input-box" placeholder="封面圖片網址" style="width: 140px;">
                     </div>
@@ -222,7 +216,6 @@
         </div>
     </div>
 
-    <!-- 專輯曲目彈窗 -->
     <div id="album-modal" class="spotify-modal">
         <div class="modal-content">
             <span id="modal-close-btn" class="modal-close">&times;</span>
@@ -231,7 +224,6 @@
                 <div>
                     <span style="font-size: 0.8em; font-weight: 700; text-transform: uppercase;">Album</span>
                     <h3 id="modal-album-title" style="margin: 5px 0 15px; font-size: 2.5em; font-weight: 900;">專輯名稱</h3>
-                    <!-- 🌟 播放整張專輯按鈕 -->
                     <button id="btn-play-album" class="btn-play" style="padding: 10px 25px; font-size: 1.1em;">▶ 播放專輯</button>
                 </div>
             </div>
@@ -239,7 +231,6 @@
         </div>
     </div>
 
-    <!-- 🌟 全域固定播放器 (Global Player) -->
     <div id="global-player">
         <div class="gp-left">
             <img id="gp-cover" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cover">
@@ -249,16 +240,13 @@
             </div>
         </div>
         <div class="gp-center">
-            <!-- 播放控制按鈕 -->
             <button class="gp-control-btn" onclick="playPrevTrack()">⏮</button>
-            <!-- 核心原生播放器 -->
             <audio id="gp-audio" controls></audio>
             <button class="gp-control-btn" onclick="playNextTrack()">⏭</button>
         </div>
-        <div style="width: 250px;"></div> <!-- 佔位對齊 -->
+        <div style="width: 250px;"></div> 
     </div>
 
-    <!-- Firebase 邏輯 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
@@ -270,10 +258,11 @@
 
         let fetchedMaterialsList = []; let currentActiveTab = "全部"; let isUserAdmin = false; 
 
-        // 🌟 全域播放器狀態變數
+        // 🌟 全域變數
         let globalPlaylist = [];
         let globalTrackIndex = 0;
         const gpAudio = document.getElementById('gp-audio');
+        let currentModalAlbum = null; // 儲存目前開啟的專輯資料
 
         window.showToast = function(msg, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -285,10 +274,16 @@
         document.addEventListener('mousemove', (e) => { const c = document.getElementById('cursor-glow'); c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px'; });
         document.getElementById('search-input').addEventListener('keyup', renderMaterialsByFilter);
 
+        // 🌟 修正1：切換時務必保留順序輸入框
         document.getElementById('mat-type-select').addEventListener('change', (e) => {
             const df = document.getElementById('dynamic-fields');
             if (e.target.value === "音樂") {
-                df.innerHTML = `<input type="text" id="mat-album" class="input-box" list="album-suggestions" placeholder="專輯名稱" style="width: 140px;"><datalist id="album-suggestions"></datalist><input type="number" id="mat-order" class="input-box" placeholder="順序" value="2" style="width: 50px;" title="曲目順序(預設2)"><input type="url" id="mat-cover-url" class="input-box" placeholder="封面網址" style="width: 140px;">`;
+                df.innerHTML = `
+                    <input type="text" id="mat-album" class="input-box" list="album-suggestions" placeholder="專輯名稱" style="width: 140px;">
+                    <datalist id="album-suggestions"></datalist>
+                    <input type="number" id="mat-order" class="input-box" placeholder="順序" value="2" style="width: 50px;" title="曲目順序 (預設 2)">
+                    <input type="url" id="mat-cover-url" class="input-box" placeholder="封面網址" style="width: 140px;">
+                `;
                 updateAlbumSuggestions();
             } else if (e.target.value === "音效") {
                 df.innerHTML = `<input type="text" id="mat-btn-style" class="input-box" placeholder="顏色碼(#ff0000)或圖片" style="width: 280px;">`;
@@ -327,7 +322,7 @@
             const type = document.getElementById('mat-type-select').value;
             const rawUrl = document.getElementById('mat-url').value.trim();
             
-            let albumName = "", coverUrl = "", btnStyle = "", trackOrder = 2; // 預設順序2
+            let albumName = "", coverUrl = "", btnStyle = "", trackOrder = 2; 
             if (type === "音樂") { 
                 albumName = document.getElementById('mat-album')?.value.trim(); 
                 coverUrl = document.getElementById('mat-cover-url')?.value.trim(); 
@@ -355,15 +350,20 @@
 
         window.playSFX = function(url) {
             const audio = new Audio(getOptimalAudioUrl(url));
-            audio.play().catch(e => showToast('🔇 無法播放，請檢查連結', 'error'));
+            audio.play().catch(e => showToast('🔇 無法播放，可能需使用 Discord 連結', 'error'));
         };
 
-        // 🌟 全域播放器：載入清單與播放邏輯
+        // 🌟 修復2：修正全域播放邏輯，不使用會報錯的 onClick 字串傳遞
         window.loadAndPlayPlaylist = function(tracks, startIndex = 0) {
             if (!tracks || tracks.length === 0) return;
             globalPlaylist = tracks;
             globalTrackIndex = startIndex;
             playCurrentGlobalTrack();
+        };
+
+        window.playTrackFromModal = function(index) {
+            if (!currentModalAlbum || !currentModalAlbum.tracks) return;
+            loadAndPlayPlaylist(currentModalAlbum.tracks, index);
         };
 
         window.playCurrentGlobalTrack = function() {
@@ -378,13 +378,17 @@
             let coverUrl = getOptimalImageUrl(track.coverUrl);
             document.getElementById('gp-cover').src = coverUrl ? coverUrl : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
             
-            gpAudio.play().catch(e => showToast("播放遭阻擋，請確認來源是否允許串流", "error"));
+            // 處理 Google 雲端可能的 403 錯誤
+            gpAudio.play().catch(e => {
+                console.error("播放錯誤:", e);
+                showToast("⚠️ 播放遭阻擋。建議使用 Discord 或非 Google 雲端網址", "error");
+            });
         };
 
         window.playNextTrack = function() {
             if (globalPlaylist.length === 0) return;
             globalTrackIndex++;
-            if (globalTrackIndex >= globalPlaylist.length) globalTrackIndex = 0; // 循環播放
+            if (globalTrackIndex >= globalPlaylist.length) globalTrackIndex = 0; 
             playCurrentGlobalTrack();
         };
 
@@ -395,7 +399,6 @@
             playCurrentGlobalTrack();
         };
 
-        // 監聽播放結束自動換下一首
         gpAudio.addEventListener('ended', playNextTrack);
 
         async function fetchMaterialsFromCloud() {
@@ -430,7 +433,6 @@
                 });
                 
                 Object.values(albums).forEach(album => {
-                    // 🌟 核心：依據設定的順序排序！如果沒填預設為 99 放到最後
                     album.tracks.sort((a, b) => (a.trackOrder ?? 99) - (b.trackOrder ?? 99));
 
                     const itemCard = document.createElement('div'); itemCard.className = 'material-item'; itemCard.style.cursor = 'pointer';
@@ -483,29 +485,26 @@
             else if (currentActiveTab === "GIF") { renderGIFs(); }
         }
 
-        // 🌟 點擊專輯顯示模態框
-        let currentModalAlbum = null;
         function openAlbumModal(album) {
-            currentModalAlbum = album; // 儲存目前開啟的專輯資料
+            currentModalAlbum = album; 
             const modal = document.getElementById('album-modal');
             document.getElementById('modal-album-title').innerText = album.name;
             let finalCover = getOptimalImageUrl(album.coverUrl);
             document.getElementById('modal-album-cover-space').innerHTML = finalCover ? `<img src="${finalCover}" style="width:140px; height:140px; object-fit:cover;">` : `<div class="default-vinyl" style="width:100px;height:100px;"></div>`;
             const listContainer = document.getElementById('modal-track-list'); listContainer.innerHTML = '';
             
-            // 每首歌生成一列
             album.tracks.forEach((track, index) => {
                 const row = document.createElement('div'); row.className = 'track-row';
                 let deleteBtnHTML = isUserAdmin ? `<button onclick="deleteMaterial('${track.id}')" class="btn-del">🗑️</button>` : '';
                 
-                // 🌟 改為「播放按鈕」呼叫全域播放器，而非嵌入 audio 標籤
+                // 🌟 修復3：使用專屬的 function 呼叫，避免 [object Object] 的錯誤
                 row.innerHTML = `
                     <div style="flex: 1; display: flex; align-items: center; gap: 15px;">
                         <span class="track-num">${index + 1}</span>
                         <strong style="color: white; font-size: 1.05em;">${track.fileName}</strong>
                     </div>
                     <div style="display:flex; gap:10px; align-items:center;">
-                        <button class="btn-play" onclick="loadAndPlayPlaylist(currentModalAlbum.tracks, ${index})">▶ 播放</button>
+                        <button class="btn-play" onclick="playTrackFromModal(${index})">▶ 播放</button>
                         <button class="btn-copy" onclick="copyToClipboard('${track.fileUrl}')">📋</button>
                         <a href="${getOptimalAudioUrl(track.fileUrl)}" target="_blank" class="btn-copy" style="text-decoration:none;">下載</a>
                         ${deleteBtnHTML}
@@ -516,11 +515,8 @@
             modal.style.display = 'flex';
         }
 
-        // 綁定「播放整張專輯」按鈕
         document.getElementById('btn-play-album').addEventListener('click', () => {
-            if (currentModalAlbum && currentModalAlbum.tracks.length > 0) {
-                loadAndPlayPlaylist(currentModalAlbum.tracks, 0);
-            }
+            if (currentModalAlbum && currentModalAlbum.tracks.length > 0) { loadAndPlayPlaylist(currentModalAlbum.tracks, 0); }
         });
 
         document.getElementById('modal-close-btn').addEventListener('click', () => { document.getElementById('album-modal').style.display = 'none'; });
