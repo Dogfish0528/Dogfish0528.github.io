@@ -23,10 +23,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         h1 { color: #00a8ff; margin-bottom: 10px; }
-        .status-bar {
-            font-size: 1.1em;
-            margin-bottom: 20px;
-        }
+        .status-bar { font-size: 1.1em; margin-bottom: 20px; }
         .user-profile {
             background: #2d2d2d;
             padding: 15px;
@@ -58,6 +55,8 @@
         .btn-logout { background-color: #555; color: white; }
         .btn-logout:hover { background-color: #444; }
         .btn-upload { background-color: #00a8ff; color: white; }
+        .btn-admin { background-color: #ff007a; color: white; padding: 8px 16px; font-size: 0.95em; }
+        .btn-admin:hover { background-color: #d00063; }
         
         .badge {
             padding: 5px 12px;
@@ -68,11 +67,9 @@
         .badge-admin { background: #ff007a; color: white; }
         .badge-user { background: #444; color: #aaa; }
         
-        /* 區塊權限控制 */
         #tools-panel { display: none; margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; }
         #admin-panel { display: none; margin-top: 30px; border-top: 2px dashed #ff007a; padding-top: 20px; }
         
-        /* AI 去背實驗室內嵌樣式 */
         input[type="file"] { display: none; }
         #ai-status { color: #f39c12; font-weight: bold; font-size: 1.2em; margin: 15px 0; }
         .image-container {
@@ -89,6 +86,28 @@
             border: 2px dashed #555;
             background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADFJREFUOE9jZCASMDKgmHGIiYn5T4RmxoEhyoBRDYA2HkI2BqMmkMQmD1oOhmgA0joAAC+bEwkXl1/qAAAAAElFTkSuQmCC') repeat; 
         }
+
+        /* 管理員控制台輸入框 */
+        .admin-input {
+            background: #121212;
+            border: 1px solid #444;
+            color: white;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 6px;
+            width: 60%;
+            max-width: 350px;
+            margin: 5px;
+        }
+        .admin-select {
+            background: #121212;
+            border: 1px solid #444;
+            color: white;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 6px;
+            margin: 5px;
+        }
     </style>
 </head>
 <body>
@@ -97,8 +116,10 @@
         <h1>✨ Dogfish0528 的個人主站</h1>
         <p class="status-bar">系統狀態：<span id="auth-status" style="color: #ff4444;">未登入會員 (功能鎖定)</span></p>
 
+        <!-- 登入按鈕 -->
         <button id="login-btn" class="btn btn-google">🔑 使用 Google 帳號登入</button>
 
+        <!-- 會員資料卡 -->
         <div id="profile-card" class="user-profile">
             <img id="user-img" class="user-avatar" src="" alt="Avatar"><br>
             <span id="user-role" class="badge">權限審查中...</span>
@@ -110,17 +131,14 @@
             <button id="logout-btn" class="btn btn-logout">🚪 登出帳號</button>
         </div>
 
+        <!-- 🔓 AI 工具區 -->
         <div id="tools-panel">
             <h2 style="color: #00a8ff;">🖼️ 瀏覽器端 AI 圖片去背實驗室</h2>
-            <p>（運算皆在本機端執行，安全不侵犯隱私）</p>
-            
             <label class="btn btn-upload">
                 選擇圖片並開始去背
                 <input type="file" id="upload-file" accept="image/*">
             </label>
-            
             <div id="ai-status">等待上傳圖片...</div>
-            
             <div class="image-container">
                 <div class="image-box">
                     <h3>原始圖片</h3>
@@ -133,21 +151,30 @@
             </div>
         </div>
 
+        <!-- 👑 帳戶管理機制：最高管理員控制台 (只有創世神 dogfish 才能使用) -->
         <div id="admin-panel">
-            <h2 style="color: #ff007a;">👑 最高管理員控制台 (dogfish 專屬)</h2>
-            <div style="background: #252525; padding: 20px; border-radius: 8px; color: #ff007a; font-family: monospace; text-align: left; border-left: 4px solid #ff007a;">
-                <p>⚙️ [系統日誌] 核心權限驗證通過。全權限指揮官已就位。</p>
-                <p>📊 [網站數據] 目前正在 GitHub Pages 穩定運行中。</p>
-                <p>🛠️ 未來你可以在這放各式各樣的管理外掛、指令面板或專屬秘密通道！</p>
+            <h2 style="color: #ff007a;">👑 最高管理員帳戶權限控制台</h2>
+            <div style="background: #252525; padding: 20px; border-radius: 8px; border-left: 4px solid #ff007a; text-align: left;">
+                <p style="color: #ff007a; font-weight: bold; margin-top: 0;">🎯 新增或動態修改使用者權限：</p>
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 5px;">
+                    <input type="email" id="target-email" class="admin-input" placeholder="請輸入對方的電子郵件 (Email)">
+                    <select id="target-role" class="admin-select">
+                        <option value="user">👤 一般會員 (user)</option>
+                        <option value="admin">👑 管理員 (admin)</option>
+                    </select>
+                    <button id="save-role-btn" class="btn btn-admin">💾 儲存權限設定</button>
+                </div>
+                <p id="admin-action-status" style="color: #00ff00; font-size: 0.9em; margin-top: 10px; font-family: monospace;"></p>
             </div>
         </div>
     </div>
 
+    <!-- Firebase 核心與資料庫載入 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
-        // 自動代入你剛剛拿到的專屬金鑰
         const firebaseConfig = {
             apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI",
             authDomain: "dogfish-website.firebaseapp.com",
@@ -157,11 +184,12 @@
             appId: "1:50151191843:web:32fd3c7a51c7a21722de96"
         };
 
-        // ⚠️ 填入你的管理員 UID。第一次登入後，複製畫面上顯示的 UID 貼到這裡，再推上 GitHub 即可！
-        const ADMIN_UID = "把你的_UID_貼在這裡";
+        // 創世神保留位：你的專屬 UID。無論資料庫怎麼改，你永遠擁有最高特權！
+        const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
         const loginBtn = document.getElementById('login-btn');
@@ -170,9 +198,14 @@
         const authStatus = document.getElementById('auth-status');
         const toolsPanel = document.getElementById('tools-panel');
         const adminPanel = document.getElementById('admin-panel');
+        
+        const saveRoleBtn = document.getElementById('save-role-btn');
+        const targetEmailInput = document.getElementById('target-email');
+        const targetRoleSelect = document.getElementById('target-role');
+        const adminActionStatus = document.getElementById('admin-action-status');
 
-        // 會員登入狀態動態分流
-        onAuthStateChanged(auth, (user) => {
+        // 當使用者登入時，去資料庫撈取並判斷他的權限
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 loginBtn.style.display = 'none';
                 profileCard.style.display = 'block';
@@ -183,14 +216,31 @@
                 document.getElementById('user-name').innerText = user.displayName;
                 document.getElementById('user-uid').innerText = user.uid;
 
-                if (user.uid === ADMIN_UID) {
-                    const roleBadge = document.getElementById('user-role');
+                let userRole = "user"; // 預設權限
+
+                if (user.uid === CREATOR_UID) {
+                    userRole = "admin"; // 創世神無條件判定為最高管理員
+                } else {
+                    // 一般使用者登入，去 Firestore 檢查他的 Email 是否被設定為管理員
+                    try {
+                        const docRef = doc(db, "permissions", user.email.toLowerCase());
+                        const docSnap = await getDoc(docRef);
+                        if (docSnap.exists() && docSnap.data().role === "admin") {
+                            userRole = "admin";
+                        }
+                    } catch (e) {
+                        console.error("讀取權限失敗，資料庫規則可能尚未開通：", e);
+                    }
+                }
+
+                // 根據最終判定的權限渲染網頁
+                const roleBadge = document.getElementById('user-role');
+                if (userRole === "admin") {
                     roleBadge.innerText = "👑 最高管理員";
                     roleBadge.className = "badge badge-admin";
-                    adminPanel.style.display = 'block';
+                    adminPanel.style.display = 'block'; // 打開權限控制後台
                     toolsPanel.style.display = 'block';
                 } else {
-                    const roleBadge = document.getElementById('user-role');
                     roleBadge.innerText = "👤 一般會員";
                     roleBadge.className = "badge badge-user";
                     adminPanel.style.display = 'none';
@@ -206,17 +256,40 @@
             }
         });
 
-        loginBtn.addEventListener('click', async () => {
+        // 管理員動態修改別人的權限按鈕事件
+        saveRoleBtn.addEventListener('click', async () => {
+            const email = targetEmailInput.value.trim().toLowerCase();
+            const role = targetRoleSelect.value;
+
+            if (!email) {
+                alert("請先輸入對方的電子郵件！");
+                return;
+            }
+
+            adminActionStatus.style.color = "#f39c12";
+            adminActionStatus.innerText = `⏳ 正在將雲端權限寫入資料庫...`;
+
             try {
-                await signInWithPopup(auth, provider);
+                // 將設定直接寫進資料庫的 permissions 分類中
+                await setDoc(doc(db, "permissions", email), {
+                    role: role,
+                    updatedBy: auth.currentUser.email,
+                    timestamp: new Date()
+                });
+                adminActionStatus.style.color = "#00ff00";
+                adminActionStatus.innerText = `✅ 成功！已將 ${email} 的權限變更為 [${role}]。對方下次登入時即刻生效！`;
+                targetEmailInput.value = "";
             } catch (error) {
-                alert("登入失敗，請確認 Firebase Authentication 中已啟用 Google 登入功能！\n錯誤原因: " + error.message);
+                console.error(error);
+                adminActionStatus.style.color = "#ff4444";
+                adminActionStatus.innerText = `❌ 錯誤：無法寫入資料庫。請確認您已將 Firestore 資料庫的「安全性規則」開啟！`;
             }
         });
 
+        loginBtn.addEventListener('click', async () => { try { await signInWithPopup(auth, provider); } catch (e) { alert(e.message); } });
         logoutBtn.addEventListener('click', async () => { await signOut(auth); });
 
-        // 🖼️ 揉合 esm.sh 完美版 AI 去背邏輯
+        // 去背功能邏輯
         const uploadFile = document.getElementById('upload-file');
         const imgOriginal = document.getElementById('img-original');
         const imgResult = document.getElementById('img-result');
@@ -225,33 +298,23 @@
         uploadFile.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
-
             imgOriginal.src = URL.createObjectURL(file);
             imgOriginal.style.display = 'block';
             imgResult.style.display = 'none';
-            
             aiStatus.style.color = "#f39c12";
-            aiStatus.innerText = '⏳ AI 正在思考中... (初次載入需耗時下載模型，請稍候)';
-
+            aiStatus.innerText = '⏳ AI 正在思考中... (初次載入模型需下載，請稍候)';
             try {
-                // 採用最穩固的 esm.sh 1.4.3 動態載入
                 const module = await import('https://esm.sh/@imgly/background-removal@1.4.3');
                 const imglyRemoveBackground = module.default;
-                
-                aiStatus.innerText = '🟣 AI 模組下載成功！開始執行去背運算...';
-
-                // 自動抓取官方大腦模型，不給予自訂路徑以防崩潰
+                aiStatus.innerText = '🟣 載入成功！開始去背運算...';
                 const imageBlob = await imglyRemoveBackground(file);
-                
                 imgResult.src = URL.createObjectURL(imageBlob);
                 imgResult.style.display = 'block';
                 aiStatus.style.color = "#00ff00";
-                aiStatus.innerText = '✅ 去背完成！你可以按右鍵另存圖片囉。';
-                
+                aiStatus.innerText = '✅ 去背完成！';
             } catch (error) {
-                console.error(error);
                 aiStatus.style.color = "#ff4444";
-                aiStatus.innerText = '❌ 運算發生錯誤，詳細原因請見 Console 紅字。';
+                aiStatus.innerText = '❌ 發生錯誤。';
             }
         });
     </script>
