@@ -299,7 +299,6 @@
 
     const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website", storageBucket: "dogfish-website.firebasestorage.app", messagingSenderId: "501551191843", appId: "1:501551191843:web:32fd3c7a51c7a21722de96" };
     const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1"; 
-    
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const provider = new GoogleAuthProvider();
 
     let fetchedMaterialsList = []; let pendingMaterialsList = []; let currentActiveTab = "全部"; let userRole = "user"; 
@@ -394,6 +393,7 @@
     document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth).then(() => switchPage('blog')); });
 
     function initChatSystem(user) {
+      let safeName = user.displayName || "匿名";
       const invitesQ = query(collection(db, "invites"), where("toEmail", "==", user.email.toLowerCase()), where("status", "==", "pending"));
       invitesUnsub = onSnapshot(invitesQ, (snapshot) => {
         const box = document.getElementById('invite-list'); box.innerHTML = '';
@@ -402,13 +402,13 @@
           div.innerHTML = `<div style="margin-bottom:5px;">來自 <b>${d.fromName}</b> 的邀請</div><button onclick="acceptInvite('${docSnap.id}', '${d.fromUid}', '${d.fromName}', '${d.fromPhoto}')" class="btn-action" style="padding:4px 10px; font-size:0.8em; width:100%;">✅ 接受邀請</button>`;
           box.appendChild(div);
         });
-      }, (err) => console.log("Invites Error:", err));
+      }, (err) => console.log(err));
 
       const chatsQ = query(collection(db, "chats"), where("participants", "array-contains", user.uid));
       chatListUnsub = onSnapshot(chatsQ, (snapshot) => {
         myChats = []; snapshot.forEach(docSnap => { myChats.push({ id: docSnap.id, ...docSnap.data() }); });
         renderChatList();
-      }, (err) => console.log("Chats Error:", err));
+      }, (err) => console.log(err));
     }
 
     window.sendFriendInvite = async function() {
@@ -515,6 +515,7 @@
       const name = document.getElementById('mat-name').value.trim(); 
       const type = document.getElementById('mat-type-select').value; 
       const rawUrl = document.getElementById('mat-url').value.trim();
+      
       if (!name) { showToast("⚠️ 請輸入標題名稱！", "error"); return; }
       let safeUploaderName = "匿名使用者";
       if (auth && auth.currentUser && auth.currentUser.displayName) { safeUploaderName = auth.currentUser.displayName; }
@@ -523,7 +524,7 @@
       try { 
         const col = (userRole === "admin") ? "categorized_materials" : "pending_materials"; 
         await addDoc(collection(db, col), { fileName: name, category: type, fileUrl: rawUrl, ...ex, uploaderName: safeUploaderName, timestamp: serverTimestamp() }); 
-        if (userRole === "admin") { showToast("✅ 素材發布成功！"); fetchMaterialsFromCloud(); } else { showToast("📤 已提交至審核大廳！"); }
+        if (userRole === "admin") { showToast("✅ 素材提交發布成功！"); fetchMaterialsFromCloud(); } else { showToast("📤 已提交至審核大廳！"); }
         document.getElementById('mat-name').value = ""; document.getElementById('mat-url').value = ""; 
         let re = document.getElementById('mat-rich-editor'); if(re) re.innerHTML = ""; 
         document.getElementById('upload-modal').style.display = 'none';
@@ -557,7 +558,7 @@
             await updateDoc(doc(db, "categorized_materials", id), { fileName: name, fileUrl: url, ...ex }); 
             showToast("✅ 資料更新成功！"); document.getElementById('edit-modal').style.display = 'none'; 
             
-            // 本地端瞬間更新陣列
+            // 瞬間更新陣列資料
             const idx = fetchedMaterialsList.findIndex(m => m.id === id);
             if(idx > -1) { fetchedMaterialsList[idx] = { ...fetchedMaterialsList[idx], fileName: name, fileUrl: url, ...ex }; }
             renderMaterialsByFilter();
@@ -569,7 +570,7 @@
       const c = document.getElementById('review-container'); if (pendingMaterialsList.length === 0) { c.innerHTML = '<p style="color:#888;">🎉 目前無任何待審核的素材！</p>'; return; } c.innerHTML = '';
       pendingMaterialsList.forEach(item => {
         const div = document.createElement('div'); div.className = 'review-item-card';
-        div.innerHTML = `<div><span style="background:#444;padding:2px 6px;border-radius:4px;font-size:0.8em;margin-right:8px;">${item.category}</span><strong style="color:white;font-size:1.1em;">${item.fileName}</strong><div style="color:#888;font-size:0.9em;margin-top:5px;">貢獻提案者: ${item.uploaderName || '匿名'}</div></div><div style="display:flex;gap:5px;"><button class="btn-copy" onclick="playSFX('${item.fileName}', '${item.fileUrl}')">🔊 試聽</button><button class="btn-action" onclick="approveMaterial('${item.id}')">✅ 核准上架</button><button class="btn-del" onclick="rejectMaterial('${item.id}')">❌ 退回</button></div>`; c.appendChild(div);
+        div.innerHTML = `<div><span style="background:#444;padding:2px 6px;border-radius:4px;font-size:0.8em;margin-right:8px;">${item.category}</span><strong style="color:white;font-size:1.1em;">${item.fileName}</strong><div style="color:#888;font-size:0.9em;margin-top:5px;">貢獻提案者: ${item.uploaderName || '匿名'}</div></div><div style="display:flex;gap:5px;"><button class="btn-copy" onclick="playSFX('${item.fileName}', '${item.fileUrl}')">🔊 試聽</button><button class="btn-action" onclick="approveMaterial('${item.id}')">✅ 核准</button><button class="btn-del" onclick="rejectMaterial('${item.id}')">❌ 退回</button></div>`; c.appendChild(div);
       });
     }
     
@@ -580,7 +581,6 @@
             await deleteDoc(doc(db, "pending_materials", id)); 
             showToast("✅ 素材順利審核上架！"); 
             
-            // 本地端瞬間更新
             pendingMaterialsList = pendingMaterialsList.filter(m => m.id !== id);
             renderPendingList();
             fetchedMaterialsList.unshift({ id: newDoc.id, fileName: t.fileName, category: t.category, fileUrl: t.fileUrl, coverUrl: t.coverUrl || "", albumName: t.albumName || "", btnStyle: t.btnStyle || "", trackOrder: t.trackOrder || 2, folderName: t.folderName || "根目錄", descriptionHTML: t.descriptionHTML || "", uploaderName: t.uploaderName || '匿名' });
@@ -598,17 +598,30 @@
         } catch(e){} 
     };
     
+    // 🌟🌟 終極修復：強制物理移除畫面元素 (超度法) 🌟🌟
     window.deleteMaterial = async function(id) { 
         if (!confirm("🚨 警告：確定要永久刪除此內容？")) return; 
         try {
             await deleteDoc(doc(db, "categorized_materials", id)); 
+            
+            // 關閉可能開著的閱讀彈窗
             document.getElementById('article-modal').style.display='none'; 
             document.getElementById('album-modal').style.display='none'; 
-            showToast("🗑️ 已徹底移除"); 
             
-            // 🌟 瞬間更新：過濾本地陣列，不再等待伺服器同步
+            // 🔥 直接從畫面上拔除該方塊！保證瞬間消失！
+            const cardElement = document.getElementById('card-' + id);
+            if (cardElement) cardElement.remove();
+            
+            const trackElement = document.getElementById('track-' + id);
+            if (trackElement) trackElement.remove();
+
+            // 更新背景陣列
             fetchedMaterialsList = fetchedMaterialsList.filter(item => item.id !== id);
+            
+            // 重新繪製其他項目 (確保資料夾架構不斷裂)
             renderMaterialsByFilter();
+
+            showToast("🗑️ 已徹底移除"); 
         } catch(e) { showToast("❌ 刪除失敗", "error"); }
     };
 
@@ -623,7 +636,9 @@
       let sItems = fetchedMaterialsList.filter(i => i.category === "軟體" && (!search || i.fileName.toLowerCase().includes(search)));
       if(sItems.length === 0) softContainer.innerHTML = '<p style="color:#888;">目前知識庫內尚無推薦軟體。</p>';
       sItems.forEach(d => {
-        const c = document.createElement('div'); c.className = 'article-card'; let img = getOptimalImageUrl(d.coverUrl) || 'https://via.placeholder.com/800x400/111/fff?text=Software';
+        const c = document.createElement('div'); c.className = 'article-card'; 
+        c.id = 'card-' + d.id; // 🔑 綁定 ID 以供瞬間刪除
+        let img = getOptimalImageUrl(d.coverUrl) || 'https://via.placeholder.com/800x400/111/fff?text=Software';
         c.innerHTML = `<img src="${img}" style="width:100%;height:180px;object-fit:cover;"><div class="article-info"><h3 class="article-title">${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊入內閱讀詳細教學</p></div>`;
         c.addEventListener('click', () => openArticleModal(d)); softContainer.appendChild(c);
       });
@@ -632,6 +647,7 @@
       if(lItems.length === 0) cmdContainer.innerHTML = '<p style="color:#888;">目前快捷指令庫內尚無資料。</p>';
       lItems.forEach(d => {
         const c = document.createElement('div'); c.className = 'article-card';
+        c.id = 'card-' + d.id; // 🔑 綁定 ID
         c.innerHTML = `<div class="article-info"><h3 class="article-title">💻 ${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊查看實用指令碼並一鍵複製</p></div>`;
         c.addEventListener('click', () => openArticleModal(d)); cmdContainer.appendChild(c);
       });
@@ -644,8 +660,8 @@
         Object.values(albums).forEach(album => { album.tracks.sort((a, b) => (a.trackOrder ?? 99) - (b.trackOrder ?? 99)); const c = document.createElement('div'); c.className = 'material-item'; let img = getOptimalImageUrl(album.coverUrl); let coverHTML = img ? `<img class="album-art-img" src="${img}">` : `<div class="default-vinyl"></div>`; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div>${coverHTML}</div><div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 內含 ${album.tracks.length} 首曲目</span></div>`; c.addEventListener('click', () => openAlbumModal(album)); container.appendChild(c); });
       }
       
-      const rSFX = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; c.style.alignItems='center'; c.style.textAlign='center'; c.style.padding='25px 15px'; let s = `background-color:#ff1744;box-shadow:0 12px 0 #8e001c,0 15px 20px rgba(0,0,0,0.5);`; if(d.btnStyle){ if(d.btnStyle.startsWith('http')){ s=`background-image:url('${getOptimalImageUrl(d.btnStyle)}');box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);border:none;`; }else{ s=`background-color:${d.btnStyle};box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);`; } } let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;width:100%;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<button class="sfx-push-btn" style="${s}" onclick="playSFX('${d.fileName}', '${d.fileUrl}')"></button><strong style="font-size:1.2em; display:block;">${d.fileName}</strong><div style="display:flex; gap:5px; margin-top:5px; width:100%;"><a href="${getOptimalAudioUrl(d.fileUrl)}" target="_blank" class="btn-copy" style="flex:1;text-align:center;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy">📋</button></div>${adminBtn}`; p.appendChild(c); };
-      const rGIF = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">🖼️ GIF</div><img class="album-art-img" src="${getOptimalImageUrl(d.fileUrl)}"></div><strong>${d.fileName}</strong><div style="display:flex; gap:5px;"><a href="${d.fileUrl}" target="_blank" class="btn-copy" style="flex:1;text-align:center;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy">📋</button></div>${adminBtn}`; p.appendChild(c); };
+      const rSFX = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; c.id = 'card-' + d.id; /* 🔑 綁定 ID */ c.style.alignItems='center'; c.style.textAlign='center'; c.style.padding='25px 15px'; let s = `background-color:#ff1744;box-shadow:0 12px 0 #8e001c,0 15px 20px rgba(0,0,0,0.5);`; if(d.btnStyle){ if(d.btnStyle.startsWith('http')){ s=`background-image:url('${getOptimalImageUrl(d.btnStyle)}');box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);border:none;`; }else{ s=`background-color:${d.btnStyle};box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);`; } } let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;width:100%;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<button class="sfx-push-btn" style="${s}" onclick="playSFX('${d.fileName}', '${d.fileUrl}')"></button><strong style="font-size:1.2em; display:block;">${d.fileName}</strong><div style="display:flex; gap:5px; margin-top:5px; width:100%;"><a href="${getOptimalAudioUrl(d.fileUrl)}" target="_blank" class="btn-copy" style="flex:1;text-align:center;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy">📋</button></div>${adminBtn}`; p.appendChild(c); };
+      const rGIF = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; c.id = 'card-' + d.id; /* 🔑 綁定 ID */ let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">🖼️ GIF</div><img class="album-art-img" src="${getOptimalImageUrl(d.fileUrl)}"></div><strong>${d.fileName}</strong><div style="display:flex; gap:5px;"><a href="${d.fileUrl}" target="_blank" class="btn-copy" style="flex:1;text-align:center;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy">📋</button></div>${adminBtn}`; p.appendChild(c); };
 
       if (currentActiveTab === "全部" || currentActiveTab === "音效") renderGrouped(fetchedMaterialsList.filter(i => i.category === "音效" && (!search || i.fileName.toLowerCase().includes(search))), rSFX);
       if (currentActiveTab === "全部" || currentActiveTab === "GIF") renderGrouped(fetchedMaterialsList.filter(i => i.category === "GIF" && (!search || i.fileName.toLowerCase().includes(search))), rGIF);
@@ -677,6 +693,7 @@
       const lc = document.getElementById('modal-track-list'); lc.innerHTML = '';
       album.tracks.forEach((t, idx) => {
         const row = document.createElement('div'); row.className = 'track-row';
+        row.id = 'track-' + t.id; // 🔑 綁定 ID 供曲目瞬間刪除
         let aBtn = (userRole === "admin") ? `<button onclick="openEditModal('${t.id}')" class="btn-edit">⚙️</button><button onclick="deleteMaterial('${t.id}')" class="btn-del">🗑️</button>` : '';
         row.innerHTML = `<div style="flex:1;display:flex;align-items:center;gap:15px;"><span class="track-num">${idx + 1}</span><strong style="color:white;font-size:1.05em;">${t.fileName}</strong></div><div style="display:flex;gap:5px;align-items:center;"><button class="btn-action" style="padding:6px 12px;" onclick="playTrackFromModal(${idx})">▶ 播放</button><a href="${getOptimalAudioUrl(t.fileUrl)}" target="_blank" class="btn-copy">📥</a><button class="btn-copy" onclick="copyToClipboard('${t.fileUrl}')">📋</button>${aBtn}</div>`;
         lc.appendChild(row);
@@ -720,15 +737,20 @@
       gpAudio.play().catch(e => { showToast("⚠️ 背景播放器攔截，改為另開網頁下載", "error"); window.open(t.fileUrl, '_blank'); });
     };
     
-    // 🌟 核心：確保小音效播完即刻停止，絕不循環！
+    // 🌟🌟 終極修復：確保小音效播完即刻停止，絕不鬼打牆循環！
     window.playNextTrack = function() { 
         if (globalPlaylist.length === 0) return; 
+        
+        // 如果已經播到最後一首（或者只有一首音效），直接停止並退出！
         if (globalTrackIndex >= globalPlaylist.length - 1) {
-            gpAudio.pause(); return;
+            gpAudio.pause(); 
+            return;
         }
+        
         globalTrackIndex++; 
         playCurrentGlobalTrack(); 
     };
+    
     window.playPrevTrack = function() { 
         if (globalPlaylist.length === 0) return; 
         if (globalTrackIndex <= 0) {
@@ -737,6 +759,8 @@
         globalTrackIndex--; 
         playCurrentGlobalTrack(); 
     };
+    
+    // 綁定結束事件到我們修好的函數
     gpAudio.addEventListener('ended', playNextTrack);
 
     window.switchPage = function(pageId) { 
