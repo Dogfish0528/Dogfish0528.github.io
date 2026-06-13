@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish Studio | v15.1 分頁直連導流版</title>
+  <title>Dogfish Studio | v15.2 滿版部落格升級</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -53,7 +53,9 @@
     #top-right-profile { display: none; align-items: center; gap: 10px; padding: 4px 12px; border-radius: 20px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); }
     #top-right-profile img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
 
-    .main-container { max-width: 1050px; margin: 90px auto 50px; padding: 0 20px; }
+    /* 🌟 全螢幕滿版容器 (取消 max-width 限制，改用 % 留一點邊距) */
+    .main-container { width: 95%; max-width: 1920px; margin: 90px auto 50px; padding: 0; }
+    
     .page-panel { display: none; padding: 30px; } .page-panel.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.1, 0.8, 0.2, 1); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     .page-title { font-size: 2.2em; font-weight: 900; margin-top: 0; margin-bottom: 25px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
@@ -67,13 +69,16 @@
     .rich-editor-content { background: rgba(0,0,0,0.3); min-height: 150px; border: 1px solid #333; border-radius: 0 0 8px 8px; padding: 15px; color: white; line-height: 1.6; outline: none; overflow-y: auto; max-height: 400px; text-align: left; }
     .rich-editor-content img, .rich-editor-content iframe, .rich-editor-content video { max-width: 100%; border-radius: 8px; margin: 10px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
     .rich-editor-content[contenteditable="true"]:empty:before { content: attr(placeholder); color: #888; cursor: text; }
+    /* 富文本內的連結樣式預設為藍色底線 */
+    .rich-editor-content a { color: #0088ff; text-decoration: underline; font-weight: bold; }
 
     /* 素材清單網格 */
     .controls-wrapper { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; flex-wrap: wrap; gap: 15px; }
     .category-tabs { display: flex; flex-wrap: wrap; gap: 10px; } .tab-btn { background: rgba(0,0,0,0.5); color: #b3b3b3; border: 1px solid transparent; padding: 8px 18px; font-weight: 700; border-radius: 20px; transition: 0.2s; } .tab-btn.active { background: white; color: #000; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
     .search-bar-container { position: relative; } .search-input { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 10px 20px 10px 40px; border-radius: 20px; outline: none; width: 220px; transition: 0.3s; } .search-input:focus { border-color: var(--primary); width: 260px; } .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.9em; }
     
-    .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+    /* 🌟 全螢幕滿版自適應網格：螢幕越寬，排的卡片越多 */
+    .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
     .material-item { background: rgba(20,20,20,0.5); border: 1px solid var(--border-color); padding: 16px; border-radius: 12px; transition: 0.3s; display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; backdrop-filter: blur(5px); }
     .material-item:hover { background: rgba(30,30,30,0.8); box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: translateY(-3px); border-color: #444; }
     .folder-header { grid-column: 1 / -1; font-size: 1.4em; font-weight: 900; color: white; margin-top: 15px; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 8px; text-align: left; }
@@ -83,10 +88,11 @@
     .sfx-push-btn { width: 110px; height: 120px; border-radius: 50%; background-size: cover; background-position: center; border: 4px solid #fff; margin: 0 auto 15px; display: block; transition: 0.1s; box-shadow: 0 8px 0 #111, 0 15px 20px rgba(0,0,0,0.5); }
     .sfx-push-btn:active { transform: translateY(8px); box-shadow: 0 0px 0 #111, 0 5px 10px rgba(0,0,0,0.5); }
 
-    .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+    /* 🌟 大文章卡片網格 */
+    .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
     .article-card { background: rgba(20,20,20,0.5); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid var(--border-color); text-align: left; backdrop-filter: blur(5px); position: relative; }
     .article-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(29, 185, 84, 0.2); }
-    .article-info { padding: 20px; } .article-title { font-size: 1.4em; font-weight: 900; margin: 0 0 10px; color: white; }
+    .article-info { padding: 20px; } .article-title { font-size: 1.5em; font-weight: 900; margin: 0 0 10px; color: white; }
 
     /* 全域編輯模式 (只針對文章/指令) */
     body.god-mode { border: 2px solid var(--accent); }
@@ -120,6 +126,7 @@
     .spotify-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 20px; }
     .modal-content { background: rgba(20,20,20,0.95); padding: 30px; border-radius: 16px; max-width: 800px; width: 100%; text-align: left; position: relative; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.8); border: 1px solid #333; }
     .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: #b3b3b3; transition: 0.2s; cursor: pointer; z-index: 100; } .modal-close:hover { color: white; transform: rotate(90deg); }
+    
     .track-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 15px; border-radius: 6px; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); } 
     .track-row:hover { background: rgba(255,255,255,0.05); }
     .track-num { color: #b3b3b3; font-weight: 700; width: 30px; text-align: center; font-size: 1.1em; }
@@ -176,12 +183,14 @@
       <input type="url" id="mat-url" class="input-box" placeholder="主要直連 / 跳轉下載連結" style="width: 95%; margin-bottom: 15px;">
       
       <div id="mat-rich-text-container" style="display: none; margin-bottom: 15px;">
+        <label style="color:#888; font-size:0.8em; margin-bottom:5px; display:block;">📝 內文排版 (支援自訂按鈕與連結)</label>
         <div class="rich-editor-toolbar">
           <button class="rich-editor-btn" onclick="document.execCommand('bold')">B 粗體</button>
           <div class="color-picker-wrap" title="更改文字顏色">🎨 <input type="color" onchange="document.execCommand('foreColor', false, this.value)"></div>
           <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'img')">🖼️ 圖片</button>
           <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'yt')">🔴 YouTube</button>
-          <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'video')">🎬 直連影片(MP4)</button>
+          <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'video')">🎬 影片(MP4)</button>
+          <button class="rich-editor-btn" onclick="insertLink('mat-rich-editor')" style="background: rgba(0, 136, 255, 0.2); color: #0088ff; border: 1px solid #0088ff;">🔗 插入連結</button>
         </div>
         <div id="mat-rich-editor" class="rich-editor-content" contenteditable="true" placeholder="自由撰寫介紹、排版或插入多媒體影片..."></div>
       </div>
@@ -231,6 +240,7 @@
           <button class="rich-editor-btn" onclick="insertEditorContent('edit-rich-editor', 'img')">🖼️ 圖片</button>
           <button class="rich-editor-btn" onclick="insertEditorContent('edit-rich-editor', 'yt')">🔴 YouTube</button>
           <button class="rich-editor-btn" onclick="insertEditorContent('edit-rich-editor', 'video')">🎬 影片(MP4)</button>
+          <button class="rich-editor-btn" onclick="insertLink('edit-rich-editor')" style="background: rgba(0, 136, 255, 0.2); color: #0088ff; border: 1px solid #0088ff;">🔗 插入連結</button>
         </div>
         <div id="edit-rich-editor" class="rich-editor-content" contenteditable="true"></div>
       </div>
@@ -257,7 +267,7 @@
   </div>
 
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v15.1 分頁直連版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v15.2 滿版全螢幕</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="switchPage('materials')">素材</button>
@@ -277,13 +287,13 @@
 
   <div class="main-container">
     <div id="page-blog" class="page-panel active">
-      <h2 class="page-title">歡迎來到沉浸式即時大廳</h2>
+      <h2 class="page-title">歡迎來到滿版沉浸式大廳</h2>
       <div class="solid-panel" style="padding: 25px; border-left: 5px solid #00d4ff; text-align: left;">
-        <h3 style="margin-top:0; font-size: 1.5em; color: #00d4ff;">✨ v15.1 全域分頁導流升級</h3>
+        <h3 style="margin-top:0; font-size: 1.5em; color: #00d4ff;">✨ v15.2 滿版全螢幕與編輯器升級</h3>
         <p style="color: #ccc; line-height: 1.8; font-size: 1.05em;">
-          1. <b>🚀 分頁直連導航</b>：分享網址加上 <code>?tab=software</code>（軟體大廳）或 <code>?tab=chat</code>（聊天室），對方一打開網頁就會自動跳轉到該分頁，不用再手動點擊導覽列！<br>
-          2. <b>🎨 專業部落格排版</b>：軟體與指令文章擁有專屬發布資訊列與底部的「獨立資源下載框」。<br>
-          3. <b>🔘 專屬文章代碼</b>：分享加上 <code>?go=代碼</code>，網頁會自動跳轉分頁並點開該文章！
+          1. <b>🖥️ 全螢幕網格延伸</b>：網站容器已解除寬度限制，現在無論是在平板還是電腦，所有版面都會**自動展開填滿整個螢幕**！<br>
+          2. <b>🔗 編輯器插入超連結</b>：發布與編輯介面的工具列新增了「🔗 插入連結」按鈕。點擊後可設定「顯示文字」與「真實網址」，讓排版更靈活。<br>
+          3. <b>🚀 分頁直連導航</b>：分享網址加上 <code>?tab=software</code> 或 <code>?go=代碼</code>，一鍵智能跳轉到位！
         </p>
       </div>
     </div>
@@ -345,7 +355,6 @@
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
-    // 🔒 你的金鑰已經加上全球網址白名單防護罩，GitHub 警告可以安全關閉！
     const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website", storageBucket: "dogfish-website.firebasestorage.app", messagingSenderId: "501551191843", appId: "1:501551191843:web:32fd3c7a51c7a21722de96" };
     const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1"; 
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const provider = new GoogleAuthProvider();
@@ -356,16 +365,13 @@
     
     let materialsUnsub = null; let pendingUnsub = null;
     window.isEditMode = false;
-    let initialRouteChecked = false; // 確保直連代碼只執行一次
+    let initialRouteChecked = false;
 
-    // 🌟 全域分頁直連路由引擎 (載入時自動執行) 🌟
+    // 🌟 全域分頁直連路由引擎 (載入時自動執行)
     window.onload = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const targetTab = urlParams.get('tab');
-        if (targetTab) {
-            // 如果網址有 ?tab=xxx，就立刻切換到該分頁
-            switchPage(targetTab);
-        }
+        if (targetTab) { switchPage(targetTab); }
     };
 
     if (localStorage.getItem('dogfish_disclaimer_agreed') === 'true') { document.getElementById('disclaimer-overlay').style.display = 'none'; }
@@ -390,6 +396,7 @@
         }
     };
 
+    // 🌟 升級版：富文本插入圖片與影片
     window.insertEditorContent = function(editorId, type) {
       let typeName = type === 'img' ? '圖片' : (type === 'yt' ? 'YouTube' : '影片 (MP4/WebM)');
       let url = prompt(`請輸入 ${typeName} 網址:`); if (!url) return;
@@ -399,7 +406,19 @@
       else { let ytId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/); if (ytId && ytId[1]) { document.execCommand('insertHTML', false, `<iframe src="https://www.youtube.com/embed/${ytId[1]}" frameborder="0" allowfullscreen contenteditable="false" style="box-shadow: 0 4px 15px rgba(0,0,0,0.5);"></iframe><br>`); } else { showToast("❌ 無效的 YouTube 網址", "error"); } }
     };
 
-    // 🌟 欄位：加入路由代碼與按鈕名稱
+    // 🌟 升級版：富文本插入超連結模組 🌟
+    window.insertLink = function(editorId) {
+        let text = prompt("請輸入連結顯示文字 (例如: 點我下載):");
+        if (!text) return;
+        let url = prompt("請輸入真實連結網址 (例如: https://...):");
+        if (!url) return;
+        
+        document.getElementById(editorId).focus();
+        // 將其轉換為超連結標籤，並設定藍底色及新視窗開啟
+        let html = `<a href="${url}" target="_blank" style="color: #0088ff; text-decoration: underline; font-weight: bold;">${text}</a>`;
+        document.execCommand('insertHTML', false, html);
+    };
+
     function renderUploadFields(type, prefix) {
       const df = document.getElementById(`${prefix}-dynamic-fields`); const urlInput = document.getElementById(prefix === 'mat' ? 'mat-url' : 'edit-url');
       const richContainer = document.getElementById(`${prefix}-rich-text-container`);
@@ -631,7 +650,7 @@
         const q = query(collection(db, "pending_materials"), orderBy("timestamp", "desc"));
         pendingUnsub = onSnapshot(q, (snap) => { pendingMaterialsList = []; snap.forEach((doc) => { let d = doc.data(); d.id = doc.id; pendingMaterialsList.push(d); }); renderPendingList(); });
     }
-    function renderPendingList() { /* 與之前審核大廳一致 */ 
+    function renderPendingList() { 
       const c = document.getElementById('review-container'); if (pendingMaterialsList.length === 0) { c.innerHTML = '<p style="color:#888;">🎉 目前無任何待審核的素材！</p>'; return; } c.innerHTML = '';
       pendingMaterialsList.forEach(item => {
         const div = document.createElement('div'); div.className = 'review-item-card';
@@ -642,7 +661,7 @@
     window.rejectMaterial = async function(id) { if (!confirm("確定要退回此提案嗎？")) return; try { await deleteDoc(doc(db, "pending_materials", id)); showToast("❌ 提案已刪除。"); } catch(e){} };
     window.deleteMaterial = async function(id) { if (!confirm("確定永久刪除？")) return; try { await deleteDoc(doc(db, "categorized_materials", id)); document.getElementById('article-modal').style.display='none'; document.getElementById('album-modal').style.display='none'; showToast("🗑️ 已徹底移除"); } catch(e) {} };
 
-    // 🌟 全域即時資料庫監聽與跳轉 🌟
+    // 🌟 全域即時資料庫監聽與跳轉
     function listenToMaterialsRealtime() {
         if(materialsUnsub) materialsUnsub();
         const q = query(collection(db, "categorized_materials"), orderBy("timestamp", "desc"));
@@ -705,8 +724,8 @@
         Object.values(albums).forEach(album => { album.tracks.sort((a, b) => (a.trackOrder ?? 99) - (b.trackOrder ?? 99)); const c = document.createElement('div'); c.className = 'material-item'; let img = getOptimalImageUrl(album.coverUrl); let coverHTML = img ? `<img class="album-art-img" src="${img}">` : `<div class="default-vinyl"></div>`; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div>${coverHTML}</div><div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 內含 ${album.tracks.length} 首曲目</span></div>`; c.addEventListener('click', () => openAlbumModal(album)); container.appendChild(c); });
       }
       
-      const rSFX = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; c.style.alignItems='center'; c.style.padding='25px 15px'; let s = `background-color:#ff1744;box-shadow:0 12px 0 #8e001c,0 15px 20px rgba(0,0,0,0.5);`; if(d.btnStyle){ if(d.btnStyle.startsWith('http')){ s=`background-image:url('${getOptimalImageUrl(d.btnStyle)}');box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);border:none;`; }else{ s=`background-color:${d.btnStyle};box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);`; } } let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;width:100%;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;font-size:0.9em;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del" style="font-size:0.9em;">🗑️ 刪除</button></div>` : ''; c.innerHTML = `<button class="sfx-push-btn" style="${s}" onclick="playSFX('${d.fileName}', '${d.fileUrl}')"></button><strong style="font-size:1.2em; display:block;">${d.fileName}</strong><div style="display:flex; gap:5px; margin-top:5px; width:100%;"><a href="${getOptimalAudioUrl(d.fileUrl)}" target="_blank" class="btn-blue-dl" style="flex:1;text-align:center; padding:10px; font-size:0.9em; box-shadow:none;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy" style="padding:10px; font-size:0.9em;">📋</button></div>${adminBtn}`; p.appendChild(c); };
-      const rGIF = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;font-size:0.9em;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del" style="font-size:0.9em;">🗑️ 刪除</button></div>` : ''; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">🖼️ GIF</div><img class="album-art-img" src="${getOptimalImageUrl(d.fileUrl)}"></div><strong>${d.fileName}</strong><div style="display:flex; gap:5px;"><a href="${d.fileUrl}" target="_blank" class="btn-blue-dl" style="flex:1;text-align:center; padding:10px; font-size:0.9em; box-shadow:none;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy" style="padding:10px; font-size:0.9em;">📋</button></div>${adminBtn}`; p.appendChild(c); };
+      const rSFX = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; c.style.alignItems='center'; c.style.padding='25px 15px'; let s = `background-color:#ff1744;box-shadow:0 12px 0 #8e001c,0 15px 20px rgba(0,0,0,0.5);`; if(d.btnStyle){ if(d.btnStyle.startsWith('http')){ s=`background-image:url('${getOptimalImageUrl(d.btnStyle)}');box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);border:none;`; }else{ s=`background-color:${d.btnStyle};box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);`; } } let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;width:100%;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<button class="sfx-push-btn" style="${s}" onclick="playSFX('${d.fileName}', '${d.fileUrl}')"></button><strong style="font-size:1.2em; display:block;">${d.fileName}</strong><div style="display:flex; gap:5px; margin-top:5px; width:100%;"><a href="${getOptimalAudioUrl(d.fileUrl)}" target="_blank" class="btn-blue-dl" style="flex:1;text-align:center; padding:10px; font-size:0.9em; box-shadow:none;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy" style="padding:10px; font-size:0.9em;">📋</button></div>${adminBtn}`; p.appendChild(c); };
+      const rGIF = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">🖼️ GIF</div><img class="album-art-img" src="${getOptimalImageUrl(d.fileUrl)}"></div><strong>${d.fileName}</strong><div style="display:flex; gap:5px;"><a href="${d.fileUrl}" target="_blank" class="btn-blue-dl" style="flex:1;text-align:center; padding:10px; font-size:0.9em; box-shadow:none;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy" style="padding:10px; font-size:0.9em;">📋</button></div>${adminBtn}`; p.appendChild(c); };
 
       if (currentActiveTab === "全部" || currentActiveTab === "音效") renderGrouped(fetchedMaterialsList.filter(i => i.category === "音效" && (!search || i.fileName.toLowerCase().includes(search))), rSFX);
       if (currentActiveTab === "全部" || currentActiveTab === "GIF") renderGrouped(fetchedMaterialsList.filter(i => i.category === "GIF" && (!search || i.fileName.toLowerCase().includes(search))), rGIF);
