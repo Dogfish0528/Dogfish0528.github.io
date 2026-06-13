@@ -3,121 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish Studio | v16.2 預覽同步版</title>
+  <title>Dogfish Studio | v17.0 電腦終極版</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary: #1db954; --secondary: #1ed760; --accent: #ff1744;
-      --bg-dark: #121212; --panel-bg: #181818; --border-color: #282828;
-      --font-main: 'Noto Sans TC', sans-serif; --player-height: 90px;
-    }
-    body { background-color: var(--bg-dark); color: #ffffff; font-family: var(--font-main); margin: 0; padding: 0 0 var(--player-height) 0; overflow-x: hidden; cursor: default; }
-    a, button, input, select, textarea { cursor: pointer; }
+    :root{--primary:#1db954;--secondary:#1ed760;--accent:#ff1744;--bg-dark:#121212;--panel-bg:#181818;--border-color:#282828;--font-main:'Noto Sans TC',sans-serif;--player-height:90px}
+    body{background-color:var(--bg-dark);color:#fff;font-family:var(--font-main);margin:0;padding:0 0 var(--player-height) 0;overflow-x:hidden;cursor:default}
+    a,button,input,select,textarea{cursor:pointer}
+    .cursor-glow{position:fixed;top:0;left:0;width:40px;height:40px;background:radial-gradient(circle,rgba(29,185,84,0.4) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:999999;transform:translate(-50%,-50%);transition:width 0.1s,height 0.1s}
+    @media (hover:none){.cursor-glow{display:none !important}}
+    .solid-panel{background:var(--panel-bg);border:1px solid var(--border-color);border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.5)}
+    .btn-action{background:var(--primary);color:#000;border:none;padding:10px 20px;border-radius:20px;font-weight:800;transition:0.2s}
+    .btn-action:hover{background:var(--secondary);transform:scale(1.03)}
+    .btn-del{background:#2a0810;color:var(--accent);border:1px solid var(--accent);padding:6px 14px;border-radius:20px;font-weight:800;transition:0.2s}
+    .btn-del:hover{background:var(--accent);color:#fff}
+    .btn-copy{background:transparent;color:#b3b3b3;border:1px solid #555;padding:6px 14px;border-radius:20px;font-weight:700;transition:0.2s;text-decoration:none;display:inline-block}
+    .btn-copy:hover{color:#fff;border-color:#fff}
+    .btn-edit{background:#1a1a24;color:var(--primary);border:1px solid var(--primary);padding:6px 14px;border-radius:20px;font-weight:800;transition:0.2s}
+    .btn-edit:hover{background:var(--primary);color:#000}
+    .btn-blue-dl{background:#0088ff;color:#fff;border:none;padding:15px 30px;border-radius:30px;font-weight:800;font-size:1.1em;transition:0.2s;display:inline-block;text-decoration:none;box-shadow:0 4px 15px rgba(0,136,255,0.4)}
+    .btn-blue-dl:hover{background:#00aaff;transform:scale(1.05)}
+    .fab-upload{position:fixed;bottom:110px;right:30px;background:var(--secondary);color:#000;width:65px;height:65px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.2em;box-shadow:0 5px 20px rgba(0,0,0,0.6);z-index:2500;border:none;transition:0.3s}
+    .fab-upload:hover{transform:scale(1.1) rotate(15deg);background:var(--primary)}
+    .input-box{background:#282828;border:1px solid transparent;color:#fff;padding:10px 14px;font-size:0.95em;border-radius:6px;outline:none;transition:0.2s;width:100%;box-sizing:border-box}
+    .input-box:focus{border-color:var(--primary);background:#333}
+    input[type="color"].input-box{padding:2px 4px;height:40px;cursor:pointer;width:auto}
+    .navbar{position:fixed;top:0;left:0;right:0;height:60px;background:rgba(0,0,0,0.85);border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;padding:0 30px;z-index:1000;backdrop-filter:blur(10px)}
+    .logo{font-size:1.2em;font-weight:800;display:flex;align-items:center;gap:10px}
+    .logo-text{color:var(--primary)}
+    .version-badge{background:linear-gradient(135deg,#1db954,#ffb300);color:#000;font-size:0.5em;padding:3px 8px;border-radius:12px;font-weight:900}
+    .nav-links{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .btn-nav{background:transparent;color:#b3b3b3;border:none;padding:6px 12px;font-size:0.95em;font-weight:700;border-radius:8px;transition:0.2s}
+    .btn-nav:hover{color:#fff;background:#282828} .btn-nav.active{background:#333;color:#fff}
+    .btn-login{padding:6px 16px;border-radius:20px;font-weight:bold;background:#fff;color:#000;border:none}
+    .btn-logout{background:transparent;color:#888;font-size:0.8em;padding:4px 12px;border-radius:8px;border:1px solid #444;transition:0.2s}
+    .btn-logout:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+    #top-right-profile{display:none;align-items:center;gap:10px;padding:4px 12px;border-radius:20px;background:#000;border:1px solid var(--border-color)}
+    #top-right-profile img{width:28px;height:28px;border-radius:50%;object-fit:cover}
+    .main-container{max-width:1050px;margin:90px auto 50px;padding:0 20px}
+    .page-panel{display:none;padding:30px} .page-panel.active{display:block;animation:fadeIn 0.3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)}}
+    .page-title{font-size:2.2em;font-weight:900;margin-top:0;margin-bottom:25px;color:#fff}
+    .rich-editor-toolbar{display:flex;gap:5px;flex-wrap:wrap;background:#222;padding:8px;border-radius:8px 8px 0 0;border:1px solid #333;border-bottom:none}
+    .rich-editor-btn{background:#333;color:#fff;border:none;padding:6px 12px;border-radius:4px;font-weight:bold;font-size:0.9em;transition:0.2s}
+    .rich-editor-btn:hover{background:var(--primary);color:#000}
+    .rich-editor-content{background:#111;min-height:150px;border:1px solid #333;border-radius:0 0 8px 8px;padding:15px;color:#fff;line-height:1.6;outline:none;overflow-y:auto;max-height:400px;text-align:left}
+    .rich-editor-content img{max-width:100%;border-radius:8px;margin:10px 0}
+    .rich-editor-content iframe,.rich-editor-content video{width:100%;aspect-ratio:16/9;border-radius:8px;margin:10px 0;border:none;background:#000}
+    .rich-editor-content[contenteditable="true"]:empty:before{content:attr(placeholder);color:#888;cursor:text}
+    .controls-wrapper{display:flex;justify-content:space-between;align-items:center;margin:20px 0;border-bottom:1px solid var(--border-color);padding-bottom:15px;flex-wrap:wrap;gap:15px}
+    .category-tabs{display:flex;flex-wrap:wrap;gap:10px} .tab-btn{background:#000;color:#b3b3b3;border:none;padding:8px 18px;font-weight:700;border-radius:20px;transition:0.2s} .tab-btn.active{background:#fff;color:#000}
+    .search-bar-container{position:relative} .search-input{background:#282828;border:none;color:#fff;padding:10px 20px 10px 40px;border-radius:20px;outline:none;width:220px;transition:0.3s} .search-input:focus{box-shadow:0 0 0 2px var(--primary);width:260px} .search-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:0.9em}
+    .material-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px}
+    .material-item{background:var(--panel-bg);padding:16px;border-radius:12px;transition:0.3s;display:flex;flex-direction:column;gap:12px;position:relative}
+    .material-item:hover{background:#282828;box-shadow:0 8px 24px rgba(0,0,0,0.5);transform:translateY(-3px)}
+    .folder-header{grid-column:1 / -1;font-size:1.4em;font-weight:900;color:#fff;margin-top:15px;border-bottom:2px solid #333;padding-bottom:8px;text-align:left}
+    .album-art-wrapper{width:100%;aspect-ratio:1/1;border-radius:8px;background:#282828;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+    .album-art-img{width:100%;height:100%;object-fit:contain}
+    .mat-type-tag{font-size:0.7em;padding:4px 10px;border-radius:4px;background:rgba(0,0,0,0.7);color:#fff;font-weight:800;position:absolute;top:10px;left:10px;z-index:10}
+    .sfx-push-btn{width:110px;height:120px;border-radius:50%;background-size:cover;background-position:center;border:4px solid #fff;margin:0 auto 15px;display:block;transition:0.1s;box-shadow:0 8px 0 #111}
+    .sfx-push-btn:active{transform:translateY(8px);box-shadow:0 0px 0 #111}
+    .article-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:25px}
+    .article-card{background:var(--panel-bg);border-radius:12px;overflow:hidden;transition:0.3s;cursor:pointer;border:1px solid var(--border-color);text-align:left}
+    .article-card:hover{border-color:var(--primary);transform:translateY(-5px)}
+    .article-info{padding:20px} .article-title{font-size:1.4em;font-weight:900;margin:0 0 10px;color:#fff}
+    .chat-app{display:flex;height:70vh;background:#1e1e1e;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.5);border:1px solid #333}
+    .chat-sidebar{width:280px;background:#252526;border-right:1px solid #333;display:flex;flex-direction:column;text-align:left}
+    .chat-sidebar-header{padding:15px;background:#1e1e1e;border-bottom:1px solid #333;font-weight:bold}
+    .chat-list{flex:1;overflow-y:auto}
+    .chat-list-item{padding:15px;border-bottom:1px solid #333;display:flex;align-items:center;gap:10px;transition:0.2s;cursor:pointer}
+    .chat-list-item:hover,.chat-list-item.active{background:#333}
+    .chat-list-avatar{width:40px;height:40px;border-radius:50%;background:#555;object-fit:cover}
+    .chat-list-name{font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;color:#fff}
+    .chat-main{flex:1;display:flex;flex-direction:column;background:#749bb6}
+    .chat-main-header{padding:15px;background:#fff;color:#000;font-weight:bold;box-shadow:0 2px 5px rgba(0,0,0,0.1);z-index:10;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+    .chat-messages{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:15px}
+    .chat-row{display:flex;gap:10px;max-width:80%;text-align:left} .chat-row.me{align-self:flex-end;flex-direction:row-reverse} .chat-row.other{align-self:flex-start}
+    .chat-bubble-wrap{display:flex;flex-direction:column;gap:4px} .chat-row.me .chat-bubble-wrap{align-items:flex-end}
+    .chat-name{font-size:0.8em;color:#e2e8f0;font-weight:700;margin:0 4px}
+    .chat-bubble{padding:10px 14px;border-radius:16px;font-size:0.95em;line-height:1.4;word-break:break-word;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+    .chat-row.me .chat-bubble{background:#85e04f;color:#000;border-top-right-radius:4px} .chat-row.other .chat-bubble{background:#fff;color:#000;border-top-left-radius:4px}
+    .chat-time{font-size:0.7em;color:#e2e8f0;margin:0 4px;align-self:flex-end}
+    .chat-input-area{background:#f0f0f0;padding:15px;display:flex;gap:10px;align-items:center;border-top:1px solid #ccc}
+    .chat-input{flex:1;padding:12px 15px;border:none;border-radius:20px;outline:none;font-size:1em;background:#fff;color:#000}
+    .invite-box{background:#333;padding:10px;margin:10px;border-radius:8px;font-size:0.9em;text-align:left}
+    .spotify-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(5px)}
+    .modal-content{background:linear-gradient(to bottom,#333 0%,#121212 30%);padding:30px;border-radius:12px;max-width:800px;width:90%;text-align:left;position:relative;max-height:80vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,0.7)}
+    .modal-close{position:absolute;top:20px;right:25px;font-size:1.8em;color:#b3b3b3;transition:0.2s;cursor:pointer} .modal-close:hover{color:#fff;transform:rotate(90deg)}
+    .track-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 16px;border-radius:6px;transition:0.2s} .track-row:hover{background:rgba(255,255,255,0.1)}
+    .track-num{color:#b3b3b3;font-weight:700;width:30px;text-align:center}
+    .review-item-card{background:#222;border-left:4px solid #ffb300;padding:15px;margin-bottom:10px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;text-align:left}
+    #global-player{position:fixed;bottom:0;left:0;right:0;height:var(--player-height);background:#181818;border-top:1px solid #282828;display:flex;justify-content:space-between;align-items:center;padding:0 20px;z-index:3000;flex-wrap:wrap}
+    .gp-left{display:flex;align-items:center;gap:15px;width:280px;text-align:left} #gp-cover{width:56px;height:56px;border-radius:4px;object-fit:cover;background:#282828} .gp-info{display:flex;flex-direction:column} #gp-title{color:#fff;font-weight:700;font-size:0.95em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px} #gp-artist{color:#b3b3b3;font-size:0.8em}
+    .gp-center{flex:1;display:flex;align-items:center;justify-content:center;gap:15px} .gp-control-btn{background:transparent;border:none;color:#b3b3b3;font-size:1.5em} .gp-control-btn:hover{color:#fff} #gp-audio{width:420px;height:40px;outline:none}
+    #toast-container{position:fixed;top:80px;right:30px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+    .toast{background:#282828;color:#fff;padding:12px 20px;border-radius:8px;border-left:5px solid var(--primary);box-shadow:0 5px 15px rgba(0,0,0,0.5);font-weight:700;animation:slideIn 0.3s forwards,fadeOut 0.3s forwards 2.7s}
+    .toast.error{border-left-color:var(--accent)}
+    @keyframes slideIn{from{opacity:0;transform:translateX(100%)} to{opacity:1;transform:translateX(0)}} @keyframes fadeOut{to{opacity:0;transform:translateX(100%)}}
     
-    .cursor-glow { position: fixed; top: 0; left: 0; width: 40px; height: 40px; background: radial-gradient(circle, rgba(29, 185, 84, 0.4) 0%, transparent 70%); border-radius: 50%; pointer-events: none; z-index: 999999; transform: translate(-50%, -50%); transition: width 0.1s, height 0.1s; }
-    @media (hover: none) { .cursor-glow { display: none !important; } }
-
-    .solid-panel { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-    .btn-action { background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 800; transition: 0.2s; }
-    .btn-action:hover { background: var(--secondary); transform: scale(1.03); }
-    .btn-del { background: #2a0810; color: var(--accent); border: 1px solid var(--accent); padding: 6px 14px; border-radius: 20px; font-weight: 800; transition: 0.2s; }
-    .btn-del:hover { background: var(--accent); color: white; }
-    .btn-copy { background: transparent; color: #b3b3b3; border: 1px solid #555; padding: 6px 14px; border-radius: 20px; font-weight: 700; transition: 0.2s; text-decoration: none; display: inline-block; }
-    .btn-copy:hover { color: white; border-color: white; }
-    .btn-edit { background: #1a1a24; color: var(--primary); border: 1px solid var(--primary); padding: 6px 14px; border-radius: 20px; font-weight: 800; transition: 0.2s; }
-    .btn-edit:hover { background: var(--primary); color: #000; }
-    .btn-blue-dl { background: #0088ff; color: #fff; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 800; font-size: 1.1em; transition: 0.2s; display: inline-block; text-decoration: none; box-shadow: 0 4px 15px rgba(0,136,255,0.4); }
-    .btn-blue-dl:hover { background: #00aaff; transform: scale(1.05); }
-
-    .fab-upload { position: fixed; bottom: 110px; right: 30px; background: var(--secondary); color: #000; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2em; box-shadow: 0 5px 20px rgba(0,0,0,0.6); z-index: 2500; border: none; transition: 0.3s; }
-    .fab-upload:hover { transform: scale(1.1) rotate(15deg); background: var(--primary); }
-
-    .input-box { background: #282828; border: 1px solid transparent; color: white; padding: 10px 14px; font-size: 0.95em; border-radius: 6px; outline: none; transition: 0.2s; width: 100%; box-sizing: border-box; }
-    .input-box:focus { border-color: var(--primary); background: #333; }
-    input[type="color"].input-box { padding: 2px 4px; height: 40px; cursor: pointer; width: auto; }
-
-    .navbar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: rgba(0,0,0,0.85); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 1000; backdrop-filter: blur(10px); }
-    .logo { font-size: 1.2em; font-weight: 800; display: flex; align-items: center; gap: 10px; }
-    .logo-text { color: var(--primary); }
-    .version-badge { background: linear-gradient(135deg, #1db954, #ffb300); color: #000; font-size: 0.5em; padding: 3px 8px; border-radius: 12px; font-weight: 900; }
-    .nav-links { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .btn-nav { background: transparent; color: #b3b3b3; border: none; padding: 6px 12px; font-size: 0.95em; font-weight: 700; border-radius: 8px; transition: 0.2s; }
-    .btn-nav:hover { color: white; background: #282828; } .btn-nav.active { background: #333; color: white; }
-    .btn-login { padding: 6px 16px; border-radius: 20px; font-weight: bold; background: white; color: black; border: none; }
-    .btn-logout { background: transparent; color: #888; font-size: 0.8em; padding: 4px 12px; border-radius: 8px; border: 1px solid #444; transition: 0.2s; }
-    .btn-logout:hover { background: var(--accent); color: white; border-color: var(--accent); }
-    #top-right-profile { display: none; align-items: center; gap: 10px; padding: 4px 12px; border-radius: 20px; background: #000; border: 1px solid var(--border-color); }
-    #top-right-profile img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
-
-    .main-container { max-width: 1050px; margin: 90px auto 50px; padding: 0 20px; }
-    .page-panel { display: none; padding: 30px; } .page-panel.active { display: block; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-    .page-title { font-size: 2.2em; font-weight: 900; margin-top: 0; margin-bottom: 25px; color: white; }
-
-    .rich-editor-toolbar { display: flex; gap: 5px; flex-wrap: wrap; background: #222; padding: 8px; border-radius: 8px 8px 0 0; border: 1px solid #333; border-bottom: none; }
-    .rich-editor-btn { background: #333; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 0.9em; transition: 0.2s; }
-    .rich-editor-btn:hover { background: var(--primary); color: black; }
-    .rich-editor-content { background: #111; min-height: 150px; border: 1px solid #333; border-radius: 0 0 8px 8px; padding: 15px; color: white; line-height: 1.6; outline: none; overflow-y: auto; max-height: 400px; text-align: left; }
-    .rich-editor-content img { max-width: 100%; border-radius: 8px; margin: 10px 0; }
-    .rich-editor-content iframe, .rich-editor-content video { width: 100%; aspect-ratio: 16/9; border-radius: 8px; margin: 10px 0; border: none; background: #000; }
-    .rich-editor-content[contenteditable="true"]:empty:before { content: attr(placeholder); color: #888; cursor: text; }
-
-    .controls-wrapper { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; flex-wrap: wrap; gap: 15px; }
-    .category-tabs { display: flex; flex-wrap: wrap; gap: 10px; } .tab-btn { background: #000; color: #b3b3b3; border: none; padding: 8px 18px; font-weight: 700; border-radius: 20px; transition: 0.2s; } .tab-btn.active { background: white; color: #000; }
-    .search-bar-container { position: relative; } .search-input { background: #282828; border: none; color: white; padding: 10px 20px 10px 40px; border-radius: 20px; outline: none; width: 220px; transition: 0.3s; } .search-input:focus { box-shadow: 0 0 0 2px var(--primary); width: 260px; } .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.9em; }
-    .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
-    .material-item { background: var(--panel-bg); padding: 16px; border-radius: 12px; transition: 0.3s; display: flex; flex-direction: column; gap: 12px; position: relative; }
-    .material-item:hover { background: #282828; box-shadow: 0 8px 24px rgba(0,0,0,0.5); transform: translateY(-3px); }
-    .folder-header { grid-column: 1 / -1; font-size: 1.4em; font-weight: 900; color: white; margin-top: 15px; border-bottom: 2px solid #333; padding-bottom: 8px; text-align: left; }
-    .album-art-wrapper { width: 100%; aspect-ratio: 1/1; border-radius: 8px; background: #282828; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
-    .album-art-img { width: 100%; height: 100%; object-fit: contain; }
-    .mat-type-tag { font-size: 0.7em; padding: 4px 10px; border-radius: 4px; background: rgba(0,0,0,0.7); color: white; font-weight: 800; position: absolute; top: 10px; left: 10px; z-index: 10; }
-    .sfx-push-btn { width: 110px; height: 120px; border-radius: 50%; background-size: cover; background-position: center; border: 4px solid #fff; margin: 0 auto 15px; display: block; transition: 0.1s; box-shadow: 0 8px 0 #111; }
-    .sfx-push-btn:active { transform: translateY(8px); box-shadow: 0 0px 0 #111; }
-
-    .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
-    .article-card { background: var(--panel-bg); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid var(--border-color); text-align: left; }
-    .article-card:hover { border-color: var(--primary); transform: translateY(-5px); }
-    .article-info { padding: 20px; } .article-title { font-size: 1.4em; font-weight: 900; margin: 0 0 10px; color: white; }
-
-    .chat-app { display: flex; height: 70vh; background: #1e1e1e; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
-    .chat-sidebar { width: 280px; background: #252526; border-right: 1px solid #333; display: flex; flex-direction: column; text-align: left; }
-    .chat-sidebar-header { padding: 15px; background: #1e1e1e; border-bottom: 1px solid #333; font-weight: bold; }
-    .chat-list { flex: 1; overflow-y: auto; }
-    .chat-list-item { padding: 15px; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 10px; transition: 0.2s; cursor: pointer; }
-    .chat-list-item:hover, .chat-list-item.active { background: #333; }
-    .chat-list-avatar { width: 40px; height: 40px; border-radius: 50%; background: #555; object-fit: cover; }
-    .chat-list-name { font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; color: white; }
-    .chat-main { flex: 1; display: flex; flex-direction: column; background: #749bb6; }
-    .chat-main-header { padding: 15px; background: #fff; color: #000; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
-    .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-    .chat-row { display: flex; gap: 10px; max-width: 80%; text-align: left; } .chat-row.me { align-self: flex-end; flex-direction: row-reverse; } .chat-row.other { align-self: flex-start; }
-    .chat-bubble-wrap { display: flex; flex-direction: column; gap: 4px; } .chat-row.me .chat-bubble-wrap { align-items: flex-end; }
-    .chat-name { font-size: 0.8em; color: #e2e8f0; font-weight: 700; margin: 0 4px; }
-    .chat-bubble { padding: 10px 14px; border-radius: 16px; font-size: 0.95em; line-height: 1.4; word-break: break-word; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .chat-row.me .chat-bubble { background: #85e04f; color: #000; border-top-right-radius: 4px; } .chat-row.other .chat-bubble { background: #ffffff; color: #000; border-top-left-radius: 4px; }
-    .chat-time { font-size: 0.7em; color: #e2e8f0; margin: 0 4px; align-self: flex-end; }
-    .chat-input-area { background: #f0f0f0; padding: 15px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #ccc; }
-    .chat-input { flex: 1; padding: 12px 15px; border: none; border-radius: 20px; outline: none; font-size: 1em; background: white; color: #000; }
-    .invite-box { background: #333; padding: 10px; margin: 10px; border-radius: 8px; font-size: 0.9em; text-align: left; }
-
-    .spotify-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-    .modal-content { background: linear-gradient(to bottom, #333 0%, #121212 30%); padding: 30px; border-radius: 12px; max-width: 800px; width: 90%; text-align: left; position: relative; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
-    .modal-close { position: absolute; top: 20px; right: 25px; font-size: 1.8em; color: #b3b3b3; transition: 0.2s; cursor: pointer; } .modal-close:hover { color: white; transform: rotate(90deg); }
-    .track-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px 16px; border-radius: 6px; transition: 0.2s; } .track-row:hover { background: rgba(255,255,255,0.1); }
-    .track-num { color: #b3b3b3; font-weight: 700; width: 30px; text-align: center; }
-    .review-item-card { background: #222; border-left: 4px solid #ffb300; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
-
-    #global-player { position: fixed; bottom: 0; left: 0; right: 0; height: var(--player-height); background: #181818; border-top: 1px solid #282828; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 3000; flex-wrap: wrap; }
-    .gp-left { display: flex; align-items: center; gap: 15px; width: 280px; text-align: left; } #gp-cover { width: 56px; height: 56px; border-radius: 4px; object-fit: cover; background: #282828; } .gp-info { display: flex; flex-direction: column; } #gp-title { color: white; font-weight: 700; font-size: 0.95em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; } #gp-artist { color: #b3b3b3; font-size: 0.8em; }
-    .gp-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 15px; } .gp-control-btn { background: transparent; border: none; color: #b3b3b3; font-size: 1.5em; } .gp-control-btn:hover { color: white; } #gp-audio { width: 420px; height: 40px; outline: none; }
-    
-    #toast-container { position: fixed; top: 80px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-    .toast { background: #282828; color: white; padding: 12px 20px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.5); font-weight: 700; animation: slideIn 0.3s forwards, fadeOut 0.3s forwards 2.7s; }
-    .toast.error { border-left-color: var(--accent); }
-    @keyframes slideIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } } @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
-
-    /* 🌟 新增：彈窗內即時預覽區的樣式 */
     .preview-box { background: #222; border: 1px solid #444; border-radius: 8px; padding: 10px; margin-bottom: 15px; display: none; align-items: center; gap: 15px; }
     .preview-img { width: 70px; height: 70px; object-fit: cover; border-radius: 6px; display: none; border: 1px solid #555; }
     .preview-audio { flex: 1; height: 35px; outline: none; display: none; }
@@ -126,10 +108,10 @@
 <body>
 
   <div id="disclaimer-overlay">
-    <div class="disclaimer-box">
-      <h2 style="color: #ff1744; font-weight: 900; margin-top: 0; border-bottom: 2px solid #2a1015; padding-bottom: 10px;">⚠️ 智慧財產權與免責聲明</h2>
-      <div style="color: #cbd5e1; font-size: 0.95em; line-height: 1.7; margin-bottom: 25px;">本站收錄之創作素材版權屬於原創作者，僅供個人交流與學習研究，嚴禁一切商業營利行為。</div>
-      <button id="agree-disclaimer-btn" class="btn-action" style="width: 100%; padding: 14px;">我已閱讀並完全同意，進入網站</button>
+    <div class="disclaimer-box" style="background:#151518; border:1px solid #ff1744; border-radius:16px; max-width:650px; width:90%; padding:35px; text-align:left; max-height:85vh; overflow-y:auto;">
+      <h2 style="color:#ff1744; font-weight:900; margin-top:0; border-bottom:2px solid #2a1015; padding-bottom:10px;">⚠️ 智慧財產權與免責聲明</h2>
+      <div style="color:#cbd5e1; font-size:0.95em; line-height:1.7; margin-bottom:25px;">本站收錄之創作素材版權屬於原創作者，僅供個人交流與學習研究，嚴禁一切商業營利行為。</div>
+      <button id="agree-disclaimer-btn" class="btn-action" style="width:100%; padding:14px;">我已閱讀並完全同意，進入網站</button>
     </div>
   </div>
 
@@ -141,8 +123,8 @@
       <h2 id="upload-title" style="color: var(--primary); margin-top: 0;">➕ 發布與提案中心</h2>
       
       <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-        <div style="display: flex; gap: 10px;">
-          <input type="text" id="mat-name" class="input-box" placeholder="名稱 / 標題" style="flex: 1;">
+        <div style="display: flex; flex-wrap:wrap; gap: 10px;">
+          <input type="text" id="mat-name" class="input-box" placeholder="名稱 / 標題" style="flex: 1; min-width:140px;">
           <select id="mat-type-select" class="input-box" style="width: auto;">
             <option value="音樂">🎵 音樂專輯</option>
             <option value="音效">🔊 小音效</option>
@@ -163,7 +145,7 @@
       <div id="mat-rich-text-container" style="display: none; margin-bottom: 15px;">
         <div class="rich-editor-toolbar">
           <button class="rich-editor-btn" onclick="document.execCommand('bold')">B 粗體</button>
-          <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'img')">🖼️ 插入圖片</button>
+          <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'img')">🖼️ 圖片</button>
           <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'yt')">🔴 YouTube</button>
           <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'video')">🎬 直連影片(MP4)</button>
         </div>
@@ -232,13 +214,14 @@
   </div>
 
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v16.2 預覽同步版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v17.0 終極防彈版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="switchPage('materials')">素材</button>
       <button class="btn-nav" onclick="switchPage('software')">🧰 軟體</button>
       <button class="btn-nav" onclick="switchPage('commands')">💻 指令</button>
       <button class="btn-nav" onclick="switchPage('chat')">💬 聊天</button>
+      <button id="nav-upload-btn" class="btn-nav" style="display: none; color: var(--secondary);" onclick="document.getElementById('upload-modal').style.display='flex'">➕ 發布</button>
       <button id="nav-review-btn" class="btn-nav" onclick="switchPage('review')" style="display: none; color: #ffb300;">審核</button>
       <button id="nav-admin-btn" class="btn-nav" onclick="switchPage('admin')" style="display: none; color: var(--accent);">設定</button>
       <button id="login-btn" class="btn-login">登入</button>
@@ -250,11 +233,11 @@
     <div id="page-blog" class="page-panel solid-panel active">
       <h2 class="page-title">歡迎來到創作者社群工作站</h2>
       <div style="background: #282828; padding: 20px; border-left: 4px solid var(--primary); border-radius: 8px; text-align: left;">
-        <h3 style="margin-top:0;">🚀 v16.2 最新修復與升級</h3>
+        <h3 style="margin-top:0;">🚀 v17.0 核心引擎防彈修復</h3>
         <p style="color: #b3b3b3; line-height: 1.6;">
-          1. <b>發布前即時預覽</b>：在發布或編輯彈窗貼上網址時，會立刻跳出預覽圖片或音樂播放器，保證封面與音檔 100% 正確！<br>
-          2. <b>免按 F5 即時同步更新</b>：採用最新的即時監聽連線 (onSnapshot)，發布後資料 0 延遲自動出現在畫面上。<br>
-          3. <b>強制彈窗成功提示</b>：發布完成後，會跳出強制性的警告彈窗（Alert），再也不用擔心錯過發布成功的提示。<br>
+          1. <b>破圖修復引擎</b>：舊文章內的 Google Drive 圖片連結現在會被自動轉譯成預覽縮圖，不再產生破圖碎片！<br>
+          2. <b>全頁面按鈕解鎖</b>：強化了過濾引擎，舊資料即使遺失檔名也不會再導致系統當機，切換分類標籤保證 100% 順暢。<br>
+          3. <b>單檔無壓縮還原</b>：應要求提供最完整的單一程式碼檔案，不再分段，直接全選覆蓋即可。
         </p>
         <button class="btn-action" style="margin-top: 15px; font-size: 1.1em; padding: 12px 25px;" onclick="document.getElementById('upload-modal').style.display='flex'">➕ 點此開啟發布中心</button>
       </div>
@@ -310,6 +293,7 @@
     <div class="gp-center" style="flex:1; display:flex; justify-content:center; gap:15px; flex-wrap: wrap;"><button class="btn-copy" style="border:none;" onclick="playPrevTrack()">⏮</button><audio id="gp-audio" controls style="width: 100%; max-width: 400px; height: 40px; outline: none;"></audio><button class="btn-copy" style="border:none;" onclick="playNextTrack()">⏭</button></div>
     <div style="width: 250px; display: none;"></div>
   </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
@@ -322,7 +306,7 @@
 
     let fetchedMaterialsList = []; let pendingMaterialsList = []; let currentActiveTab = "全部"; let userRole = "user"; 
     let globalPlaylist = []; let globalTrackIndex = 0; const gpAudio = document.getElementById('gp-audio'); let currentModalAlbum = null;
-    let myChats = []; let currentChatId = null; let activeChatUnsub = null; let invitesUnsub = null; let chatListUnsub = null; let materialsUnsub = null;
+    let myChats = []; let currentChatId = null; let activeChatUnsub = null; let invitesUnsub = null; let chatListUnsub = null;
 
     if (localStorage.getItem('dogfish_disclaimer_agreed') === 'true') { document.getElementById('disclaimer-overlay').style.display = 'none'; }
     document.getElementById('agree-disclaimer-btn').addEventListener('click', () => { localStorage.setItem('dogfish_disclaimer_agreed', 'true'); document.getElementById('disclaimer-overlay').style.display = 'none'; showToast("歡迎！已同意免責聲明。"); });
@@ -333,50 +317,20 @@
     document.addEventListener('mousemove', (e) => { const c = document.getElementById('cursor-glow'); if(c) { c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px'; } });
     document.getElementById('search-input').addEventListener('keyup', renderMaterialsByFilter);
 
-    // 🌟 實時預覽功能 (包含封面與音檔)
-    function updatePreviews(prefix) {
-      const type = document.getElementById(`${prefix}-type-select`)?.value || document.getElementById('edit-category').value;
-      const urlInput = document.getElementById(`${prefix}-url`);
-      const coverInput = document.getElementById(`${prefix}-cover`);
-      const imgPreview = document.getElementById(`${prefix}-preview-img`);
-      const audioPreview = document.getElementById(`${prefix}-preview-audio`);
-      const previewBox = document.getElementById(`${prefix}-preview-box`);
-      
-      let hasPreview = false;
+    // 🌟 URL 安全處理與自動轉換 Google Drive
+    function getOptimalImageUrl(url) { if (!url) return ""; let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w800` : url; }
+    function getOptimalAudioUrl(url) { if (!url) return ""; if (url.includes("cdn.discordapp.com") || url.includes("attachments")) return url; let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); return m ? `https://docs.google.com/uc?export=download&id=${m[1]}` : url; }
 
-      // 音樂/音效的 MP3 試聽預覽
-      if ((type === '音樂' || type === '音效') && urlInput && urlInput.value.trim()) {
-          let optimalAudioUrl = getOptimalAudioUrl(urlInput.value.trim());
-          if (audioPreview.src !== optimalAudioUrl) { audioPreview.src = optimalAudioUrl; }
-          audioPreview.style.display = 'block';
-          hasPreview = true;
-      } else {
-          audioPreview.style.display = 'none';
-          audioPreview.pause();
-      }
-
-      // 圖片/封面/GIF 的圖片預覽
-      let imgUrl = "";
-      if (type === 'GIF' && urlInput && urlInput.value.trim()) { imgUrl = getOptimalImageUrl(urlInput.value.trim()); } 
-      else if (coverInput && coverInput.value.trim()) { imgUrl = getOptimalImageUrl(coverInput.value.trim()); }
-
-      if (imgUrl) {
-          imgPreview.src = imgUrl;
-          imgPreview.style.display = 'block';
-          hasPreview = true;
-      } else {
-          imgPreview.style.display = 'none';
-      }
-
-      // 控制預覽區塊的顯示
-      if (previewBox) previewBox.style.display = hasPreview ? 'flex' : 'none';
+    // 🌟 自動超度舊文章中的 Google Drive 破圖
+    function fixHtmlContent(html) {
+        if (!html) return '';
+        // 尋找 img 標籤中的 src，如果是 GD 網址自動轉換為 thumbnail 縮圖
+        return html.replace(/<img[^>]+src="([^">]+)"/g, (match, url) => {
+            let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (m) { return match.replace(url, `https://drive.google.com/thumbnail?id=${m[1]}&sz=w800`); }
+            return match;
+        });
     }
-
-    // 監聽網址輸入，自動更新預覽
-    document.body.addEventListener('input', (e) => {
-        if (e.target.id === 'mat-url' || e.target.id === 'mat-cover' || e.target.id === 'mat-type-select') { updatePreviews('mat'); }
-        if (e.target.id === 'edit-url' || e.target.id === 'edit-cover') { updatePreviews('edit'); }
-    });
 
     window.insertEditorContent = function(editorId, type) {
       let typeName = type === 'img' ? '圖片' : (type === 'yt' ? 'YouTube' : '影片 (MP4/WebM)');
@@ -390,6 +344,35 @@
       else if (type === 'video') { document.execCommand('insertHTML', false, `<video controls src="${url}" style="width:100%; border-radius:8px; margin:10px 0; background:#000;"></video><br>`); } 
       else { let ytId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/); if (ytId && ytId[1]) { document.execCommand('insertHTML', false, `<iframe src="https://www.youtube.com/embed/${ytId[1]}" frameborder="0" allowfullscreen contenteditable="false"></iframe><br>`); } else { showToast("❌ 無效的 YouTube 網址", "error"); } }
     };
+
+    function updatePreviews(prefix) {
+      const type = document.getElementById(`${prefix}-type-select`)?.value || document.getElementById('edit-category')?.value;
+      const urlInput = document.getElementById(`${prefix}-url`); const coverInput = document.getElementById(`${prefix}-cover`);
+      const imgPreview = document.getElementById(`${prefix}-preview-img`); const audioPreview = document.getElementById(`${prefix}-preview-audio`);
+      const previewBox = document.getElementById(`${prefix}-preview-box`);
+      
+      if(!previewBox) return;
+      let hasPreview = false;
+
+      if ((type === '音樂' || type === '音效') && urlInput && urlInput.value.trim()) {
+          let optimalAudioUrl = getOptimalAudioUrl(urlInput.value.trim());
+          if (audioPreview.src !== optimalAudioUrl) { audioPreview.src = optimalAudioUrl; }
+          audioPreview.style.display = 'block'; hasPreview = true;
+      } else { audioPreview.style.display = 'none'; audioPreview.pause(); }
+
+      let imgUrl = "";
+      if (type === 'GIF' && urlInput && urlInput.value.trim()) { imgUrl = getOptimalImageUrl(urlInput.value.trim()); } 
+      else if (coverInput && coverInput.value.trim()) { imgUrl = getOptimalImageUrl(coverInput.value.trim()); }
+
+      if (imgUrl) { imgPreview.src = imgUrl; imgPreview.style.display = 'block'; hasPreview = true; } 
+      else { imgPreview.style.display = 'none'; }
+      previewBox.style.display = hasPreview ? 'flex' : 'none';
+    }
+
+    document.body.addEventListener('input', (e) => {
+        if (e.target.id === 'mat-url' || e.target.id === 'mat-cover' || e.target.id === 'mat-type-select') { updatePreviews('mat'); }
+        if (e.target.id === 'edit-url' || e.target.id === 'edit-cover') { updatePreviews('edit'); }
+    });
 
     function renderUploadFields(type, prefix) {
       const df = document.getElementById(`${prefix}-dynamic-fields`); const urlInput = document.getElementById(prefix === 'mat' ? 'mat-url' : 'edit-url');
@@ -409,27 +392,17 @@
         if (urlInput) urlInput.placeholder = "主要下載跳轉網址 (選填)";
         if (richContainer) { richContainer.style.display = 'block'; if(prefix === 'mat') document.getElementById('mat-rich-editor').innerHTML = ''; }
       } else { df.innerHTML = ``; }
-      updatePreviews(prefix); // 切換分類時同步更新預覽
+      updatePreviews(prefix);
     }
     document.getElementById('mat-type-select').addEventListener('change', (e) => renderUploadFields(e.target.value, 'mat'));
     renderUploadFields("音樂", 'mat');
 
-    function getOptimalImageUrl(url) { if (!url) return ""; let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w800` : url; }
-    function getOptimalAudioUrl(url) { if (!url) return ""; if (url.includes("cdn.discordapp.com") || url.includes("attachments")) return url; let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); return m ? `https://docs.google.com/uc?export=download&id=${m[1]}` : url; }
-
-    // 🌟 免按 F5 即時監聽資料庫
-    function startMaterialsListener() {
-        if(materialsUnsub) materialsUnsub();
-        const q = query(collection(db, "categorized_materials"), orderBy("timestamp", "desc"));
-        materialsUnsub = onSnapshot(q, (snap) => {
-            fetchedMaterialsList = [];
-            snap.forEach(doc => { fetchedMaterialsList.push({ id: doc.id, ...doc.data() }); });
-            renderMaterialsByFilter();
-        });
-    }
-    
-    // 初始化呼叫即時監聽取代舊的單次拉取
-    startMaterialsListener();
+    // 🌟 Firebase 即時監聽與啟動
+    onSnapshot(query(collection(db, "categorized_materials"), orderBy("timestamp", "desc")), (snap) => {
+        fetchedMaterialsList = [];
+        snap.forEach(doc => { fetchedMaterialsList.push({ id: doc.id, ...doc.data() }); });
+        renderMaterialsByFilter();
+    });
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -451,26 +424,28 @@
     });
 
     function updateUIForRole(user) {
-      document.getElementById('nav-review-btn').style.display = 'none';
+      document.getElementById('nav-upload-btn').style.display = 'none'; document.getElementById('nav-admin-btn').style.display = 'none'; document.getElementById('nav-review-btn').style.display = 'none';
       const fab = document.getElementById('fab-upload'); if(fab) fab.style.display = 'none';
+
       if (!user) return;
-      
       let roleTag = ""; let safeName = user.displayName || "匿名";
 
       if (userRole === "admin") { 
+          document.getElementById('nav-upload-btn').style.display = 'inline-block'; 
           document.getElementById('nav-review-btn').style.display = 'inline-block'; 
           if(fab) fab.style.display = 'flex';
           
           if (user.uid === CREATOR_UID) {
               document.getElementById('nav-admin-btn').style.display = 'inline-block';
               roleTag = `<span style="color:var(--accent);">👑 創世神</span>`; 
-          } else { 
-              document.getElementById('nav-admin-btn').style.display = 'none';
-              roleTag = `<span style="color:var(--accent);">🔧 管理員</span>`; 
-          }
+          } else { roleTag = `<span style="color:var(--accent);">🔧 管理員</span>`; }
       } 
       else if (userRole === "reviewer") { document.getElementById('nav-review-btn').style.display = 'inline-block'; roleTag = `<span style="color:#ffb300;">🛡️ 審核員</span>`; } 
-      else if (userRole === "contributor") { if(fab) fab.style.display = 'flex'; roleTag = `<span style="color:var(--secondary);">✍️ 貢獻者</span>`; } 
+      else if (userRole === "contributor") { 
+          document.getElementById('nav-upload-btn').style.display = 'inline-block'; 
+          if(fab) fab.style.display = 'flex';
+          roleTag = `<span style="color:var(--secondary);">✍️ 貢獻者</span>`; 
+      } 
       else { roleTag = `👤 一般會員`; }
       document.getElementById('tr-name').innerHTML = `${roleTag} ${safeName}`;
     }
@@ -478,6 +453,7 @@
     document.getElementById('login-btn').addEventListener('click', () => { signInWithPopup(auth, provider).then(() => switchPage('blog')); });
     document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth).then(() => switchPage('blog')); });
 
+    // 聊天系統
     function initChatSystem(user) {
       const invitesQ = query(collection(db, "invites"), where("toEmail", "==", user.email.toLowerCase()), where("status", "==", "pending"));
       invitesUnsub = onSnapshot(invitesQ, (snapshot) => {
@@ -576,17 +552,15 @@
       } catch (e) { showToast("發送失敗", "error"); }
     }
 
+    // 發布與編輯提取
     function getUploadData(prefix) {
-      const type = document.getElementById(`${prefix}-type-select`)?.value || document.getElementById('edit-category').value;
+      const type = document.getElementById(`${prefix}-type-select`)?.value || document.getElementById('edit-category')?.value || "音樂";
       let d = { trackOrder: 2, folderName: "根目錄", btnStyle: "", albumName: "", coverUrl: "", descriptionHTML: "" };
-      
       const getVal = (id) => document.getElementById(id)?.value?.trim() || "";
       
       if (type === "音樂") { 
-        d.albumName = getVal(`${prefix}-album`); 
-        d.coverUrl = getVal(`${prefix}-cover`); 
-        let o = parseInt(getVal(`${prefix}-order`)); 
-        if (!isNaN(o)) d.trackOrder = o; 
+        d.albumName = getVal(`${prefix}-album`); d.coverUrl = getVal(`${prefix}-cover`); 
+        let o = parseInt(getVal(`${prefix}-order`)); if (!isNaN(o)) d.trackOrder = o; 
       } 
       else if (type === "音效" || type === "GIF") { 
         d.folderName = getVal(`${prefix}-folder`) || "根目錄"; 
@@ -599,17 +573,13 @@
       return d;
     }
 
-    // 🌟 強制彈出成功 Alert 與清空邏輯
     document.getElementById('add-mat-btn').addEventListener('click', async () => {
       const name = document.getElementById('mat-name')?.value?.trim(); 
       const type = document.getElementById('mat-type-select')?.value; 
       const rawUrl = document.getElementById('mat-url')?.value?.trim();
-      
       if (!name) { alert("⚠️ 發布失敗：請輸入名稱或標題！"); return; }
       
-      let safeUploaderName = "匿名使用者";
-      if (auth && auth.currentUser && auth.currentUser.displayName) { safeUploaderName = auth.currentUser.displayName; }
-
+      let safeUploaderName = (auth && auth.currentUser && auth.currentUser.displayName) ? auth.currentUser.displayName : "匿名使用者";
       const ex = getUploadData('mat');
       const dataObj = { fileName: name, category: type, fileUrl: rawUrl || "", ...ex, uploaderName: safeUploaderName };
 
@@ -617,24 +587,14 @@
         const col = (userRole === "admin") ? "categorized_materials" : "pending_materials"; 
         await addDoc(collection(db, col), { ...dataObj, timestamp: serverTimestamp() }); 
         
-        // 🌟 強制彈窗提示發布成功
-        if (userRole === "admin") { 
-            alert("✅ 發布成功！檔案已順利上架，並且畫面已為您即時更新。");
-        } else { 
-            alert("📤 發布已送出！已提交至審核大廳，請等待站長過目。");
-        }
+        if (userRole === "admin") { alert("✅ 發布成功！檔案已順利上架，畫面已為您即時同步更新。"); } 
+        else { alert("📤 發布已送出！已提交至審核大廳，請等待站長過目。"); }
         
-        // 乾淨地清空表單
         if(document.getElementById('mat-name')) document.getElementById('mat-name').value = ""; 
         if(document.getElementById('mat-url')) document.getElementById('mat-url').value = ""; 
         let re = document.getElementById('mat-rich-editor'); if(re) re.innerHTML = ""; 
-        updatePreviews('mat'); // 清空預覽
-        
-        document.getElementById('upload-modal').style.display = 'none';
-      } catch (error) { 
-        console.error(error); 
-        alert("❌ 儲存發生錯誤，請檢查網路連線。"); 
-      }
+        updatePreviews('mat'); document.getElementById('upload-modal').style.display = 'none';
+      } catch (error) { console.error(error); alert("❌ 儲存發生錯誤，請檢查網路連線。"); }
     });
 
     document.getElementById('save-role-btn').addEventListener('click', async () => {
@@ -661,10 +621,7 @@
     document.getElementById('save-edit-btn').addEventListener('click', async () => { 
         const id = document.getElementById('edit-id').value; const name = document.getElementById('edit-name').value.trim(); const url = document.getElementById('edit-url').value.trim(); 
         const ex = getUploadData('edit'); 
-        try { 
-            await updateDoc(doc(db, "categorized_materials", id), { fileName: name, fileUrl: url, ...ex }); 
-            alert("✅ 資料更新成功！"); document.getElementById('edit-modal').style.display = 'none'; 
-        } catch(e) { showToast("❌ 儲存失敗", "error"); } 
+        try { await updateDoc(doc(db, "categorized_materials", id), { fileName: name, fileUrl: url, ...ex }); alert("✅ 資料更新成功！"); document.getElementById('edit-modal').style.display = 'none'; } catch(e) { showToast("❌ 儲存失敗", "error"); } 
     });
 
     async function fetchPendingMaterials() { try { const q = query(collection(db, "pending_materials"), orderBy("timestamp", "desc")); const snap = await getDocs(q); pendingMaterialsList = []; snap.forEach((doc) => { let d = doc.data(); d.id = doc.id; pendingMaterialsList.push(d); }); renderPendingList(); } catch(e){} }
@@ -672,7 +629,7 @@
       const c = document.getElementById('review-container'); if (pendingMaterialsList.length === 0) { c.innerHTML = '<p style="color:#888;">🎉 目前無任何待審核的素材！</p>'; return; } c.innerHTML = '';
       pendingMaterialsList.forEach(item => {
         const div = document.createElement('div'); div.className = 'review-item-card';
-        div.innerHTML = `<div><span style="background:#444;padding:2px 6px;border-radius:4px;font-size:0.8em;margin-right:8px;">${item.category}</span><strong style="color:white;font-size:1.1em;">${item.fileName}</strong><div style="color:#888;font-size:0.9em;margin-top:5px;">貢獻提案者: ${item.uploaderName || '匿名'}</div></div><div style="display:flex;gap:5px;"><button class="btn-copy" onclick="playSFX('${item.fileName}', '${item.fileUrl}')">🔊 試聽</button><button class="btn-action" onclick="approveMaterial('${item.id}')">✅ 核准</button><button class="btn-del" onclick="rejectMaterial('${item.id}')">❌ 退回</button></div>`; c.appendChild(div);
+        div.innerHTML = `<div><span style="background:#444;padding:2px 6px;border-radius:4px;font-size:0.8em;margin-right:8px;">${item.category}</span><strong style="color:white;font-size:1.1em;">${item.fileName}</strong><div style="color:#888;font-size:0.9em;margin-top:5px;">貢獻提案者: ${item.uploaderName || '匿名'}</div></div><div style="display:flex;gap:5px;"><button class="btn-copy" onclick="playSFX('${item.fileName}', '${item.fileUrl}')">🔊 試聽</button><button class="btn-action" onclick="approveMaterial('${item.id}')">✅ 核准上架</button><button class="btn-del" onclick="rejectMaterial('${item.id}')">❌ 退回</button></div>`; c.appendChild(div);
       });
     }
     
@@ -681,12 +638,10 @@
         try { 
             await addDoc(collection(db, "categorized_materials"), { fileName: t.fileName, category: t.category, fileUrl: t.fileUrl, coverUrl: t.coverUrl || "", albumName: t.albumName || "", btnStyle: t.btnStyle || "", trackOrder: t.trackOrder || 2, folderName: t.folderName || "根目錄", descriptionHTML: t.descriptionHTML || "", uploaderName: t.uploaderName || '匿名', timestamp: serverTimestamp() }); 
             await deleteDoc(doc(db, "pending_materials", id)); 
-            showToast("✅ 素材順利審核上架！"); 
-            pendingMaterialsList = pendingMaterialsList.filter(m => m.id !== id);
-            renderPendingList();
+            showToast("✅ 素材順利審核上架！"); fetchPendingMaterials();
         } catch(e) { showToast("核准失敗", "error"); } 
     };
-    window.rejectMaterial = async function(id) { if (!confirm("確定要退回此提案嗎？")) return; try { await deleteDoc(doc(db, "pending_materials", id)); showToast("❌ 提案已退回刪除。"); pendingMaterialsList = pendingMaterialsList.filter(m => m.id !== id); renderPendingList(); } catch(e){} };
+    window.rejectMaterial = async function(id) { if (!confirm("確定要退回此提案嗎？")) return; try { await deleteDoc(doc(db, "pending_materials", id)); showToast("❌ 提案已退回刪除。"); fetchPendingMaterials(); } catch(e){} };
     
     window.deleteMaterial = async function(id) { 
         if (!confirm("🚨 警告：確定要永久刪除此內容？")) return; 
@@ -695,46 +650,53 @@
             document.getElementById('article-modal').style.display='none'; 
             document.getElementById('album-modal').style.display='none'; 
             showToast("🗑️ 已徹底移除"); 
-            // 畫面會因 onSnapshot 自動刷新
         } catch(e) { showToast("❌ 刪除失敗", "error"); }
     };
 
+    // 🌟 防彈級防護渲染引擎，任何欄位損壞都不會崩潰
     function renderMaterialsByFilter() {
-      const container = document.getElementById('material-container'); container.innerHTML = '';
-      const softContainer = document.getElementById('software-container'); softContainer.innerHTML = '';
-      const cmdContainer = document.getElementById('commands-container'); cmdContainer.innerHTML = '';
-      const search = document.getElementById('search-input').value.toLowerCase(); 
+      try {
+          const container = document.getElementById('material-container'); container.innerHTML = '';
+          const softContainer = document.getElementById('software-container'); softContainer.innerHTML = '';
+          const cmdContainer = document.getElementById('commands-container'); cmdContainer.innerHTML = '';
+          
+          const searchVal = document.getElementById('search-input')?.value || "";
+          const search = searchVal.toLowerCase(); 
+          const getSafe = (str) => (str || "").toLowerCase();
 
-      let sItems = fetchedMaterialsList.filter(i => i.category === "軟體" && (!search || i.fileName.toLowerCase().includes(search)));
-      if(sItems.length === 0) softContainer.innerHTML = '<p style="color:#888;">目前知識庫內尚無推薦軟體。</p>';
-      sItems.forEach(d => {
-        const c = document.createElement('div'); c.className = 'article-card'; 
-        let img = getOptimalImageUrl(d.coverUrl) || 'https://via.placeholder.com/800x400/111/fff?text=Software';
-        c.innerHTML = `<img src="${img}" style="width:100%;height:180px;object-fit:cover;"><div class="article-info"><h3 class="article-title">${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊入內閱讀詳細教學</p></div>`;
-        c.addEventListener('click', () => openArticleModal(d)); softContainer.appendChild(c);
-      });
+          let sItems = fetchedMaterialsList.filter(i => i.category === "軟體" && (!search || getSafe(i.fileName).includes(search)));
+          if(sItems.length === 0) softContainer.innerHTML = '<p style="color:#888;">目前知識庫內尚無推薦軟體。</p>';
+          sItems.forEach(d => {
+            const c = document.createElement('div'); c.className = 'article-card'; 
+            let img = getOptimalImageUrl(d.coverUrl) || 'https://via.placeholder.com/800x400/111/fff?text=Software';
+            c.innerHTML = `<img src="${img}" style="width:100%;height:180px;object-fit:cover;"><div class="article-info"><h3 class="article-title">${d.fileName || '未命名'}</h3><p style="color:#666;font-size:0.85em;">點擊入內閱讀詳細教學</p></div>`;
+            c.addEventListener('click', () => openArticleModal(d)); softContainer.appendChild(c);
+          });
 
-      let lItems = fetchedMaterialsList.filter(i => i.category === "指令" && (!search || i.fileName.toLowerCase().includes(search)));
-      if(lItems.length === 0) cmdContainer.innerHTML = '<p style="color:#888;">目前快捷指令庫內尚無資料。</p>';
-      lItems.forEach(d => {
-        const c = document.createElement('div'); c.className = 'article-card';
-        c.innerHTML = `<div class="article-info"><h3 class="article-title">💻 ${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊查看實用指令碼並一鍵複製</p></div>`;
-        c.addEventListener('click', () => openArticleModal(d)); cmdContainer.appendChild(c);
-      });
+          let lItems = fetchedMaterialsList.filter(i => i.category === "指令" && (!search || getSafe(i.fileName).includes(search)));
+          if(lItems.length === 0) cmdContainer.innerHTML = '<p style="color:#888;">目前快捷指令庫內尚無資料。</p>';
+          lItems.forEach(d => {
+            const c = document.createElement('div'); c.className = 'article-card';
+            c.innerHTML = `<div class="article-info"><h3 class="article-title">💻 ${d.fileName || '未命名'}</h3><p style="color:#666;font-size:0.85em;">點擊查看實用指令碼並一鍵複製</p></div>`;
+            c.addEventListener('click', () => openArticleModal(d)); cmdContainer.appendChild(c);
+          });
 
-      const renderGrouped = (items, renderer) => { const grps = {}; items.forEach(d => { let f = `📁 資料夾：${d.folderName || '未分類根目錄'}`; if (!grps[f]) grps[f] = []; grps[f].push(d); }); Object.keys(grps).sort().forEach(folder => { const h = document.createElement('div'); h.className = 'folder-header'; h.innerHTML = folder; container.appendChild(h); grps[folder].forEach(d => renderer(d, container)); }); };
+          const renderGrouped = (items, renderer) => { const grps = {}; items.forEach(d => { let f = `📁 資料夾：${d.folderName || '未分類根目錄'}`; if (!grps[f]) grps[f] = []; grps[f].push(d); }); Object.keys(grps).sort().forEach(folder => { const h = document.createElement('div'); h.className = 'folder-header'; h.innerHTML = folder; container.appendChild(h); grps[folder].forEach(d => renderer(d, container)); }); };
 
-      if (currentActiveTab === "全部" || currentActiveTab === "音樂") {
-        const albums = {};
-        fetchedMaterialsList.forEach(item => { if (item.category !== "音樂") return; let albName = item.albumName || "未分類獨立單曲"; if (search && !albName.toLowerCase().includes(search) && !item.fileName.toLowerCase().includes(search)) return; if (!albums[albName]) albums[albName] = { name: albName, coverUrl: item.coverUrl || "", tracks: [] }; if (!albums[albName].coverUrl && item.coverUrl) albums[albName].coverUrl = item.coverUrl; albums[albName].tracks.push(item); });
-        Object.values(albums).forEach(album => { album.tracks.sort((a, b) => (a.trackOrder ?? 99) - (b.trackOrder ?? 99)); const c = document.createElement('div'); c.className = 'material-item'; let img = getOptimalImageUrl(album.coverUrl); let coverHTML = img ? `<img class="album-art-img" src="${img}">` : `<div class="default-vinyl"></div>`; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div>${coverHTML}</div><div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 內含 ${album.tracks.length} 首曲目</span></div>`; c.addEventListener('click', () => openAlbumModal(album)); container.appendChild(c); });
+          if (currentActiveTab === "全部" || currentActiveTab === "音樂") {
+            const albums = {};
+            fetchedMaterialsList.forEach(item => { if (item.category !== "音樂") return; let albName = item.albumName || "未分類獨立單曲"; if (search && !getSafe(albName).includes(search) && !getSafe(item.fileName).includes(search)) return; if (!albums[albName]) albums[albName] = { name: albName, coverUrl: item.coverUrl || "", tracks: [] }; if (!albums[albName].coverUrl && item.coverUrl) albums[albName].coverUrl = item.coverUrl; albums[albName].tracks.push(item); });
+            Object.values(albums).forEach(album => { album.tracks.sort((a, b) => (a.trackOrder ?? 99) - (b.trackOrder ?? 99)); const c = document.createElement('div'); c.className = 'material-item'; let img = getOptimalImageUrl(album.coverUrl); let coverHTML = img ? `<img class="album-art-img" src="${img}">` : `<div class="default-vinyl"></div>`; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div>${coverHTML}</div><div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 內含 ${album.tracks.length} 首曲目</span></div>`; c.addEventListener('click', () => openAlbumModal(album)); container.appendChild(c); });
+          }
+          
+          const rSFX = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; c.style.alignItems='center'; c.style.textAlign='center'; c.style.padding='25px 15px'; let s = `background-color:#ff1744;box-shadow:0 12px 0 #8e001c,0 15px 20px rgba(0,0,0,0.5);`; if(d.btnStyle){ if(d.btnStyle.startsWith('http')){ s=`background-image:url('${getOptimalImageUrl(d.btnStyle)}');box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);border:none;`; }else{ s=`background-color:${d.btnStyle};box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);`; } } let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;width:100%;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<button class="sfx-push-btn" style="${s}" onclick="playSFX('${d.fileName}', '${d.fileUrl}')"></button><strong style="font-size:1.2em; display:block;">${d.fileName || '未命名'}</strong><div style="display:flex; gap:5px; margin-top:5px; width:100%;"><a href="${getOptimalAudioUrl(d.fileUrl)}" target="_blank" class="btn-copy" style="flex:1;text-align:center;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy">📋</button></div>${adminBtn}`; p.appendChild(c); };
+          const rGIF = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">🖼️ GIF</div><img class="album-art-img" src="${getOptimalImageUrl(d.fileUrl)}"></div><strong>${d.fileName || '未命名'}</strong><div style="display:flex; gap:5px;"><a href="${d.fileUrl}" target="_blank" class="btn-copy" style="flex:1;text-align:center;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy">📋</button></div>${adminBtn}`; p.appendChild(c); };
+
+          if (currentActiveTab === "全部" || currentActiveTab === "音效") renderGrouped(fetchedMaterialsList.filter(i => i.category === "音效" && (!search || getSafe(i.fileName).includes(search))), rSFX);
+          if (currentActiveTab === "全部" || currentActiveTab === "GIF") renderGrouped(fetchedMaterialsList.filter(i => i.category === "GIF" && (!search || getSafe(i.fileName).includes(search))), rGIF);
+      } catch (error) {
+          console.error("渲染清單時發生錯誤:", error);
       }
-      
-      const rSFX = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; c.style.alignItems='center'; c.style.textAlign='center'; c.style.padding='25px 15px'; let s = `background-color:#ff1744;box-shadow:0 12px 0 #8e001c,0 15px 20px rgba(0,0,0,0.5);`; if(d.btnStyle){ if(d.btnStyle.startsWith('http')){ s=`background-image:url('${getOptimalImageUrl(d.btnStyle)}');box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);border:none;`; }else{ s=`background-color:${d.btnStyle};box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);`; } } let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;width:100%;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<button class="sfx-push-btn" style="${s}" onclick="playSFX('${d.fileName}', '${d.fileUrl}')"></button><strong style="font-size:1.2em; display:block;">${d.fileName}</strong><div style="display:flex; gap:5px; margin-top:5px; width:100%;"><a href="${getOptimalAudioUrl(d.fileUrl)}" target="_blank" class="btn-copy" style="flex:1;text-align:center;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy">📋</button></div>${adminBtn}`; p.appendChild(c); };
-      const rGIF = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">🖼️ GIF</div><img class="album-art-img" src="${getOptimalImageUrl(d.fileUrl)}"></div><strong>${d.fileName}</strong><div style="display:flex; gap:5px;"><a href="${d.fileUrl}" target="_blank" class="btn-copy" style="flex:1;text-align:center;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy">📋</button></div>${adminBtn}`; p.appendChild(c); };
-
-      if (currentActiveTab === "全部" || currentActiveTab === "音效") renderGrouped(fetchedMaterialsList.filter(i => i.category === "音效" && (!search || i.fileName.toLowerCase().includes(search))), rSFX);
-      if (currentActiveTab === "全部" || currentActiveTab === "GIF") renderGrouped(fetchedMaterialsList.filter(i => i.category === "GIF" && (!search || i.fileName.toLowerCase().includes(search))), rGIF);
     }
 
     window.openArticleModal = function(data) {
@@ -747,7 +709,11 @@
                        </div>`;
       }
       document.getElementById('article-title').innerHTML = `${data.fileName} ${adminBtns}`;
-      document.getElementById('article-desc').innerHTML = data.descriptionHTML || '<p style="color:#888;">本卡片尚未編輯描述內容。</p>';
+      
+      // 🌟 呼叫自動超度法，修復舊文章中的破圖
+      let safeHtml = fixHtmlContent(data.descriptionHTML) || '<p style="color:#888;">本卡片尚未編輯描述內容。</p>';
+      
+      document.getElementById('article-desc').innerHTML = safeHtml;
       
       if (data.fileUrl) {
           let btnText = data.category === '軟體' ? '🔗 前往軟體連結 / 📥 下載' : '🔗 前往參考連結';
@@ -764,7 +730,7 @@
       album.tracks.forEach((t, idx) => {
         const row = document.createElement('div'); row.className = 'track-row';
         let aBtn = (userRole === "admin") ? `<button onclick="openEditModal('${t.id}')" class="btn-edit">⚙️</button><button onclick="deleteMaterial('${t.id}')" class="btn-del">🗑️</button>` : '';
-        row.innerHTML = `<div style="flex:1;display:flex;align-items:center;gap:15px;"><span class="track-num">${idx + 1}</span><strong style="color:white;font-size:1.05em;">${t.fileName}</strong></div><div style="display:flex;gap:5px;align-items:center;"><button class="btn-action" style="padding:6px 12px;" onclick="playTrackFromModal(${idx})">▶ 播放</button><a href="${getOptimalAudioUrl(t.fileUrl)}" target="_blank" class="btn-copy">📥</a><button class="btn-copy" onclick="copyToClipboard('${t.fileUrl}')">📋</button>${aBtn}</div>`;
+        row.innerHTML = `<div style="flex:1;display:flex;align-items:center;gap:15px;"><span class="track-num">${idx + 1}</span><strong style="color:white;font-size:1.05em;">${t.fileName || '未命名'}</strong></div><div style="display:flex;gap:5px;align-items:center;"><button class="btn-action" style="padding:6px 12px;" onclick="playTrackFromModal(${idx})">▶ 播放</button><a href="${getOptimalAudioUrl(t.fileUrl)}" target="_blank" class="btn-copy">📥</a><button class="btn-copy" onclick="copyToClipboard('${t.fileUrl}')">📋</button>${aBtn}</div>`;
         lc.appendChild(row);
       });
       m.style.display = 'flex';
@@ -795,7 +761,7 @@
     window.playTrackFromModal = function(index) { if (!currentModalAlbum || !currentModalAlbum.tracks) return; loadAndPlayPlaylist(currentModalAlbum.tracks, index); };
     window.playCurrentGlobalTrack = function() {
       if (globalPlaylist.length === 0) return; let t = globalPlaylist[globalTrackIndex]; gpAudio.src = getOptimalAudioUrl(t.fileUrl);
-      document.getElementById('gp-title').innerText = t.fileName; document.getElementById('gp-artist').innerText = t.albumName || "Dogfish Studio";
+      document.getElementById('gp-title').innerText = t.fileName || '未命名'; document.getElementById('gp-artist').innerText = t.albumName || "Dogfish Studio";
       let c = getOptimalImageUrl(t.coverUrl); document.getElementById('gp-cover').src = c ? c : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
       gpAudio.play().catch(e => { showToast("⚠️ 背景播放器攔截，改為另開網頁下載", "error"); window.open(t.fileUrl, '_blank'); });
     };
@@ -824,6 +790,16 @@
         const activeNavBtn = Array.from(document.querySelectorAll('.btn-nav')).find(b => b.getAttribute('onclick')?.includes(pageId)); 
         if (activeNavBtn) activeNavBtn.classList.add('active'); 
     }
+    
+    // 初始化防彈標籤切換
+    document.querySelectorAll('.tab-btn').forEach(button => { 
+        button.addEventListener('click', () => { 
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); 
+            button.classList.add('active'); 
+            currentActiveTab = button.getAttribute('data-target'); 
+            renderMaterialsByFilter(); 
+        }); 
+    });
   </script>
 </body>
 </html>
