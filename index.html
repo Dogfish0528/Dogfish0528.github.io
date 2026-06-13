@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish Studio | v14.5 沉浸式創世神版</title>
+  <title>Dogfish Studio | v14.6 即時上帝版</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -12,7 +12,6 @@
       --font-main: 'Noto Sans TC', sans-serif; --player-height: 90px;
     }
     
-    /* ✨ 超酷黑科技 1：動態呼吸漸層背景 */
     body { 
       background: linear-gradient(-45deg, #0a0a0a, #1a0b12, #0d141e, #0a110d);
       background-size: 400% 400%; animation: gradientBG 20s ease infinite;
@@ -21,9 +20,9 @@
     @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     
     a, button, input, select, textarea { cursor: pointer; }
+    .cursor-glow { position: fixed; top: 0; left: 0; width: 40px; height: 40px; background: radial-gradient(circle, rgba(29, 185, 84, 0.4) 0%, transparent 70%); border-radius: 50%; pointer-events: none; z-index: 999999; transform: translate(-50%, -50%); transition: width 0.1s, height 0.1s; }
     @media (hover: none) { .cursor-glow { display: none !important; } }
 
-    /* ✨ 超酷黑科技 2：高質感毛玻璃面板 (Glassmorphism) */
     .solid-panel { background: rgba(20, 20, 20, 0.6); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     
     .btn-action { background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 800; transition: 0.2s; box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3); }
@@ -41,7 +40,7 @@
     .input-box { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 10px 14px; font-size: 0.95em; border-radius: 6px; outline: none; transition: 0.2s; }
     .input-box:focus { border-color: var(--primary); background: rgba(0,0,0,0.8); box-shadow: 0 0 10px rgba(29, 185, 84, 0.2); }
 
-    /* 導覽列毛玻璃 */
+    /* 導覽列 */
     .navbar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: rgba(10, 10, 10, 0.7); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 1000; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
     .logo { font-size: 1.2em; font-weight: 800; display: flex; align-items: center; gap: 10px; }
     .logo-text { background: linear-gradient(90deg, #1db954, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -54,23 +53,24 @@
     #top-right-profile { display: none; align-items: center; gap: 10px; padding: 4px 12px; border-radius: 20px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); }
     #top-right-profile img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
 
+    /* 頁面切換 */
     .main-container { max-width: 1050px; margin: 90px auto 50px; padding: 0 20px; }
     .page-panel { display: none; padding: 30px; } .page-panel.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.1, 0.8, 0.2, 1); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     .page-title { font-size: 2.2em; font-weight: 900; margin-top: 0; margin-bottom: 25px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
 
-    /* 富文本編輯器 (加入顏色選擇器) */
+    /* 富文本編輯器 */
     #upload-section { display: none; background: rgba(26, 8, 16, 0.6); border: 1px solid rgba(255, 23, 68, 0.3); padding: 20px; margin-bottom: 30px; border-radius: 12px; }
     .rich-editor-toolbar { display: flex; gap: 8px; flex-wrap: wrap; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px 8px 0 0; border: 1px solid #333; border-bottom: none; align-items: center; }
     .rich-editor-btn { background: #333; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9em; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
     .rich-editor-btn:hover { background: var(--primary); color: black; }
-    .color-picker-wrap { display: flex; align-items: center; background: #333; padding: 2px 8px; border-radius: 6px; gap: 5px; font-weight: bold; font-size: 0.9em; }
+    .color-picker-wrap { display: flex; align-items: center; background: #333; padding: 2px 8px; border-radius: 6px; gap: 5px; font-weight: bold; font-size: 0.9em; border: 1px solid #444; }
     .color-picker-wrap input { width: 25px; height: 25px; padding: 0; border: none; background: transparent; cursor: pointer; }
     .rich-editor-content { background: rgba(0,0,0,0.3); min-height: 150px; border: 1px solid #333; border-radius: 0 0 8px 8px; padding: 15px; color: white; line-height: 1.6; outline: none; overflow-y: auto; max-height: 400px; text-align: left; }
     .rich-editor-content img, .rich-editor-content iframe, .rich-editor-content video { max-width: 100%; border-radius: 8px; margin: 10px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
     .rich-editor-content[contenteditable="true"]:empty:before { content: attr(placeholder); color: #888; cursor: text; }
 
-    /* 素材清單網格 */
+    /* 素材清單 */
     .controls-wrapper { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; flex-wrap: wrap; gap: 15px; }
     .category-tabs { display: flex; flex-wrap: wrap; gap: 10px; } .tab-btn { background: rgba(0,0,0,0.5); color: #b3b3b3; border: 1px solid transparent; padding: 8px 18px; font-weight: 700; border-radius: 20px; transition: 0.2s; } .tab-btn.active { background: white; color: #000; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
     .search-bar-container { position: relative; } .search-input { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 10px 20px 10px 40px; border-radius: 20px; outline: none; width: 220px; transition: 0.3s; } .search-input:focus { border-color: var(--primary); width: 260px; } .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.9em; }
@@ -85,17 +85,13 @@
     .sfx-push-btn { width: 110px; height: 120px; border-radius: 50%; background-size: cover; background-position: center; border: 4px solid #fff; margin: 0 auto 15px; display: block; transition: 0.1s; box-shadow: 0 8px 0 #111, 0 15px 20px rgba(0,0,0,0.5); }
     .sfx-push-btn:active { transform: translateY(8px); box-shadow: 0 0px 0 #111, 0 5px 10px rgba(0,0,0,0.5); }
 
-    /* 知識庫大卡片 */
     .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
     .article-card { background: rgba(20,20,20,0.5); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid var(--border-color); text-align: left; backdrop-filter: blur(5px); }
     .article-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(29, 185, 84, 0.2); }
     .article-info { padding: 20px; } .article-title { font-size: 1.4em; font-weight: 900; margin: 0 0 10px; color: white; }
 
-    /* 🌟 全域上帝編輯模式 (God Mode) 🌟 */
-    #god-mode-btn { position: fixed; bottom: 120px; right: 30px; width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(135deg, #ff1744, #ffb300); color: white; font-size: 2em; border: none; box-shadow: 0 10px 25px rgba(255, 23, 68, 0.5); z-index: 2500; display: none; align-items: center; justify-content: center; transition: 0.3s; }
-    #god-mode-btn:hover { transform: scale(1.1) rotate(15deg); }
-    
-    body.god-mode { outline: 4px solid var(--accent); outline-offset: -4px; }
+    /* 🌟 全域工具列編輯模式 (取代浮動按鈕) 🌟 */
+    body.god-mode { border: 2px solid var(--accent); }
     body.god-mode .admin-overlay { display: flex !important; }
     body.god-mode .track-admin-btns { display: flex !important; }
     
@@ -103,7 +99,7 @@
     @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
     .track-admin-btns { display: none; gap: 5px; }
 
-    /* LINE 風格通訊模組 */
+    /* LINE 風格通訊 */
     .chat-app { display: flex; height: 70vh; background: rgba(30,30,30,0.7); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; backdrop-filter: blur(10px); }
     .chat-sidebar { width: 280px; background: rgba(20,20,20,0.8); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; text-align: left; flex-grow: 1; min-width: 250px; }
     .chat-sidebar-header { padding: 15px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; }
@@ -127,7 +123,7 @@
     .chat-input { flex: 1; padding: 12px 15px; border: none; border-radius: 20px; outline: none; font-size: 1em; background: rgba(255,255,255,0.9); color: #000; }
     .invite-box { background: rgba(0,0,0,0.5); padding: 10px; margin: 10px; border-radius: 8px; font-size: 0.9em; text-align: left; border: 1px solid #444; }
 
-    /* 彈窗與底部播放器 */
+    /* 彈窗樣式 */
     .spotify-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 20px; }
     .modal-content { background: rgba(20,20,20,0.95); padding: 30px; border-radius: 16px; max-width: 800px; width: 100%; text-align: left; position: relative; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.8); border: 1px solid #333; }
     .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: #b3b3b3; transition: 0.2s; cursor: pointer; z-index: 100; } .modal-close:hover { color: white; transform: rotate(90deg); }
@@ -136,7 +132,9 @@
     .track-row:hover { background: rgba(255,255,255,0.05); }
     .track-num { color: #b3b3b3; font-weight: 700; width: 30px; text-align: center; font-size: 1.1em; }
 
-    /* ✨ 超酷黑科技 3：播放器與視覺化頻譜 */
+    .review-item-card { background: rgba(20,20,20,0.6); border-left: 4px solid #ffb300; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; text-align: left; border: 1px solid #333; }
+
+    /* 播放器與視覺化頻譜 */
     #global-player { position: fixed; bottom: 0; left: 0; right: 0; height: var(--player-height); background: rgba(15,15,15,0.85); border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 3000; flex-wrap: wrap; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
     .gp-left { display: flex; align-items: center; gap: 15px; width: 280px; text-align: left; } #gp-cover { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); } .gp-info { display: flex; flex-direction: column; } #gp-title { color: white; font-weight: 700; font-size: 0.95em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; } #gp-artist { color: #b3b3b3; font-size: 0.8em; }
     .gp-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 15px; } .gp-control-btn { background: transparent; border: none; color: #b3b3b3; font-size: 1.5em; } .gp-control-btn:hover { color: white; transform: scale(1.1); } #gp-audio { width: 100%; max-width: 400px; height: 40px; outline: none; }
@@ -154,8 +152,6 @@
   </style>
 </head>
 <body>
-
-  <button id="god-mode-btn" onclick="toggleGodMode()" title="開啟/關閉全域編輯模式">🖌️</button>
 
   <div id="disclaimer-overlay">
     <div class="disclaimer-box solid-panel">
@@ -176,7 +172,7 @@
   <div id="edit-modal" class="spotify-modal">
     <div class="modal-content" style="max-width: 600px;">
       <span id="close-edit-btn" class="modal-close">&times;</span>
-      <h2 style="color: var(--primary); margin-top: 0;">⚙️ 編輯資料 (神之模式)</h2>
+      <h2 style="color: var(--primary); margin-top: 0;">⚙️ 修改內容 (全域編輯)</h2>
       <input type="hidden" id="edit-id"><input type="hidden" id="edit-category">
       <div style="display:flex; flex-direction:column; gap:10px; text-align:left;">
         <label style="color:#888; font-size:0.8em;">名稱 / 標題</label>
@@ -186,7 +182,7 @@
       </div>
       <div id="edit-dynamic-fields" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0;"></div>
       <div id="edit-rich-text-container" style="display: none; margin-bottom: 15px; text-align:left;">
-        <label style="color:#888; font-size:0.8em;">富文本內容</label>
+        <label style="color:#888; font-size:0.8em;">富文本內容 (自訂排版)</label>
         <div class="rich-editor-toolbar">
           <button class="rich-editor-btn" onclick="document.execCommand('bold')">B 粗體</button>
           <div class="color-picker-wrap" title="更改文字顏色">🎨 <input type="color" onchange="document.execCommand('foreColor', false, this.value)"></div>
@@ -196,7 +192,7 @@
         </div>
         <div id="edit-rich-editor" class="rich-editor-content" contenteditable="true"></div>
       </div>
-      <button id="save-edit-btn" class="btn-action" style="width: 100%; margin-top:15px; font-size: 1.1em;">💾 儲存並覆蓋</button>
+      <button id="save-edit-btn" class="btn-action" style="width: 100%; margin-top:15px; font-size: 1.1em;">💾 儲存並即時覆蓋</button>
     </div>
   </div>
 
@@ -219,13 +215,14 @@
   </div>
 
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v14.5 上帝模式版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v14.6 即時上帝版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="switchPage('materials')">素材</button>
       <button class="btn-nav" onclick="switchPage('software')">🧰 軟體</button>
       <button class="btn-nav" onclick="switchPage('commands')">💻 指令</button>
       <button class="btn-nav" onclick="switchPage('chat')">💬 聊天</button>
+      <button id="nav-edit-mode-btn" class="btn-nav" onclick="toggleEditMode()" style="display: none; color: #00d4ff; border: 1px solid #00d4ff;">🖌️ 編輯模式</button>
       <button id="nav-review-btn" class="btn-nav" onclick="switchPage('review')" style="display: none; color: #ffb300;">審核</button>
       <button id="nav-admin-btn" class="btn-nav" onclick="switchPage('admin')" style="display: none; color: var(--accent);">設定</button>
       <button id="login-btn" class="btn-login">登入</button>
@@ -235,13 +232,13 @@
 
   <div class="main-container">
     <div id="page-blog" class="page-panel active">
-      <h2 class="page-title">歡迎來到沉浸式創作者大廳</h2>
-      <div class="solid-panel" style="padding: 25px; border-left: 5px solid var(--primary); text-align: left;">
-        <h3 style="margin-top:0; font-size: 1.5em;">🚀 v14.5 全域編輯與黑科技視覺</h3>
+      <h2 class="page-title">歡迎來到沉浸式即時大廳</h2>
+      <div class="solid-panel" style="padding: 25px; border-left: 5px solid #00d4ff; text-align: left;">
+        <h3 style="margin-top:0; font-size: 1.5em; color: #00d4ff;">⚡ v14.6 即時更新與工具列畫筆</h3>
         <p style="color: #ccc; line-height: 1.8; font-size: 1.05em;">
-          1. <b>🖌️ 創世神畫筆 (God Mode)</b>：告別雜亂！站長專屬右下角懸浮畫筆，點擊後全站進入「遮罩編輯模式」，點誰就改誰。<br>
-          2. <b>🎨 富文本顏色自訂</b>：編輯器新增調色盤，可自由更改文章內指定字體的顏色。<br>
-          3. <b>✨ 沉浸式視覺體驗</b>：全站套用呼吸漸層星空背景與毛玻璃透視面板，底部播放器新增動態音訊頻譜條！
+          1. <b>零延遲全域更新</b>：現在站內的「發布、刪除、編輯、設定」，<b>全部都是即時生效！</b>你再也不需要在網站內按 F5，畫面會自己變魔術更新！<br>
+          2. <b>🖌️ 導覽列專屬畫筆</b>：取消了礙眼的右下角按鈕。站長只要點擊上方導覽列的「🖌️ 編輯模式」，全站就會立刻顯示編輯遮罩，還給你一個乾淨的版面！<br>
+          3. <b>🎨 專屬調色盤</b>：在發表文章時，可以隨時選取文字改變顏色！
         </p>
       </div>
       
@@ -262,11 +259,11 @@
             <div class="color-picker-wrap" title="更改文字顏色">🎨 <input type="color" onchange="document.execCommand('foreColor', false, this.value)"></div>
             <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'img')">🖼️ 圖片</button>
             <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'yt')">🔴 YouTube</button>
-            <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'video')">🎬 直連影片(MP4)</button>
+            <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'video')">🎬 直連影片</button>
           </div>
           <div id="mat-rich-editor" class="rich-editor-content" contenteditable="true" placeholder="自由撰寫介紹、排版或插入多媒體影片..."></div>
         </div>
-        <button id="add-mat-btn" class="btn-action" style="font-size: 1.1em; padding: 12px 30px;">發布上架</button>
+        <button id="add-mat-btn" class="btn-action" style="font-size: 1.1em; padding: 12px 30px;">即時發布上架</button>
       </div>
     </div>
 
@@ -303,11 +300,11 @@
     <div id="page-admin" class="page-panel">
       <h2 class="page-title" style="color: var(--accent);">創世神控制台</h2>
       <div class="solid-panel" style="padding: 25px; border-left: 5px solid var(--accent); text-align: left;">
-        <p style="color: var(--accent); font-weight: 700; margin-top:0; font-size:1.2em;">🎯 動態指派權限（唯獨創世神可操控）：</p>
+        <p style="color: var(--accent); font-weight: 700; margin-top:0; font-size:1.2em;">🎯 動態指派權限（即時生效）：</p>
         <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
           <input type="email" id="target-email" class="input-box" placeholder="目標 Email" style="width: 280px; padding:12px;">
           <select id="target-role" class="input-box" style="background:rgba(0,0,0,0.8); padding:12px;"><option value="user">👤 一般會員</option><option value="contributor">✍️ 貢獻者</option><option value="reviewer">🛡️ 審核員</option><option value="admin">👑 管理員</option></select>
-          <button id="save-role-btn" class="btn-action" style="background: var(--accent); color: white; padding:12px 25px;">儲存設定</button>
+          <button id="save-role-btn" class="btn-action" style="background: var(--accent); color: white; padding:12px 25px;">即時儲存設定</button>
         </div>
         <p id="admin-action-status" style="color: var(--primary); font-size: 1em; margin-top: 15px; font-weight: bold;"></p>
       </div>
@@ -335,27 +332,35 @@
     let globalPlaylist = []; let globalTrackIndex = 0; const gpAudio = document.getElementById('gp-audio'); let currentModalAlbum = null;
     let myChats = []; let currentChatId = null; let activeChatUnsub = null; let invitesUnsub = null; let chatListUnsub = null;
     
-    // 🌟 神之畫筆全域變數
-    window.isGodMode = false;
+    // 🌟 全域即時資料庫監聽器
+    let materialsUnsub = null;
+    let pendingUnsub = null;
+    
+    // 🌟 編輯模式 (畫筆)
+    window.isEditMode = false;
 
     if (localStorage.getItem('dogfish_disclaimer_agreed') === 'true') { document.getElementById('disclaimer-overlay').style.display = 'none'; }
     document.getElementById('agree-disclaimer-btn').addEventListener('click', () => { localStorage.setItem('dogfish_disclaimer_agreed', 'true'); document.getElementById('disclaimer-overlay').style.display = 'none'; showToast("歡迎進入！"); });
 
     window.showToast = function(msg, type = 'success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg; c.appendChild(t); setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 3000); };
     window.copyToClipboard = function(text) { navigator.clipboard.writeText(text).then(() => showToast('🔗 連結複製成功！')).catch(() => showToast('❌ 複製失敗', 'error')); };
-
     document.getElementById('search-input').addEventListener('keyup', renderMaterialsByFilter);
 
-    // 🌟 全域上帝模式切換
-    window.toggleGodMode = function() {
+    // 🌟 工具列畫筆切換邏輯
+    window.toggleEditMode = function() {
         if(userRole !== 'admin') return;
-        window.isGodMode = !window.isGodMode;
-        if(window.isGodMode) {
+        window.isEditMode = !window.isEditMode;
+        const btn = document.getElementById('nav-edit-mode-btn');
+        if(window.isEditMode) {
             document.body.classList.add('god-mode');
-            showToast("🖌️ 已啟動上帝模式：點擊卡片遮罩進行編輯");
+            btn.classList.add('active');
+            btn.innerHTML = "❌ 關閉編輯";
+            showToast("🖌️ 編輯模式已開啟：請點擊卡片遮罩進行修改");
         } else {
             document.body.classList.remove('god-mode');
-            showToast("✅ 已關閉上帝模式");
+            btn.classList.remove('active');
+            btn.innerHTML = "🖌️ 編輯模式";
+            showToast("✅ 已關閉編輯模式");
         }
     };
 
@@ -389,7 +394,8 @@
     function getOptimalImageUrl(url) { if (!url) return ""; let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w800` : url; }
     function getOptimalAudioUrl(url) { if (!url) return ""; if (url.includes("cdn.discordapp.com") || url.includes("attachments")) return url; let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); return m ? `https://docs.google.com/uc?export=download&id=${m[1]}` : url; }
 
-    fetchMaterialsFromCloud();
+    // 🌟 全域即時資料庫監聽啟動 🌟
+    listenToMaterialsRealtime();
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -401,19 +407,25 @@
 
         if (user.uid === CREATOR_UID) { userRole = "admin"; } else { try { const d = await getDoc(doc(db, "permissions", user.email.toLowerCase())); userRole = d.exists() ? d.data().role : "user"; } catch (e) { userRole = "user"; } }
         updateUIForRole(user);
-        if(userRole === "admin" || userRole === "reviewer") fetchPendingMaterials();
+        
+        if(userRole === "admin" || userRole === "reviewer") listenToPendingRealtime();
         initChatSystem(user);
       } else { 
         userRole = "user"; document.getElementById('login-btn').style.display = 'inline-block'; document.getElementById('top-right-profile').style.display = 'none'; updateUIForRole(null); 
         document.getElementById('chat-app-container').style.display = 'none'; document.getElementById('chat-login-prompt').style.display = 'block';
         if(invitesUnsub) invitesUnsub(); if(chatListUnsub) chatListUnsub(); if(activeChatUnsub) activeChatUnsub();
+        if(pendingUnsub) pendingUnsub();
       }
     });
 
     function updateUIForRole(user) {
       document.getElementById('upload-section').style.display = 'none'; document.getElementById('nav-admin-btn').style.display = 'none'; document.getElementById('nav-review-btn').style.display = 'none';
-      document.getElementById('god-mode-btn').style.display = 'none';
-      window.isGodMode = false; document.body.classList.remove('god-mode');
+      document.getElementById('nav-edit-mode-btn').style.display = 'none';
+      
+      // 確保登出或切換身分時關閉編輯模式
+      window.isEditMode = false; document.body.classList.remove('god-mode');
+      const editBtn = document.getElementById('nav-edit-mode-btn');
+      editBtn.classList.remove('active'); editBtn.innerHTML = "🖌️ 編輯模式";
 
       if (!user) return;
       let roleTag = ""; let btnAct = document.getElementById('add-mat-btn'); let upTitle = document.getElementById('upload-title');
@@ -421,13 +433,14 @@
 
       if (userRole === "admin") { 
           document.getElementById('upload-section').style.display = 'block'; document.getElementById('nav-admin-btn').style.display = 'inline-block'; document.getElementById('nav-review-btn').style.display = 'inline-block'; 
-          document.getElementById('god-mode-btn').style.display = 'flex'; // 顯示畫筆
-          btnAct.innerText = "🚀 直接發布上架"; upTitle.innerText = "👑 站長管理中心"; roleTag = (user.uid === CREATOR_UID) ? `<span style="color:var(--accent);">👑 創世神</span>` : `<span style="color:var(--accent);">🔧 管理員</span>`; 
+          document.getElementById('nav-edit-mode-btn').style.display = 'inline-block'; // 顯示畫筆
+          btnAct.innerText = "🚀 即時發布上架"; upTitle.innerText = "👑 站長發布中心"; roleTag = (user.uid === CREATOR_UID) ? `<span style="color:var(--accent);">👑 創世神</span>` : `<span style="color:var(--accent);">🔧 管理員</span>`; 
       } 
       else if (userRole === "reviewer") { document.getElementById('nav-review-btn').style.display = 'inline-block'; roleTag = `<span style="color:#ffb300;">🛡️ 審核員</span>`; } 
       else if (userRole === "contributor") { document.getElementById('upload-section').style.display = 'block'; btnAct.innerText = "📤 提交審核庫"; upTitle.innerText = "✍️ 貢獻者提案區"; roleTag = `<span style="color:var(--secondary);">✍️ 貢獻者</span>`; } 
       else { roleTag = `👤 一般會員`; }
       document.getElementById('tr-name').innerHTML = `${roleTag} ${safeName}`;
+      renderMaterialsByFilter(); // 刷新 UI 讓編輯遮罩消失或出現
     }
 
     document.getElementById('login-btn').addEventListener('click', () => { signInWithPopup(auth, provider).then(() => switchPage('blog')); });
@@ -440,7 +453,7 @@
         const box = document.getElementById('invite-list'); box.innerHTML = '';
         snapshot.forEach(docSnap => {
           const d = docSnap.data(); const div = document.createElement('div'); div.className = 'invite-box';
-          div.innerHTML = `<div style="margin-bottom:5px;">來自 <b>${d.fromName}</b> 的邀請</div><button onclick="acceptInvite('${docSnap.id}', '${d.fromUid}', '${d.fromName}', '${d.fromPhoto}')" class="btn-action" style="padding:4px 10px; font-size:0.8em; width:100%;">接受邀請</button>`;
+          div.innerHTML = `<div style="margin-bottom:5px;">來自 <b>${d.fromName}</b> 的邀請</div><button onclick="acceptInvite('${docSnap.id}', '${d.fromUid}', '${d.fromName}', '${d.fromPhoto}')" class="btn-action" style="padding:4px 10px; font-size:0.8em; width:100%;">接受</button>`;
           box.appendChild(div);
         });
       });
@@ -491,7 +504,7 @@
 
     function openChat(chatId, chatName, isGrp, ownerId) {
       currentChatId = chatId; renderChatList();
-      let addBtn = (isGrp && ownerId === auth.currentUser.uid) ? `<button onclick="addGroupMember('${chatId}')" class="btn-action" style="padding:6px 12px; font-size:0.9em;">➕ 拉人進群</button>` : '';
+      let addBtn = (isGrp && ownerId === auth.currentUser.uid) ? `<button onclick="addGroupMember('${chatId}')" class="btn-action" style="padding:4px 8px; font-size:0.8em;">➕ 拉人進群</button>` : '';
       document.getElementById('current-chat-header').innerHTML = `<span>${chatName}</span> ${addBtn}`;
       document.getElementById('chat-input-area').style.display = 'flex';
       if(activeChatUnsub) activeChatUnsub();
@@ -558,7 +571,7 @@
       const rawUrl = document.getElementById('mat-url').value.trim();
       
       if (!name) { showToast("⚠️ 請輸入標題名稱！", "error"); return; }
-      let safeUploaderName = (auth && auth.currentUser && auth.currentUser.displayName) ? auth.currentUser.displayName : "匿名";
+      let safeUploaderName = (auth && auth.currentUser && auth.currentUser.displayName) ? auth.currentUser.displayName : "匿名使用者";
 
       const ex = getUploadData('mat');
       try { 
@@ -568,18 +581,19 @@
             uploaderName: safeUploaderName, timestamp: serverTimestamp() 
         }); 
         
-        if (userRole === "admin") { showToast("✅ 發布成功！"); fetchMaterialsFromCloud(); } 
+        if (userRole === "admin") { showToast("✅ 即時發布成功！已自動更新"); } 
         else { showToast("📤 已提交至審核大廳！"); }
 
         document.getElementById('mat-name').value = ""; document.getElementById('mat-url').value = ""; 
         let re = document.getElementById('mat-rich-editor'); if(re) re.innerHTML = ""; 
+        // 不再需要手動 fetch，因為 onSnapshot 會自動抓到最新變化！
       } catch (error) { console.error(error); showToast("❌ 儲存發生錯誤", "error"); }
     });
 
     document.getElementById('save-role-btn').addEventListener('click', async () => {
       const em = document.getElementById('target-email').value.trim().toLowerCase(); const role = document.getElementById('target-role').value; const s = document.getElementById('admin-action-status');
       if (!em) return; if (auth.currentUser.uid !== CREATOR_UID) { showToast("⚠️ 權限拒絕：只有創世神可指派權限！", "error"); return; }
-      s.innerText = "⏳ 儲存中..."; try { await setDoc(doc(db, "permissions", em), { role: role, updatedBy: auth.currentUser.email || 'Admin', timestamp: new Date() }); s.innerText = `✅ 成功將 ${em} 設定為 [${role}]`; showToast(`✅ 權限設定指派完畢！`); document.getElementById('target-email').value = ""; } catch (e) { s.innerText = "❌ 寫入遭拒"; }
+      s.innerText = "⏳ 儲存中..."; try { await setDoc(doc(db, "permissions", em), { role: role, updatedBy: auth.currentUser.email || 'Admin', timestamp: new Date() }); s.innerText = `✅ 成功設定 ${em} 為 [${role}]`; showToast(`✅ 權限已即時生效！`); document.getElementById('target-email').value = ""; } catch (e) { s.innerText = "❌ 寫入遭拒"; }
     });
 
     // 編輯系統
@@ -595,46 +609,79 @@
       }, 100);
       document.getElementById('edit-modal').style.display = 'flex';
       // 當打開編輯彈窗時，自動關閉上帝模式與遮罩以防干擾
-      if(window.isGodMode) toggleGodMode();
+      if(window.isEditMode) toggleEditMode();
     };
     document.getElementById('close-edit-btn').addEventListener('click', () => { document.getElementById('edit-modal').style.display = 'none'; });
     
     document.getElementById('save-edit-btn').addEventListener('click', async () => { 
         const id = document.getElementById('edit-id').value; const name = document.getElementById('edit-name').value.trim(); const url = document.getElementById('edit-url').value.trim(); 
         const ex = getUploadData('edit'); 
-        try { await updateDoc(doc(db, "categorized_materials", id), { fileName: name, fileUrl: url, ...ex }); showToast("✅ 資料更新成功！"); document.getElementById('edit-modal').style.display = 'none'; fetchMaterialsFromCloud(); } catch(e) { showToast("❌ 儲存失敗", "error"); } 
+        try { 
+            await updateDoc(doc(db, "categorized_materials", id), { fileName: name, fileUrl: url, ...ex }); 
+            showToast("✅ 資料已即時更新覆蓋！"); 
+            document.getElementById('edit-modal').style.display = 'none'; 
+            // 由於使用 onSnapshot，畫面會自動更新！
+        } catch(e) { showToast("❌ 編輯儲存失敗", "error"); } 
     });
 
-    // 審核大廳
-    async function fetchPendingMaterials() { try { const q = query(collection(db, "pending_materials"), orderBy("timestamp", "desc")); const snap = await getDocs(q); pendingMaterialsList = []; snap.forEach((doc) => { let d = doc.data(); d.id = doc.id; pendingMaterialsList.push(d); }); renderPendingList(); } catch(e){} }
+    // 🌟 全域即時審核監聽 (取代手動 fetch)
+    function listenToPendingRealtime() {
+        if (pendingUnsub) pendingUnsub();
+        const q = query(collection(db, "pending_materials"), orderBy("timestamp", "desc"));
+        pendingUnsub = onSnapshot(q, (snap) => {
+            pendingMaterialsList = [];
+            snap.forEach((doc) => { let d = doc.data(); d.id = doc.id; pendingMaterialsList.push(d); });
+            renderPendingList();
+        });
+    }
+
     function renderPendingList() {
-      const c = document.getElementById('review-container'); if (pendingMaterialsList.length === 0) { c.innerHTML = '<p style="color:#888;">🎉 目前無待審核項目！</p>'; return; } c.innerHTML = '';
+      const c = document.getElementById('review-container'); if (pendingMaterialsList.length === 0) { c.innerHTML = '<p style="color:#888;">🎉 目前無任何待審核的素材！</p>'; return; } c.innerHTML = '';
       pendingMaterialsList.forEach(item => {
         const div = document.createElement('div'); div.className = 'review-item-card';
-        div.innerHTML = `<div><span style="background:#444;padding:2px 6px;border-radius:4px;font-size:0.8em;margin-right:8px;">${item.category}</span><strong style="color:white;font-size:1.1em;">${item.fileName}</strong><div style="color:#888;font-size:0.9em;margin-top:5px;">貢獻者: ${item.uploaderName || '匿名'}</div></div><div style="display:flex;gap:5px;flex-wrap:wrap;"><button class="btn-copy" style="padding:6px 12px;font-size:0.85em;" onclick="playSFX('${item.fileName}', '${item.fileUrl}')">🔊 試聽</button><button class="btn-action" style="padding:6px 12px;font-size:0.85em;" onclick="approveMaterial('${item.id}')">✅ 核准</button><button class="btn-del" style="padding:6px 12px;font-size:0.85em;" onclick="rejectMaterial('${item.id}')">❌ 退回</button></div>`; c.appendChild(div);
+        div.innerHTML = `<div><span style="background:#444;padding:2px 6px;border-radius:4px;font-size:0.8em;margin-right:8px;">${item.category}</span><strong style="color:white;font-size:1.1em;">${item.fileName}</strong><div style="color:#888;font-size:0.9em;margin-top:5px;">貢獻提案者: ${item.uploaderName || '匿名'}</div></div><div style="display:flex;gap:5px;flex-wrap:wrap;"><button class="btn-copy" style="padding:6px 12px;font-size:0.85em;" onclick="playSFX('${item.fileName}', '${item.fileUrl}')">🔊 試聽</button><button class="btn-action" style="padding:6px 12px;font-size:0.85em;" onclick="approveMaterial('${item.id}')">✅ 核准上架</button><button class="btn-del" style="padding:6px 12px;font-size:0.85em;" onclick="rejectMaterial('${item.id}')">❌ 退回</button></div>`; c.appendChild(div);
       });
     }
-    window.approveMaterial = async function(id) { const t = pendingMaterialsList.find(m => m.id === id); if (!t) return; try { await addDoc(collection(db, "categorized_materials"), { fileName: t.fileName, category: t.category, fileUrl: t.fileUrl, coverUrl: t.coverUrl || "", albumName: t.albumName || "", btnStyle: t.btnStyle || "", trackOrder: t.trackOrder || 2, folderName: t.folderName || "根目錄", descriptionHTML: t.descriptionHTML || "", uploaderName: t.uploaderName || '匿名', timestamp: serverTimestamp() }); await deleteDoc(doc(db, "pending_materials", id)); showToast("✅ 素材上架！"); fetchPendingMaterials(); fetchMaterialsFromCloud(); } catch(e) { showToast("核准失敗", "error"); } };
-    window.rejectMaterial = async function(id) { if (!confirm("退回此提案？")) return; try { await deleteDoc(doc(db, "pending_materials", id)); showToast("❌ 提案已刪除。"); fetchPendingMaterials(); } catch(e){} };
     
-    // 🌟 全域刪除邏輯
+    window.approveMaterial = async function(id) { 
+        const t = pendingMaterialsList.find(m => m.id === id); if (!t) return; 
+        try { 
+            await addDoc(collection(db, "categorized_materials"), { 
+                fileName: t.fileName, category: t.category, fileUrl: t.fileUrl, coverUrl: t.coverUrl || "", 
+                albumName: t.albumName || "", btnStyle: t.btnStyle || "", trackOrder: t.trackOrder || 2, 
+                folderName: t.folderName || "根目錄", descriptionHTML: t.descriptionHTML || "", 
+                uploaderName: t.uploaderName || '匿名', timestamp: serverTimestamp() 
+            }); 
+            await deleteDoc(doc(db, "pending_materials", id)); 
+            showToast("✅ 素材順利審核上架！(即時生效)"); 
+        } catch(e) { showToast("核准失敗", "error"); } 
+    };
+    window.rejectMaterial = async function(id) { if (!confirm("確定要退回此提案嗎？")) return; try { await deleteDoc(doc(db, "pending_materials", id)); showToast("❌ 提案已刪除。"); } catch(e){} };
+    
     window.deleteMaterial = async function(id) { 
-        if (!confirm("🚨 警告：確定永久刪除此內容？無法復原！")) return; 
+        if (!confirm("🚨 警告：確定要永久刪除此內容？無法復原！")) return; 
         try {
             await deleteDoc(doc(db, "categorized_materials", id)); 
             document.getElementById('article-modal').style.display='none'; 
             document.getElementById('album-modal').style.display='none';
-            showToast("🗑️ 已徹底移除"); 
-            fetchMaterialsFromCloud(); 
-            // 刪除後關閉遮罩模式
-            if(window.isGodMode) toggleGodMode();
+            showToast("🗑️ 已徹底移除 (畫面即時更新)"); 
+            if(window.isEditMode) toggleEditMode();
         } catch(e) { showToast("刪除失敗", "error"); }
     };
 
-    /* 素材渲染系統 */
-    async function fetchMaterialsFromCloud() { try { const q = query(collection(db, "categorized_materials"), orderBy("timestamp", "desc")); const snap = await getDocs(q); fetchedMaterialsList = []; snap.forEach((d) => { let data = d.data(); data.id = d.id; fetchedMaterialsList.push(data); }); renderMaterialsByFilter(); } catch(e){} }
+    /* 🌟 素材庫全域即時監聽系統 (取代舊的 fetchMaterialsFromCloud) */
+    function listenToMaterialsRealtime() {
+        if(materialsUnsub) materialsUnsub();
+        const q = query(collection(db, "categorized_materials"), orderBy("timestamp", "desc"));
+        materialsUnsub = onSnapshot(q, (snap) => {
+            fetchedMaterialsList = [];
+            snap.forEach((d) => { let data = d.data(); data.id = d.id; fetchedMaterialsList.push(data); });
+            renderMaterialsByFilter();
+        });
+    }
+    // 相容舊函式呼叫 (避免報錯，但實際由 onSnapshot 接管更新)
+    function fetchMaterialsFromCloud() {} 
 
-    // 🌟 產生遮罩 UI (上帝模式用)
     function getAdminOverlay(id) {
         return `<div class="admin-overlay">
             <button onclick="event.stopPropagation(); openEditModal('${id}')" class="btn-action" style="width:70%; font-size:1.1em;">⚙️ 編輯內容</button>
@@ -649,34 +696,33 @@
       const search = document.getElementById('search-input').value.toLowerCase(); 
 
       let sItems = fetchedMaterialsList.filter(i => i.category === "軟體");
-      if(sItems.length === 0) softContainer.innerHTML = '<p style="color:#888;">目前知識庫內尚無軟體。</p>';
+      if(sItems.length === 0) softContainer.innerHTML = '<p style="color:#888;">目前知識庫內尚無推薦軟體。</p>';
       sItems.forEach(d => {
         const c = document.createElement('div'); c.className = 'article-card'; let img = getOptimalImageUrl(d.coverUrl) || 'https://via.placeholder.com/800x400/111/fff?text=Software';
-        c.innerHTML = `<img src="${img}" style="width:100%;height:180px;object-fit:cover;"><div class="article-info"><h3 class="article-title">${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊閱讀教學</p></div>${getAdminOverlay(d.id)}`;
-        c.addEventListener('click', () => { if(!window.isGodMode) openArticleModal(d); }); 
+        c.innerHTML = `<img src="${img}" style="width:100%;height:180px;object-fit:cover;"><div class="article-info"><h3 class="article-title">${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊入內閱讀詳細教學</p></div>${getAdminOverlay(d.id)}`;
+        c.addEventListener('click', () => { if(!window.isEditMode) openArticleModal(d); }); 
         softContainer.appendChild(c);
       });
 
       let lItems = fetchedMaterialsList.filter(i => i.category === "指令");
-      if(lItems.length === 0) cmdContainer.innerHTML = '<p style="color:#888;">目前尚無指令。</p>';
+      if(lItems.length === 0) cmdContainer.innerHTML = '<p style="color:#888;">目前快捷指令庫內尚無資料。</p>';
       lItems.forEach(d => {
         const c = document.createElement('div'); c.className = 'article-card';
-        c.innerHTML = `<div class="article-info"><h3 class="article-title">💻 ${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊查看指令碼並複製</p></div>${getAdminOverlay(d.id)}`;
-        c.addEventListener('click', () => { if(!window.isGodMode) openArticleModal(d); }); 
+        c.innerHTML = `<div class="article-info"><h3 class="article-title">💻 ${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊查看實用指令碼並一鍵複製</p></div>${getAdminOverlay(d.id)}`;
+        c.addEventListener('click', () => { if(!window.isEditMode) openArticleModal(d); }); 
         cmdContainer.appendChild(c);
       });
 
-      const renderGrouped = (items, renderer) => { const grps = {}; items.forEach(d => { let f = `📁 ${d.folderName || '未分類'}`; if (!grps[f]) grps[f] = []; grps[f].push(d); }); Object.keys(grps).sort().forEach(folder => { const h = document.createElement('div'); h.className = 'folder-header'; h.innerHTML = folder; container.appendChild(h); grps[folder].forEach(d => renderer(d, container)); }); };
+      const renderGrouped = (items, renderer) => { const grps = {}; items.forEach(d => { let f = `📁 資料夾：${d.folderName || '未分類根目錄'}`; if (!grps[f]) grps[f] = []; grps[f].push(d); }); Object.keys(grps).sort().forEach(folder => { const h = document.createElement('div'); h.className = 'folder-header'; h.innerHTML = folder; container.appendChild(h); grps[folder].forEach(d => renderer(d, container)); }); };
 
       if (currentActiveTab === "全部" || currentActiveTab === "音樂") {
         const albums = {};
-        fetchedMaterialsList.forEach(item => { if (item.category !== "音樂") return; let albName = item.albumName || "獨立單曲"; if (search && !albName.toLowerCase().includes(search) && !item.fileName.toLowerCase().includes(search)) return; if (!albums[albName]) albums[albName] = { name: albName, coverUrl: item.coverUrl || "", tracks: [] }; if (!albums[albName].coverUrl && item.coverUrl) albums[albName].coverUrl = item.coverUrl; albums[albName].tracks.push(item); });
+        fetchedMaterialsList.forEach(item => { if (item.category !== "音樂") return; let albName = item.albumName || "未分類獨立單曲"; if (search && !albName.toLowerCase().includes(search) && !item.fileName.toLowerCase().includes(search)) return; if (!albums[albName]) albums[albName] = { name: albName, coverUrl: item.coverUrl || "", tracks: [] }; if (!albums[albName].coverUrl && item.coverUrl) albums[albName].coverUrl = item.coverUrl; albums[albName].tracks.push(item); });
         Object.values(albums).forEach(album => { 
             album.tracks.sort((a, b) => (a.trackOrder ?? 99) - (b.trackOrder ?? 99)); 
             const c = document.createElement('div'); c.className = 'material-item'; let img = getOptimalImageUrl(album.coverUrl); let coverHTML = img ? `<img class="album-art-img" src="${img}">` : `<div class="default-vinyl"></div>`; 
             
-            // 專輯的遮罩比較特別，點擊遮罩是打開編輯，但因為它是合輯，我們預設讓它打開專輯彈窗後再個別編輯
-            c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div>${coverHTML}</div><div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 ${album.tracks.length} 首</span></div>`; 
+            c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div>${coverHTML}</div><div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 內含 ${album.tracks.length} 首曲目</span></div>`; 
             c.addEventListener('click', () => openAlbumModal(album)); 
             container.appendChild(c); 
         });
@@ -692,8 +738,7 @@
     window.openArticleModal = function(data) {
       const modal = document.getElementById('article-modal');
       document.getElementById('article-title').innerHTML = `${data.fileName}`;
-      document.getElementById('article-desc').innerHTML = data.descriptionHTML || '<p style="color:#888;">尚未編輯內容。</p>';
-      
+      document.getElementById('article-desc').innerHTML = data.descriptionHTML || '<p style="color:#888;">本卡片尚未編輯描述內容。</p>';
       if (data.fileUrl) {
           let btnText = (data.category === '軟體' || data.category === '指令') ? '🔗 前往外部連結' : '🔗 前往連結 / 📥 點此下載';
           document.getElementById('article-desc').innerHTML += `<div style="margin-top: 35px; text-align: center;"><a href="${data.fileUrl}" target="_blank" class="btn-blue-dl">${btnText}</a></div>`;
@@ -708,7 +753,8 @@
       const lc = document.getElementById('modal-track-list'); lc.innerHTML = '';
       album.tracks.forEach((t, idx) => {
         const row = document.createElement('div'); row.className = 'track-row';
-        row.innerHTML = `<div style="flex:1;display:flex;align-items:center;gap:15px;min-width:200px;"><span class="track-num">${idx + 1}</span><strong style="color:white;font-size:1.05em;">${t.fileName}</strong></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button class="btn-action" style="padding:6px 12px; font-size:0.85em;" onclick="playTrackFromModal(${idx})">▶ 播放</button><a href="${getOptimalAudioUrl(t.fileUrl)}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; font-size:0.85em; box-shadow:none;">📥 下載</a><button class="btn-copy" style="padding:6px 12px; font-size:0.85em;" onclick="copyToClipboard('${t.fileUrl}')">📋 複製</button><div class="track-admin-btns"><button onclick="openEditModal('${t.id}')" class="btn-edit" style="padding:6px 12px; font-size:0.85em;">⚙️</button><button onclick="deleteMaterial('${t.id}')" class="btn-del" style="padding:6px 12px; font-size:0.85em;">🗑️</button></div></div>`;
+        let aBtn = (userRole === "admin") ? `<button onclick="openEditModal('${t.id}')" class="btn-edit" style="padding:6px 12px; font-size:0.85em;">⚙️</button><button onclick="deleteMaterial('${t.id}')" class="btn-del" style="padding:6px 12px; font-size:0.85em;">🗑️</button>` : '';
+        row.innerHTML = `<div style="flex:1;display:flex;align-items:center;gap:15px;min-width:200px;"><span class="track-num">${idx + 1}</span><strong style="color:white;font-size:1.05em;">${t.fileName}</strong></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button class="btn-action" style="padding:6px 12px; font-size:0.85em;" onclick="playTrackFromModal(${idx})">▶ 播放</button><a href="${getOptimalAudioUrl(t.fileUrl)}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; font-size:0.85em; box-shadow:none;">📥 下載</a><button class="btn-copy" style="padding:6px 12px; font-size:0.85em;" onclick="copyToClipboard('${t.fileUrl}')">📋 複製</button><div class="track-admin-btns">${aBtn}</div></div>`;
         lc.appendChild(row);
       });
       m.style.display = 'flex';
@@ -717,24 +763,22 @@
     document.getElementById('btn-play-album').addEventListener('click', () => { if (currentModalAlbum && currentModalAlbum.tracks.length > 0) loadAndPlayPlaylist(currentModalAlbum.tracks, 0); });
     document.getElementById('btn-shuffle-album').addEventListener('click', () => { 
         if (currentModalAlbum && currentModalAlbum.tracks.length > 0) { 
-            let shuffled = [...currentModalAlbum.tracks].sort(() => Math.random() - 0.5); loadAndPlayPlaylist(shuffled, 0); showToast("🔀 隨機播放！");
+            let shuffled = [...currentModalAlbum.tracks].sort(() => Math.random() - 0.5); loadAndPlayPlaylist(shuffled, 0); showToast("🔀 已開啟隨機播放！");
         } 
     });
     document.getElementById('modal-close-btn').addEventListener('click', () => { document.getElementById('album-modal').style.display = 'none'; });
     
-    // 🌟 播放與視覺化頻譜連動
-    window.playSFX = function(name, url) { globalPlaylist = [{ fileName: name, fileUrl: url, albumName: "單曲" }]; globalTrackIndex = 0; playCurrentGlobalTrack(); };
+    window.playSFX = function(name, url) { globalPlaylist = [{ fileName: name, fileUrl: url, albumName: "單曲預覽" }]; globalTrackIndex = 0; playCurrentGlobalTrack(); };
     window.loadAndPlayPlaylist = function(tracks, startIndex = 0) { if (!tracks || tracks.length === 0) return; globalPlaylist = tracks; globalTrackIndex = startIndex; playCurrentGlobalTrack(); };
     window.playTrackFromModal = function(index) { if (!currentModalAlbum || !currentModalAlbum.tracks) return; loadAndPlayPlaylist(currentModalAlbum.tracks, index); };
     window.playCurrentGlobalTrack = function() {
       if (globalPlaylist.length === 0) return; let t = globalPlaylist[globalTrackIndex]; gpAudio.src = getOptimalAudioUrl(t.fileUrl);
       document.getElementById('gp-title').innerText = t.fileName; document.getElementById('gp-artist').innerText = t.albumName || "Dogfish Studio";
       let c = getOptimalImageUrl(t.coverUrl); document.getElementById('gp-cover').src = c ? c : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
-      gpAudio.play().catch(e => { showToast("⚠️ 播放遭阻擋，改為下載", "error"); window.open(t.fileUrl, '_blank'); });
+      gpAudio.play().catch(e => { showToast("⚠️ 背景播放器攔截，改為另開網頁下載", "error"); window.open(t.fileUrl, '_blank'); });
     };
     window.playNextTrack = function() { if (globalPlaylist.length === 0) return; globalTrackIndex = (globalTrackIndex + 1) % globalPlaylist.length; playCurrentGlobalTrack(); };
     window.playPrevTrack = function() { if (globalPlaylist.length === 0) return; globalTrackIndex = (globalTrackIndex - 1 + globalPlaylist.length) % globalPlaylist.length; playCurrentGlobalTrack(); };
-    
     gpAudio.addEventListener('ended', playNextTrack);
     gpAudio.addEventListener('play', () => document.getElementById('gp-visualizer').classList.remove('paused'));
     gpAudio.addEventListener('pause', () => document.getElementById('gp-visualizer').classList.add('paused'));
