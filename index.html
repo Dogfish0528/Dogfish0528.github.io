@@ -298,7 +298,6 @@
     import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website", storageBucket: "dogfish-website.firebasestorage.app", messagingSenderId: "501551191843", appId: "1:501551191843:web:32fd3c7a51c7a21722de96" };
-    // 🌟 核心創世神 UID 鎖定
     const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1"; 
     
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const provider = new GoogleAuthProvider();
@@ -380,15 +379,10 @@
           document.getElementById('nav-upload-btn').style.display = 'inline-block'; 
           document.getElementById('nav-review-btn').style.display = 'inline-block'; 
           document.getElementById('nav-upload-btn').innerHTML = "🚀 發布"; 
-          
-          // 🌟 修復 1：創世神權限絕對防護，只有本人看得到設定台按鈕
           if (user.uid === CREATOR_UID) {
               document.getElementById('nav-admin-btn').style.display = 'inline-block';
               roleTag = `<span style="color:var(--accent);">👑 創世神</span>`; 
-          } else {
-              document.getElementById('nav-admin-btn').style.display = 'none';
-              roleTag = `<span style="color:var(--accent);">🔧 管理員</span>`; 
-          }
+          } else { roleTag = `<span style="color:var(--accent);">🔧 管理員</span>`; }
       } 
       else if (userRole === "reviewer") { document.getElementById('nav-review-btn').style.display = 'inline-block'; roleTag = `<span style="color:#ffb300;">🛡️ 審核員</span>`; } 
       else if (userRole === "contributor") { document.getElementById('nav-upload-btn').style.display = 'inline-block'; document.getElementById('nav-upload-btn').innerHTML = "📤 提案"; roleTag = `<span style="color:var(--secondary);">✍️ 貢獻者</span>`; } 
@@ -399,9 +393,7 @@
     document.getElementById('login-btn').addEventListener('click', () => { signInWithPopup(auth, provider).then(() => switchPage('blog')); });
     document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth).then(() => switchPage('blog')); });
 
-    // 🌟 修復 2：聊天室邀請與群組機制穩定化
     function initChatSystem(user) {
-      let safeName = user.displayName || "匿名";
       const invitesQ = query(collection(db, "invites"), where("toEmail", "==", user.email.toLowerCase()), where("status", "==", "pending"));
       invitesUnsub = onSnapshot(invitesQ, (snapshot) => {
         const box = document.getElementById('invite-list'); box.innerHTML = '';
@@ -410,13 +402,13 @@
           div.innerHTML = `<div style="margin-bottom:5px;">來自 <b>${d.fromName}</b> 的邀請</div><button onclick="acceptInvite('${docSnap.id}', '${d.fromUid}', '${d.fromName}', '${d.fromPhoto}')" class="btn-action" style="padding:4px 10px; font-size:0.8em; width:100%;">✅ 接受邀請</button>`;
           box.appendChild(div);
         });
-      }, (err) => console.log(err));
+      }, (err) => console.log("Invites Error:", err));
 
       const chatsQ = query(collection(db, "chats"), where("participants", "array-contains", user.uid));
       chatListUnsub = onSnapshot(chatsQ, (snapshot) => {
         myChats = []; snapshot.forEach(docSnap => { myChats.push({ id: docSnap.id, ...docSnap.data() }); });
         renderChatList();
-      }, (err) => console.log(err));
+      }, (err) => console.log("Chats Error:", err));
     }
 
     window.sendFriendInvite = async function() {
@@ -531,24 +523,17 @@
       try { 
         const col = (userRole === "admin") ? "categorized_materials" : "pending_materials"; 
         await addDoc(collection(db, col), { fileName: name, category: type, fileUrl: rawUrl, ...ex, uploaderName: safeUploaderName, timestamp: serverTimestamp() }); 
-        if (userRole === "admin") { showToast("✅ 素材提交發布成功！"); fetchMaterialsFromCloud(); } else { showToast("📤 已提交至審核大廳！"); }
+        if (userRole === "admin") { showToast("✅ 素材發布成功！"); fetchMaterialsFromCloud(); } else { showToast("📤 已提交至審核大廳！"); }
         document.getElementById('mat-name').value = ""; document.getElementById('mat-url').value = ""; 
         let re = document.getElementById('mat-rich-editor'); if(re) re.innerHTML = ""; 
         document.getElementById('upload-modal').style.display = 'none';
       } catch (error) { console.error(error); showToast("❌ 儲存發生錯誤", "error"); }
     });
 
-    // 🌟 修復 1：控制台創世神鎖死機制
     document.getElementById('save-role-btn').addEventListener('click', async () => {
       const em = document.getElementById('target-email').value.trim().toLowerCase(); const role = document.getElementById('target-role').value; const s = document.getElementById('admin-action-status');
-      if (!em) return; 
-      if (auth.currentUser.uid !== CREATOR_UID) { showToast("⚠️ 權限拒絕：只有創世神 dogfish 本人可指派權限！", "error"); return; }
-      s.innerText = "⏳ 儲存中..."; 
-      try { 
-          await setDoc(doc(db, "permissions", em), { role: role, updatedBy: auth.currentUser.email || 'Admin', timestamp: new Date() }); 
-          s.innerText = `✅ 成功將 ${em} 設定為 [${role}]`; showToast(`✅ 權限設定指派完畢！`); 
-          document.getElementById('target-email').value = ""; 
-      } catch (e) { s.innerText = "❌ 寫入遭拒"; }
+      if (!em) return; if (auth.currentUser.uid !== CREATOR_UID) { showToast("⚠️ 只有創世神可修改權限！", "error"); return; }
+      s.innerText = "⏳ 儲存中..."; try { await setDoc(doc(db, "permissions", em), { role: role, updatedBy: auth.currentUser.email || 'Admin', timestamp: new Date() }); s.innerText = `✅ 成功將 ${em} 設定為 [${role}]`; showToast(`✅ 權限指派完畢！`); document.getElementById('target-email').value = ""; } catch (e) { s.innerText = "❌ 寫入遭拒"; }
     });
 
     window.openEditModal = function(id) {
@@ -568,7 +553,15 @@
     document.getElementById('save-edit-btn').addEventListener('click', async () => { 
         const id = document.getElementById('edit-id').value; const name = document.getElementById('edit-name').value.trim(); const url = document.getElementById('edit-url').value.trim(); 
         const ex = getUploadData('edit'); 
-        try { await updateDoc(doc(db, "categorized_materials", id), { fileName: name, fileUrl: url, ...ex }); showToast("✅ 資料更新成功！"); document.getElementById('edit-modal').style.display = 'none'; fetchMaterialsFromCloud(); } catch(e) { showToast("❌ 儲存失敗", "error"); } 
+        try { 
+            await updateDoc(doc(db, "categorized_materials", id), { fileName: name, fileUrl: url, ...ex }); 
+            showToast("✅ 資料更新成功！"); document.getElementById('edit-modal').style.display = 'none'; 
+            
+            // 本地端瞬間更新陣列
+            const idx = fetchedMaterialsList.findIndex(m => m.id === id);
+            if(idx > -1) { fetchedMaterialsList[idx] = { ...fetchedMaterialsList[idx], fileName: name, fileUrl: url, ...ex }; }
+            renderMaterialsByFilter();
+        } catch(e) { showToast("❌ 儲存失敗", "error"); } 
     });
 
     async function fetchPendingMaterials() { try { const q = query(collection(db, "pending_materials"), orderBy("timestamp", "desc")); const snap = await getDocs(q); pendingMaterialsList = []; snap.forEach((doc) => { let d = doc.data(); d.id = doc.id; pendingMaterialsList.push(d); }); renderPendingList(); } catch(e){} }
@@ -583,20 +576,39 @@
     window.approveMaterial = async function(id) { 
         const t = pendingMaterialsList.find(m => m.id === id); if (!t) return; 
         try { 
-            await addDoc(collection(db, "categorized_materials"), { fileName: t.fileName, category: t.category, fileUrl: t.fileUrl, coverUrl: t.coverUrl || "", albumName: t.albumName || "", btnStyle: t.btnStyle || "", trackOrder: t.trackOrder || 2, folderName: t.folderName || "根目錄", descriptionHTML: t.descriptionHTML || "", uploaderName: t.uploaderName || '匿名', timestamp: serverTimestamp() }); 
+            const newDoc = await addDoc(collection(db, "categorized_materials"), { fileName: t.fileName, category: t.category, fileUrl: t.fileUrl, coverUrl: t.coverUrl || "", albumName: t.albumName || "", btnStyle: t.btnStyle || "", trackOrder: t.trackOrder || 2, folderName: t.folderName || "根目錄", descriptionHTML: t.descriptionHTML || "", uploaderName: t.uploaderName || '匿名', timestamp: serverTimestamp() }); 
             await deleteDoc(doc(db, "pending_materials", id)); 
-            showToast("✅ 素材順利審核上架！"); fetchPendingMaterials(); fetchMaterialsFromCloud(); 
+            showToast("✅ 素材順利審核上架！"); 
+            
+            // 本地端瞬間更新
+            pendingMaterialsList = pendingMaterialsList.filter(m => m.id !== id);
+            renderPendingList();
+            fetchedMaterialsList.unshift({ id: newDoc.id, fileName: t.fileName, category: t.category, fileUrl: t.fileUrl, coverUrl: t.coverUrl || "", albumName: t.albumName || "", btnStyle: t.btnStyle || "", trackOrder: t.trackOrder || 2, folderName: t.folderName || "根目錄", descriptionHTML: t.descriptionHTML || "", uploaderName: t.uploaderName || '匿名' });
+            renderMaterialsByFilter();
         } catch(e) { showToast("核准失敗", "error"); } 
     };
-    window.rejectMaterial = async function(id) { if (!confirm("確定要退回此提案嗎？")) return; try { await deleteDoc(doc(db, "pending_materials", id)); showToast("❌ 提案已退回刪除。"); fetchPendingMaterials(); } catch(e){} };
+    
+    window.rejectMaterial = async function(id) { 
+        if (!confirm("確定要退回此提案嗎？")) return; 
+        try { 
+            await deleteDoc(doc(db, "pending_materials", id)); 
+            showToast("❌ 提案已退回刪除。"); 
+            pendingMaterialsList = pendingMaterialsList.filter(m => m.id !== id);
+            renderPendingList();
+        } catch(e){} 
+    };
     
     window.deleteMaterial = async function(id) { 
         if (!confirm("🚨 警告：確定要永久刪除此內容？")) return; 
         try {
             await deleteDoc(doc(db, "categorized_materials", id)); 
             document.getElementById('article-modal').style.display='none'; 
+            document.getElementById('album-modal').style.display='none'; 
             showToast("🗑️ 已徹底移除"); 
-            fetchMaterialsFromCloud(); 
+            
+            // 🌟 瞬間更新：過濾本地陣列，不再等待伺服器同步
+            fetchedMaterialsList = fetchedMaterialsList.filter(item => item.id !== id);
+            renderMaterialsByFilter();
         } catch(e) { showToast("❌ 刪除失敗", "error"); }
     };
 
@@ -608,7 +620,7 @@
       const cmdContainer = document.getElementById('commands-container'); cmdContainer.innerHTML = '';
       const search = document.getElementById('search-input').value.toLowerCase(); 
 
-      let sItems = fetchedMaterialsList.filter(i => i.category === "軟體");
+      let sItems = fetchedMaterialsList.filter(i => i.category === "軟體" && (!search || i.fileName.toLowerCase().includes(search)));
       if(sItems.length === 0) softContainer.innerHTML = '<p style="color:#888;">目前知識庫內尚無推薦軟體。</p>';
       sItems.forEach(d => {
         const c = document.createElement('div'); c.className = 'article-card'; let img = getOptimalImageUrl(d.coverUrl) || 'https://via.placeholder.com/800x400/111/fff?text=Software';
@@ -616,11 +628,11 @@
         c.addEventListener('click', () => openArticleModal(d)); softContainer.appendChild(c);
       });
 
-      let lItems = fetchedMaterialsList.filter(i => i.category === "指令");
+      let lItems = fetchedMaterialsList.filter(i => i.category === "指令" && (!search || i.fileName.toLowerCase().includes(search)));
       if(lItems.length === 0) cmdContainer.innerHTML = '<p style="color:#888;">目前快捷指令庫內尚無資料。</p>';
       lItems.forEach(d => {
         const c = document.createElement('div'); c.className = 'article-card';
-        c.innerHTML = `<div class="article-info"><h3 class="article-title">💻 ${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊查看實用指令碼</p></div>`;
+        c.innerHTML = `<div class="article-info"><h3 class="article-title">💻 ${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊查看實用指令碼並一鍵複製</p></div>`;
         c.addEventListener('click', () => openArticleModal(d)); cmdContainer.appendChild(c);
       });
 
@@ -691,18 +703,12 @@
         });
     };
 
-    // 🌟 修復 2：小音效防重疊與暫停機制
     window.playSFX = function(name, url) { 
-        // 判斷是否點擊的是正在播放的小音效
         if (globalPlaylist.length === 1 && globalPlaylist[0].fileUrl === url && !gpAudio.paused) {
-            gpAudio.pause();
-            gpAudio.currentTime = 0;
-            showToast("⏸️ 音效已停止");
-            return;
+            gpAudio.pause(); gpAudio.currentTime = 0; showToast("⏸️ 音效已停止"); return;
         }
         globalPlaylist = [{ fileName: name, fileUrl: url, albumName: "單曲預覽" }]; 
-        globalTrackIndex = 0; 
-        playCurrentGlobalTrack(); 
+        globalTrackIndex = 0; playCurrentGlobalTrack(); 
     };
     
     window.loadAndPlayPlaylist = function(tracks, startIndex = 0) { if (!tracks || tracks.length === 0) return; globalPlaylist = tracks; globalTrackIndex = startIndex; playCurrentGlobalTrack(); };
@@ -713,15 +719,29 @@
       let c = getOptimalImageUrl(t.coverUrl); document.getElementById('gp-cover').src = c ? c : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
       gpAudio.play().catch(e => { showToast("⚠️ 背景播放器攔截，改為另開網頁下載", "error"); window.open(t.fileUrl, '_blank'); });
     };
-    window.playNextTrack = function() { if (globalPlaylist.length === 0) return; globalTrackIndex = (globalTrackIndex + 1) % globalPlaylist.length; playCurrentGlobalTrack(); };
-    window.playPrevTrack = function() { if (globalPlaylist.length === 0) return; globalTrackIndex = (globalTrackIndex - 1 + globalPlaylist.length) % globalPlaylist.length; playCurrentGlobalTrack(); };
+    
+    // 🌟 核心：確保小音效播完即刻停止，絕不循環！
+    window.playNextTrack = function() { 
+        if (globalPlaylist.length === 0) return; 
+        if (globalTrackIndex >= globalPlaylist.length - 1) {
+            gpAudio.pause(); return;
+        }
+        globalTrackIndex++; 
+        playCurrentGlobalTrack(); 
+    };
+    window.playPrevTrack = function() { 
+        if (globalPlaylist.length === 0) return; 
+        if (globalTrackIndex <= 0) {
+            gpAudio.currentTime = 0; return;
+        }
+        globalTrackIndex--; 
+        playCurrentGlobalTrack(); 
+    };
     gpAudio.addEventListener('ended', playNextTrack);
 
     window.switchPage = function(pageId) { 
-        // 防護：如果不是創世神，強制阻擋進入控制台
         if (pageId === 'admin' && auth.currentUser && auth.currentUser.uid !== CREATOR_UID) {
-            showToast("⚠️ 權限拒絕：只有創世神可以進入此頁面", "error");
-            return;
+            showToast("⚠️ 權限拒絕：只有創世神可以進入此頁面", "error"); return;
         }
         document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active')); 
         document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active')); 
@@ -729,7 +749,6 @@
         const activeNavBtn = Array.from(document.querySelectorAll('.btn-nav')).find(b => b.getAttribute('onclick')?.includes(pageId)); 
         if (activeNavBtn) activeNavBtn.classList.add('active'); 
     }
-    document.querySelectorAll('.tab-btn').forEach(button => { button.addEventListener('click', () => { document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); currentActiveTab = button.getAttribute('data-target'); renderMaterialsByFilter(); }); });
   </script>
 </body>
 </html>
