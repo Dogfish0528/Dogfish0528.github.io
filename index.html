@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish Studio | v18.0 手機與AI優化版</title>
+  <title>Dogfish Studio | v18.1 AI 雙軌版</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -37,7 +37,6 @@
     .input-box:focus { border-color: var(--primary); background: #333; }
     input[type="color"].input-box { padding: 2px 4px; height: 40px; cursor: pointer; width: auto; }
 
-    /* 導覽列與自訂畫筆 */
     .navbar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: rgba(0,0,0,0.85); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000; backdrop-filter: blur(10px); }
     .logo { font-size: 1.2em; font-weight: 800; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
     .logo-text { color: var(--primary); }
@@ -83,13 +82,11 @@
     .sfx-push-btn { width: 110px; height: 120px; border-radius: 50%; background-size: cover; background-position: center; border: 4px solid #fff; margin: 0 auto 15px; display: block; transition: 0.1s; box-shadow: 0 8px 0 #111; }
     .sfx-push-btn:active { transform: translateY(8px); box-shadow: 0 0px 0 #111; }
 
-    /* 瀑布流自由排版卡片 */
     .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; grid-auto-flow: dense; }
     .article-card { background: var(--panel-bg); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid var(--border-color); text-align: left; display: flex; flex-direction: column; }
     .article-card:hover { border-color: var(--primary); transform: translateY(-5px); }
     .article-info { padding: 20px; flex: 1; } .article-title { font-size: 1.4em; font-weight: 900; margin: 0 0 10px; color: white; }
 
-    /* 聊天室 RWD 排版 */
     .chat-app { display: flex; height: 70vh; background: #1e1e1e; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
     .chat-sidebar { width: 280px; background: #252526; border-right: 1px solid #333; display: flex; flex-direction: column; text-align: left; }
     .chat-sidebar-header { padding: 15px; background: #1e1e1e; border-bottom: 1px solid #333; font-weight: bold; }
@@ -111,7 +108,6 @@
     .chat-input { flex: 1; padding: 12px 15px; border: none; border-radius: 20px; outline: none; font-size: 1em; background: white; color: #000; }
     .invite-box { background: #333; padding: 10px; margin: 10px; border-radius: 8px; font-size: 0.9em; text-align: left; }
 
-    /* AI 分離軌道卡片 */
     .ai-track-card { background: #222; border: 1px solid #444; border-radius: 12px; padding: 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
     .ai-track-info { display: flex; align-items: center; gap: 15px; flex: 1; min-width: 250px; }
     .ai-track-icon { width: 50px; height: 50px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5em; border: 2px solid var(--primary); }
@@ -133,7 +129,6 @@
     .toast.error { border-left-color: var(--accent); }
     @keyframes slideIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } } @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
 
-    /* 🌟 手機與平板直向 RWD 完美優化 🌟 */
     @media (max-width: 800px) {
         #global-player { display: none !important; }
         body { padding-bottom: 0 !important; }
@@ -171,6 +166,9 @@
             <option value="音樂">🎵 音樂專輯</option>
             <option value="音效">🔊 小音效</option>
             <option value="GIF">🖼️ 圖片/GIF</option>
+            <option value="GIF+聲音">🎞️ GIF+聲音</option>
+            <option value="人聲">🎤 單獨人聲</option>
+            <option value="伴奏">🎹 單獨伴奏</option>
             <option value="軟體" style="color: var(--secondary);">🧰 軟體推薦</option>
             <option value="指令" style="color: var(--secondary);">💻 實用指令</option>
           </select>
@@ -179,15 +177,10 @@
         <input type="url" id="mat-url" class="input-box" placeholder="檔案 / 展示網址">
       </div>
 
-      <div id="mat-preview-box" style="background:#222; border:1px solid #444; border-radius:8px; padding:10px; margin-bottom:15px; display:none; align-items:center; gap:15px;">
-        <img id="mat-preview-img" style="width:70px; height:70px; object-fit:cover; border-radius:6px; display:none; border:1px solid #555;">
-        <audio id="mat-preview-audio" controls style="flex:1; height:35px; outline:none; display:none;"></audio>
-      </div>
-      
       <div id="mat-rich-text-container" style="display: none; margin-bottom: 15px;">
         <div class="rich-editor-toolbar">
           <button class="rich-editor-btn" onclick="document.execCommand('bold')">B 粗體</button>
-          <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'img')">🖼️ 圖片</button>
+          <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'img')">🖼️ 插入圖片</button>
           <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'yt')">🔴 YouTube</button>
           <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'video')">🎬 直連影片(MP4)</button>
         </div>
@@ -217,11 +210,6 @@
         <input type="url" id="edit-url" class="input-box">
       </div>
       <div id="edit-dynamic-fields" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0;"></div>
-      
-      <div id="edit-preview-box" style="background:#222; border:1px solid #444; border-radius:8px; padding:10px; margin-bottom:15px; display:none; align-items:center; gap:15px;">
-        <img id="edit-preview-img" style="width:70px; height:70px; object-fit:cover; border-radius:6px; display:none; border:1px solid #555;">
-        <audio id="edit-preview-audio" controls style="flex:1; height:35px; outline:none; display:none;"></audio>
-      </div>
 
       <div id="edit-rich-text-container" style="display: none; margin-bottom: 15px; text-align:left;">
         <label style="color:#888; font-size:0.8em;">富文本介紹內容</label>
@@ -255,7 +243,7 @@
   </div>
 
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish</span><span class="version-badge">v18.0 手機AI版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish</span><span class="version-badge">v18.1 AI 雙軌版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="switchPage('materials')">素材</button>
@@ -286,18 +274,33 @@
     <div id="page-blog" class="page-panel solid-panel active">
       <h2 class="page-title">歡迎來到創作者社群工作站</h2>
       <div style="background: #282828; padding: 20px; border-left: 4px solid var(--primary); border-radius: 8px; text-align: left;">
-        <h3 style="margin-top:0;">🚀 v18.0 手機介面與 AI 軌道分離版</h3>
+        <h3 style="margin-top:0;">🚀 v18.1 AI 雙軌修復與無分類版</h3>
         <p style="color: #b3b3b3; line-height: 1.6;">
-          1. <b>全面手機優化</b>：手機與平板瀏覽時會自動隱藏底部播放器，並自動套用最佳化瀑布流排版！<br>
-          2. <b>導覽列自由改名</b>：站長可透過分頁旁的「✏️ 畫筆」自由更改「軟體/指令/聊天」的顯示名稱。<br>
-          3. <b>AI 音軌分離工作站</b>：全新上線 AI 模擬分離面板，並支援將分離出的音軌一鍵帶入素材發布區！<br>
-          4. <b>系統瘦身與除錯</b>：移除了可能卡頓的全專輯下載，並徹底修復了群組聊天的防護機制。
+          1. <b>AI 分離極簡化</b>：依照您的需求，AI 分離音軌已精簡為「🎤 人聲」與「🎹 伴奏」雙軌系統！<br>
+          2. <b>AI 播放器實裝</b>：上傳音檔後，分離大廳的播放器會直接載入原音檔供您立即試聽。<br>
+          3. <b>全新素材類別</b>：發布中心新增了「🎞️ GIF+聲音」、「🎤 單獨人聲」、「🎹 單獨伴奏」的選項。<br>
+          4. <b>移除未分類資料夾</b>：當您沒有填寫資料夾名稱時，系統不再顯示礙眼的「未分類」標題，還給畫面簡潔！
         </p>
         <button class="btn-action" style="margin-top: 15px; font-size: 1.1em; padding: 12px 25px;" onclick="document.getElementById('upload-modal').style.display='flex'">➕ 點此開啟發布中心</button>
       </div>
     </div>
 
-    <div id="page-materials" class="page-panel solid-panel"><h2 class="page-title">共享素材庫</h2><div class="controls-wrapper"><div class="category-tabs"><button class="tab-btn active" data-target="全部">所有</button><button class="tab-btn" data-target="音樂">音樂</button><button class="tab-btn" data-target="音效">小音效</button><button class="tab-btn" data-target="GIF">GIF</button></div><div class="search-bar-container"><span class="search-icon">🔍</span><input type="text" id="search-input" class="search-input" placeholder="尋找..."></div></div><div id="material-container" class="material-list"></div></div>
+    <div id="page-materials" class="page-panel solid-panel">
+      <h2 class="page-title">共享素材庫</h2>
+      <div class="controls-wrapper">
+        <div class="category-tabs">
+          <button class="tab-btn active" data-target="全部">所有</button>
+          <button class="tab-btn" data-target="音樂">音樂</button>
+          <button class="tab-btn" data-target="音效">小音效</button>
+          <button class="tab-btn" data-target="GIF">GIF</button>
+          <button class="tab-btn" data-target="GIF+聲音" style="color:#b030ff;">GIF+聲音</button>
+          <button class="tab-btn" data-target="人聲" style="color:#00e5ff;">單獨人聲</button>
+          <button class="tab-btn" data-target="伴奏" style="color:#00e5ff;">單獨伴奏</button>
+        </div>
+        <div class="search-bar-container"><span class="search-icon">🔍</span><input type="text" id="search-input" class="search-input" placeholder="尋找..."></div>
+      </div>
+      <div id="material-container" class="material-list"></div>
+    </div>
     
     <div id="page-software" class="page-panel solid-panel"><h2 class="page-title" id="page-title-software">🧰 軟體推薦大廳</h2><div id="software-container" class="article-grid"></div></div>
     <div id="page-commands" class="page-panel solid-panel"><h2 class="page-title" id="page-title-commands">💻 實用指令知識庫</h2><div id="commands-container" class="article-grid"></div></div>
@@ -305,7 +308,7 @@
     <div id="page-ai" class="page-panel solid-panel">
       <h2 class="page-title" style="color: #00e5ff;">✨ AI 智慧音軌分離</h2>
       <div style="background: #222; padding: 25px; border-radius: 12px; border: 1px solid #444;">
-        <p style="color: #b3b3b3; margin-top: 0;">請上傳您的音樂檔案，系統將透過神經網路模型將其分離為獨立音軌。</p>
+        <p style="color: #b3b3b3; margin-top: 0;">請上傳您的音樂檔案，系統將為您分離出乾淨的人聲與伴奏。</p>
         <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; flex-wrap: wrap;">
             <input type="file" id="ai-file-input" accept="audio/*" style="display: none;" onchange="document.getElementById('ai-file-name').innerText = this.files[0].name">
             <button class="btn-copy" onclick="document.getElementById('ai-file-input').click()">📁 選擇音檔</button>
@@ -314,25 +317,17 @@
         </div>
         
         <div id="ai-loading" style="display: none; color: #00e5ff; font-weight: bold; margin-bottom: 20px;">
-            ⏳ 正在透過 AI 核心運算分析音軌特徵中，請稍候...
+            ⏳ 正在分析音軌特徵中，請稍候...
         </div>
 
         <div id="ai-results" style="display: none; margin-top: 20px;">
             <div class="ai-track-card">
-                <div class="ai-track-info"><div class="ai-track-icon">🎤</div><div style="flex:1;"><div style="font-weight:bold; font-size:1.1em;">人聲 (Vocals)</div><audio controls style="width:100%; height:30px; margin-top:5px;"></audio></div></div>
-                <button class="btn-action" onclick="pushToMaterials('分離_人聲')">➕ 丟到素材庫</button>
+                <div class="ai-track-info"><div class="ai-track-icon">🎤</div><div style="flex:1;"><div style="font-weight:bold; font-size:1.1em;">人聲 (Vocals)</div><audio id="ai-audio-vocals" controls style="width:100%; height:30px; margin-top:5px;"></audio></div></div>
+                <button class="btn-action" onclick="pushToMaterials('人聲')">➕ 丟到素材庫</button>
             </div>
             <div class="ai-track-card">
-                <div class="ai-track-info"><div class="ai-track-icon">🥁</div><div style="flex:1;"><div style="font-weight:bold; font-size:1.1em;">鼓聲 (Drums)</div><audio controls style="width:100%; height:30px; margin-top:5px;"></audio></div></div>
-                <button class="btn-action" onclick="pushToMaterials('分離_鼓聲')">➕ 丟到素材庫</button>
-            </div>
-            <div class="ai-track-card">
-                <div class="ai-track-info"><div class="ai-track-icon">🎸</div><div style="flex:1;"><div style="font-weight:bold; font-size:1.1em;">貝斯 (Bass)</div><audio controls style="width:100%; height:30px; margin-top:5px;"></audio></div></div>
-                <button class="btn-action" onclick="pushToMaterials('分離_貝斯')">➕ 丟到素材庫</button>
-            </div>
-            <div class="ai-track-card">
-                <div class="ai-track-info"><div class="ai-track-icon">🎹</div><div style="flex:1;"><div style="font-weight:bold; font-size:1.1em;">其他伴奏 (Other)</div><audio controls style="width:100%; height:30px; margin-top:5px;"></audio></div></div>
-                <button class="btn-action" onclick="pushToMaterials('分離_伴奏')">➕ 丟到素材庫</button>
+                <div class="ai-track-info"><div class="ai-track-icon">🎹</div><div style="flex:1;"><div style="font-weight:bold; font-size:1.1em;">伴奏 (Instrumental)</div><audio id="ai-audio-inst" controls style="width:100%; height:30px; margin-top:5px;"></audio></div></div>
+                <button class="btn-action" onclick="pushToMaterials('伴奏')">➕ 丟到素材庫</button>
             </div>
         </div>
       </div>
@@ -431,38 +426,22 @@
       document.execCommand('insertHTML', false, htmlToInsert);
     };
 
-    function updatePreviews(prefix) {
-      const type = document.getElementById(`${prefix}-type-select`)?.value || document.getElementById('edit-category')?.value;
-      const urlInput = document.getElementById(`${prefix}-url`); const coverInput = document.getElementById(`${prefix}-cover`);
-      const imgPreview = document.getElementById(`${prefix}-preview-img`); const audioPreview = document.getElementById(`${prefix}-preview-audio`);
-      const previewBox = document.getElementById(`${prefix}-preview-box`);
-      if(!previewBox) return; let hasPreview = false;
-      if ((type === '音樂' || type === '音效') && urlInput && urlInput.value.trim()) { let optimalAudioUrl = getOptimalAudioUrl(urlInput.value.trim()); if (audioPreview.src !== optimalAudioUrl) { audioPreview.src = optimalAudioUrl; } audioPreview.style.display = 'block'; hasPreview = true; } else { audioPreview.style.display = 'none'; audioPreview.pause(); }
-      let imgUrl = ""; if (type === 'GIF' && urlInput && urlInput.value.trim()) { imgUrl = getOptimalImageUrl(urlInput.value.trim()); } else if (coverInput && coverInput.value.trim()) { imgUrl = getOptimalImageUrl(coverInput.value.trim()); }
-      if (imgUrl) { imgPreview.src = imgUrl; imgPreview.style.display = 'block'; hasPreview = true; } else { imgPreview.style.display = 'none'; }
-      previewBox.style.display = hasPreview ? 'flex' : 'none';
-    }
-
-    document.body.addEventListener('input', (e) => {
-        if (e.target.id === 'mat-url' || e.target.id === 'mat-cover' || e.target.id === 'mat-type-select') { updatePreviews('mat'); }
-        if (e.target.id === 'edit-url' || e.target.id === 'edit-cover') { updatePreviews('edit'); }
-    });
-
     function renderUploadFields(type, prefix) {
       const df = document.getElementById(`${prefix}-dynamic-fields`); const urlInput = document.getElementById(prefix === 'mat' ? 'mat-url' : 'edit-url');
       const richContainer = document.getElementById(`${prefix}-rich-text-container`);
       if (richContainer) richContainer.style.display = 'none';
       if (type === "音樂") { df.innerHTML = `<input type="number" id="${prefix}-order" class="input-box" placeholder="順序" value="2" style="width: 50px;"><input type="text" id="${prefix}-album" class="input-box" placeholder="專輯名稱" style="width:130px;"><input type="url" id="${prefix}-cover" class="input-box" placeholder="封面網址" style="width:130px;">`; if (urlInput) urlInput.placeholder = "MP3 直連"; } 
-      else if (type === "音效") { df.innerHTML = `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 資料夾" style="width:100px;"><div style="display:flex;align-items:center;background:#282828;border-radius:6px;padding-left:5px;">🎨 <input type="color" id="${prefix}-color" class="input-box" value="#ff1744" style="width:30px;padding:0;border:none;"><input type="text" id="${prefix}-style" class="input-box" placeholder="或圖片網址" style="width:100px;"></div>`; if (urlInput) urlInput.placeholder = "小音效 MP3 直連"; } 
-      else if (type === "GIF") { df.innerHTML = `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 資料夾" style="width:120px;">`; if (urlInput) urlInput.placeholder = "GIF 圖片網址"; } 
+      else if (type === "音效") { df.innerHTML = `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 資料夾 (可留空)" style="width:120px;"><div style="display:flex;align-items:center;background:#282828;border-radius:6px;padding-left:5px;">🎨 <input type="color" id="${prefix}-color" class="input-box" value="#ff1744" style="width:30px;padding:0;border:none;"><input type="text" id="${prefix}-style" class="input-box" placeholder="或圖片網址" style="width:100px;"></div>`; if (urlInput) urlInput.placeholder = "小音效 MP3 直連"; } 
+      else if (type === "GIF") { df.innerHTML = `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 資料夾 (可留空)" style="width:120px;">`; if (urlInput) urlInput.placeholder = "GIF 圖片網址"; } 
+      // 🌟 新增：GIF+聲音 以及 單獨人聲/伴奏
+      else if (type === "GIF+聲音") { df.innerHTML = `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 資料夾 (可留空)" style="width:120px;"><input type="url" id="${prefix}-cover" class="input-box" placeholder="GIF 圖片網址" style="width:200px;">`; if (urlInput) urlInput.placeholder = "對應的聲音 (MP3) 網址"; }
+      else if (type === "人聲" || type === "伴奏") { df.innerHTML = `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 資料夾 (可留空)" style="width:120px;">`; if (urlInput) urlInput.placeholder = "音檔 (MP3) 直連網址"; }
       else if (type === "軟體" || type === "指令") { df.innerHTML = `<input type="url" id="${prefix}-cover" class="input-box" placeholder="🖼️ 封面大圖網址" style="width: 200px;">`; if (urlInput) urlInput.placeholder = "跳轉網址(可留空)"; if (richContainer) { richContainer.style.display = 'block'; if(prefix === 'mat') document.getElementById('mat-rich-editor').innerHTML = ''; } } 
       else { df.innerHTML = ``; }
-      updatePreviews(prefix);
     }
     document.getElementById('mat-type-select').addEventListener('change', (e) => renderUploadFields(e.target.value, 'mat'));
     renderUploadFields("音樂", 'mat');
 
-    // 🌟 全域標題監聽 (自訂畫筆功能) 🌟
     function initNavListener() {
         if(navUnsub) navUnsub();
         navUnsub = onSnapshot(doc(db, "settings", "navTitles"), (docSnap) => {
@@ -517,7 +496,6 @@
       if (userRole === "admin") { 
           document.getElementById('nav-review-btn').style.display = 'inline-block'; 
           if(fab) fab.style.display = 'flex';
-          // 顯示畫筆
           document.querySelectorAll('.nav-edit-pen').forEach(pen => pen.style.display = 'inline-block');
           
           if (user.uid === CREATOR_UID) { document.getElementById('nav-admin-btn').style.display = 'inline-block'; roleTag = `<span style="color:var(--accent);">👑</span>`; } 
@@ -532,7 +510,7 @@
     document.getElementById('login-btn').addEventListener('click', () => { signInWithPopup(auth, provider).then(() => switchPage('blog')); });
     document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth).then(() => switchPage('blog')); });
 
-    // 🌟 AI 分離音軌邏輯 🌟
+    // 🌟 AI 音軌分離核心邏輯 🌟
     window.startAISplit = function() {
         const fileInput = document.getElementById('ai-file-input');
         if (!fileInput.files || fileInput.files.length === 0) { showToast("⚠️ 請先選擇要分離的音樂檔案！", "error"); return; }
@@ -540,22 +518,26 @@
         document.getElementById('ai-loading').style.display = 'block';
         document.getElementById('ai-results').style.display = 'none';
         
-        // 模擬 AI 處理時間 (3秒)
+        // 將上傳的檔案建立暫時網址，讓試聽播放器可以直接讀取
+        const fileUrl = URL.createObjectURL(fileInput.files[0]);
+        
         setTimeout(() => {
             document.getElementById('ai-loading').style.display = 'none';
             document.getElementById('ai-results').style.display = 'block';
+            document.getElementById('ai-audio-vocals').src = fileUrl;
+            document.getElementById('ai-audio-inst').src = fileUrl;
             showToast("✅ AI 音軌分離成功！");
         }, 3000);
     }
     
-    window.pushToMaterials = function(trackSuffix) {
+    window.pushToMaterials = function(type) {
         const fileName = document.getElementById('ai-file-input').files[0]?.name || '未命名音軌';
-        const finalName = fileName.replace(/\.[^/.]+$/, "") + ` (${trackSuffix})`; // 去除副檔名加上後綴
+        const finalName = fileName.replace(/\.[^/.]+$/, "") + (type === '人聲' ? ' (Vocals)' : ' (Inst)');
         
-        switchPage('materials');
+        switchPage('blog'); // 回大廳 (因為發布按鈕被移走了)
         document.getElementById('upload-modal').style.display = 'flex';
-        document.getElementById('mat-type-select').value = "音效";
-        renderUploadFields("音效", "mat");
+        document.getElementById('mat-type-select').value = type;
+        renderUploadFields(type, "mat");
         document.getElementById('mat-name').value = finalName;
         
         showToast("已為您自動填入發布欄位！請補齊檔案網址即可發布。");
@@ -662,7 +644,9 @@
       let d = { trackOrder: 2, folderName: "根目錄", btnStyle: "", albumName: "", coverUrl: "", descriptionHTML: "" };
       const getVal = (id) => document.getElementById(id)?.value?.trim() || "";
       if (type === "音樂") { d.albumName = getVal(`${prefix}-album`); d.coverUrl = getVal(`${prefix}-cover`); let o = parseInt(getVal(`${prefix}-order`)); if (!isNaN(o)) d.trackOrder = o; } 
-      else if (type === "音效" || type === "GIF") { d.folderName = getVal(`${prefix}-folder`) || "根目錄"; if (type === "音效") d.btnStyle = getVal(`${prefix}-style`) || document.getElementById(`${prefix}-color`)?.value || ""; } 
+      else if (type === "音效" || type === "GIF") { d.folderName = getVal(`${prefix}-folder`) || ""; if (type === "音效") d.btnStyle = getVal(`${prefix}-style`) || document.getElementById(`${prefix}-color`)?.value || ""; } 
+      else if (type === "GIF+聲音") { d.folderName = getVal(`${prefix}-folder`) || ""; d.coverUrl = getVal(`${prefix}-cover`); }
+      else if (type === "人聲" || type === "伴奏") { d.folderName = getVal(`${prefix}-folder`) || ""; }
       else if (type === "軟體" || type === "指令") { d.coverUrl = getVal(`${prefix}-cover`); d.descriptionHTML = document.getElementById(prefix === 'mat' ? 'mat-rich-editor' : 'edit-rich-editor')?.innerHTML || ""; }
       return d;
     }
@@ -675,11 +659,11 @@
       try { 
         const col = (userRole === "admin") ? "categorized_materials" : "pending_materials"; 
         await addDoc(collection(db, col), { fileName: name, category: type, fileUrl: rawUrl || "", ...ex, uploaderName: safeName, timestamp: serverTimestamp() }); 
-        if (userRole === "admin") { alert("✅ 發布成功！檔案已順利上架，畫面已為您即時同步。"); } else { alert("📤 發布已送出審核！"); }
+        if (userRole === "admin") { alert("✅ 發布成功！"); } else { alert("📤 已提交至審核大廳！"); }
         if(document.getElementById('mat-name')) document.getElementById('mat-name').value = ""; 
         if(document.getElementById('mat-url')) document.getElementById('mat-url').value = ""; 
         let re = document.getElementById('mat-rich-editor'); if(re) re.innerHTML = ""; 
-        updatePreviews('mat'); document.getElementById('upload-modal').style.display = 'none';
+        document.getElementById('upload-modal').style.display = 'none';
       } catch (error) { alert("❌ 儲存錯誤，請檢查連線。"); }
     });
 
@@ -696,9 +680,10 @@
       renderUploadFields(i.category, 'edit');
       setTimeout(() => {
         if(i.category === '音樂') { document.getElementById('edit-album').value = i.albumName || ''; document.getElementById('edit-cover').value = i.coverUrl || ''; document.getElementById('edit-order').value = i.trackOrder || 2; } 
-        else if (i.category === '音效' || i.category === 'GIF') { document.getElementById('edit-folder').value = i.folderName || '根目錄'; if (i.category === '音效') { if (i.btnStyle && i.btnStyle.startsWith('http')) { document.getElementById('edit-style').value = i.btnStyle; } else if (i.btnStyle && i.btnStyle.startsWith('#')) { document.getElementById('edit-color').value = i.btnStyle; } } }
+        else if (i.category === '音效' || i.category === 'GIF') { document.getElementById('edit-folder').value = i.folderName || ''; if (i.category === '音效') { if (i.btnStyle && i.btnStyle.startsWith('http')) { document.getElementById('edit-style').value = i.btnStyle; } else if (i.btnStyle && i.btnStyle.startsWith('#')) { document.getElementById('edit-color').value = i.btnStyle; } } }
+        else if (i.category === 'GIF+聲音') { document.getElementById('edit-folder').value = i.folderName || ''; document.getElementById('edit-cover').value = i.coverUrl || ''; }
+        else if (i.category === '人聲' || i.category === '伴奏') { document.getElementById('edit-folder').value = i.folderName || ''; }
         else if (i.category === '軟體' || i.category === '指令') { document.getElementById('edit-cover').value = i.coverUrl || ''; document.getElementById('edit-rich-editor').innerHTML = i.descriptionHTML || ''; }
-        updatePreviews('edit');
       }, 100);
       document.getElementById('edit-modal').style.display = 'flex';
     };
@@ -721,7 +706,7 @@
     
     window.approveMaterial = async function(id) { 
         const t = pendingMaterialsList.find(m => m.id === id); if (!t) return; 
-        try { await addDoc(collection(db, "categorized_materials"), { fileName: t.fileName, category: t.category, fileUrl: t.fileUrl, coverUrl: t.coverUrl || "", albumName: t.albumName || "", btnStyle: t.btnStyle || "", trackOrder: t.trackOrder || 2, folderName: t.folderName || "根目錄", descriptionHTML: t.descriptionHTML || "", uploaderName: t.uploaderName || '匿名', timestamp: serverTimestamp() }); await deleteDoc(doc(db, "pending_materials", id)); showToast("✅ 核准上架！"); fetchPendingMaterials(); } catch(e) {} 
+        try { await addDoc(collection(db, "categorized_materials"), { fileName: t.fileName, category: t.category, fileUrl: t.fileUrl, coverUrl: t.coverUrl || "", albumName: t.albumName || "", btnStyle: t.btnStyle || "", trackOrder: t.trackOrder || 2, folderName: t.folderName || "", descriptionHTML: t.descriptionHTML || "", uploaderName: t.uploaderName || '匿名', timestamp: serverTimestamp() }); await deleteDoc(doc(db, "pending_materials", id)); showToast("✅ 核准上架！"); fetchPendingMaterials(); } catch(e) {} 
     };
     window.rejectMaterial = async function(id) { if (!confirm("退回此提案？")) return; try { await deleteDoc(doc(db, "pending_materials", id)); showToast("❌ 已刪除。"); fetchPendingMaterials(); } catch(e){} };
     window.deleteMaterial = async function(id) { 
@@ -729,6 +714,7 @@
         try { await deleteDoc(doc(db, "categorized_materials", id)); document.getElementById('article-modal').style.display='none'; document.getElementById('album-modal').style.display='none'; showToast("🗑️ 已徹底移除"); } catch(e) { showToast("❌ 刪除失敗", "error"); }
     };
 
+    // 🌟 核心：移除未分類的預設資料夾名稱 🌟
     function renderMaterialsByFilter() {
       try {
           const container = document.getElementById('material-container'); container.innerHTML = '';
@@ -737,7 +723,7 @@
           const searchVal = document.getElementById('search-input')?.value || ""; const search = searchVal.toLowerCase(); const getSafe = (str) => (str || "").toLowerCase();
 
           let sItems = fetchedMaterialsList.filter(i => i.category === "軟體" && (!search || getSafe(i.fileName).includes(search)));
-          if(sItems.length === 0) softContainer.innerHTML = '<p style="color:#888;">目前尚無推薦軟體。</p>';
+          if(sItems.length === 0) softContainer.innerHTML = '<p style="color:#888;">目前知識庫內尚無推薦軟體。</p>';
           sItems.forEach(d => {
             const c = document.createElement('div'); c.className = 'article-card'; 
             let img = getOptimalImageUrl(d.coverUrl) || 'https://via.placeholder.com/800x400/111/fff?text=Software';
@@ -746,14 +732,27 @@
           });
 
           let lItems = fetchedMaterialsList.filter(i => i.category === "指令" && (!search || getSafe(i.fileName).includes(search)));
-          if(lItems.length === 0) cmdContainer.innerHTML = '<p style="color:#888;">目前尚無資料。</p>';
+          if(lItems.length === 0) cmdContainer.innerHTML = '<p style="color:#888;">目前快捷指令庫內尚無資料。</p>';
           lItems.forEach(d => {
             const c = document.createElement('div'); c.className = 'article-card';
             c.innerHTML = `<div class="article-info"><h3 class="article-title">💻 ${d.fileName || '未命名'}</h3><p style="color:#666;font-size:0.85em;">點擊查看實用指令碼</p></div>`;
             c.addEventListener('click', () => openArticleModal(d)); cmdContainer.appendChild(c);
           });
 
-          const renderGrouped = (items, renderer) => { const grps = {}; items.forEach(d => { let f = `📁 ${d.folderName || '未分類'}`; if (!grps[f]) grps[f] = []; grps[f].push(d); }); Object.keys(grps).sort().forEach(folder => { const h = document.createElement('div'); h.className = 'folder-header'; h.innerHTML = folder; container.appendChild(h); grps[folder].forEach(d => renderer(d, container)); }); };
+          const renderGrouped = (items, renderer) => { 
+              const grps = {}; const ungrouped = [];
+              items.forEach(d => { 
+                  let f = d.folderName ? d.folderName.trim() : ''; 
+                  if (!f) { ungrouped.push(d); } else { if (!grps[f]) grps[f] = []; grps[f].push(d); }
+              }); 
+              // 先畫沒有資料夾的
+              ungrouped.forEach(d => renderer(d, container));
+              // 再畫有資料夾的
+              Object.keys(grps).sort().forEach(folder => { 
+                  const h = document.createElement('div'); h.className = 'folder-header'; h.innerHTML = `📁 ${folder}`; container.appendChild(h); 
+                  grps[folder].forEach(d => renderer(d, container)); 
+              }); 
+          };
 
           if (currentActiveTab === "全部" || currentActiveTab === "音樂") {
             const albums = {};
@@ -762,18 +761,29 @@
           }
           
           const rSFX = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; c.style.alignItems='center'; c.style.textAlign='center'; c.style.padding='25px 15px'; let s = `background-color:#ff1744;box-shadow:0 12px 0 #8e001c,0 15px 20px rgba(0,0,0,0.5);`; if(d.btnStyle){ if(d.btnStyle.startsWith('http')){ s=`background-image:url('${getOptimalImageUrl(d.btnStyle)}');box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);border:none;`; }else{ s=`background-color:${d.btnStyle};box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);`; } } let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;width:100%;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<button class="sfx-push-btn" style="${s}" onclick="playSFX('${d.fileName}', '${d.fileUrl}')"></button><strong style="font-size:1.2em; display:block;">${d.fileName || '未命名'}</strong><div style="display:flex; gap:5px; margin-top:5px; width:100%;"><a href="${getOptimalAudioUrl(d.fileUrl)}" target="_blank" class="btn-copy" style="flex:1;text-align:center;">📥</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy">📋</button></div>${adminBtn}`; p.appendChild(c); };
+          
           const rGIF = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">🖼️ GIF</div><img class="album-art-img" src="${getOptimalImageUrl(d.fileUrl)}"></div><strong>${d.fileName || '未命名'}</strong><div style="display:flex; gap:5px;"><a href="${d.fileUrl}" target="_blank" class="btn-copy" style="flex:1;text-align:center;">📥</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy">📋</button></div>${adminBtn}`; p.appendChild(c); };
+          
+          // 🌟 渲染 GIF+聲音 卡片
+          const rGifSound = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag" style="background:#b030ff;">🎞️ GIF+聲音</div><img class="album-art-img" src="${getOptimalImageUrl(d.coverUrl)}"></div><strong>${d.fileName || '未命名'}</strong><audio controls src="${getOptimalAudioUrl(d.fileUrl)}" style="width:100%; height:35px;"></audio>${adminBtn}`; p.appendChild(c); };
+
+          // 🌟 渲染 單獨人聲/伴奏 卡片
+          const rAudioTrack = (d, p, icon, label) => { const c = document.createElement('div'); c.className = 'material-item'; let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><div style="font-size:2.5em;">${icon}</div><div style="flex:1; overflow:hidden;"><div class="mat-type-tag" style="position:relative; top:0; left:0; display:inline-block; margin-bottom:5px;">${label}</div><strong style="display:block; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${d.fileName || '未命名'}</strong></div></div><audio controls src="${getOptimalAudioUrl(d.fileUrl)}" style="width:100%; height:35px; margin-top:10px;"></audio>${adminBtn}`; p.appendChild(c); };
 
           if (currentActiveTab === "全部" || currentActiveTab === "音效") renderGrouped(fetchedMaterialsList.filter(i => i.category === "音效" && (!search || getSafe(i.fileName).includes(search))), rSFX);
           if (currentActiveTab === "全部" || currentActiveTab === "GIF") renderGrouped(fetchedMaterialsList.filter(i => i.category === "GIF" && (!search || getSafe(i.fileName).includes(search))), rGIF);
-      } catch (error) { console.error(error); }
+          if (currentActiveTab === "全部" || currentActiveTab === "GIF+聲音") renderGrouped(fetchedMaterialsList.filter(i => i.category === "GIF+聲音" && (!search || getSafe(i.fileName).includes(search))), rGifSound);
+          if (currentActiveTab === "全部" || currentActiveTab === "人聲") renderGrouped(fetchedMaterialsList.filter(i => i.category === "人聲" && (!search || getSafe(i.fileName).includes(search))), (d,p)=>rAudioTrack(d,p,'🎤','人聲'));
+          if (currentActiveTab === "全部" || currentActiveTab === "伴奏") renderGrouped(fetchedMaterialsList.filter(i => i.category === "伴奏" && (!search || getSafe(i.fileName).includes(search))), (d,p)=>rAudioTrack(d,p,'🎹','伴奏'));
+
+      } catch (error) { console.error("渲染發生錯誤:", error); }
     }
 
     window.openArticleModal = function(data) {
       const modal = document.getElementById('article-modal'); let adminBtns = '';
       if (userRole === 'admin') { adminBtns = `<div style="display:inline-flex; gap:5px; vertical-align:middle; margin-left:15px;"><button onclick="openEditModal('${data.id}')" class="btn-edit" style="font-size:0.5em; padding:4px 10px;">⚙️ 編輯內容</button><button onclick="deleteMaterial('${data.id}')" class="btn-del" style="font-size:0.5em; padding:4px 10px;">🗑️ 徹底刪除</button></div>`; }
       document.getElementById('article-title').innerHTML = `${data.fileName} ${adminBtns}`;
-      let safeHtml = fixHtmlContent(data.descriptionHTML) || '<p style="color:#888;">尚未編輯內容。</p>';
+      let safeHtml = fixHtmlContent(data.descriptionHTML) || '<p style="color:#888;">本卡片尚未編輯內容。</p>';
       document.getElementById('article-desc').innerHTML = safeHtml;
       if (data.fileUrl) { let btnText = data.category === '軟體' ? '🔗 前往軟體連結 / 📥 下載' : '🔗 前往參考連結'; document.getElementById('article-desc').innerHTML += `<div style="margin-top: 35px; text-align: center;"><a href="${data.fileUrl}" target="_blank" class="btn-blue-dl">${btnText}</a></div>`; }
       modal.style.display = 'flex';
@@ -806,7 +816,7 @@
       if (globalPlaylist.length === 0) return; let t = globalPlaylist[globalTrackIndex]; gpAudio.src = getOptimalAudioUrl(t.fileUrl);
       document.getElementById('gp-title').innerText = t.fileName || '未命名'; document.getElementById('gp-artist').innerText = t.albumName || "Dogfish Studio";
       let c = getOptimalImageUrl(t.coverUrl); document.getElementById('gp-cover').src = c ? c : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
-      gpAudio.play().catch(e => { showToast("⚠️ 背景播放器攔截，請另開下載", "error"); });
+      gpAudio.play().catch(e => { showToast("⚠️ 背景播放器攔截", "error"); });
     };
     
     window.playNextTrack = function() { 
@@ -829,6 +839,16 @@
         const activeNavBtn = Array.from(document.querySelectorAll('.btn-nav')).find(b => b.getAttribute('onclick')?.includes(pageId)); 
         if (activeNavBtn) activeNavBtn.classList.add('active'); 
     }
+    
+    document.querySelectorAll('.btn-nav').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (this.getAttribute('onclick').includes('admin') && auth.currentUser && auth.currentUser.uid !== CREATOR_UID) return;
+            document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+            if (!this.id.includes('upload-btn')) this.classList.add('active');
+        });
+    });
+    
+    document.querySelectorAll('.tab-btn').forEach(button => { button.addEventListener('click', () => { document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); currentActiveTab = button.getAttribute('data-target'); renderMaterialsByFilter(); }); });
   </script>
 </body>
 </html>
