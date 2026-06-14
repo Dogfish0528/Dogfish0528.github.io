@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish Studio | v15.9 名冊管理版</title>
+  <title>Dogfish Studio | v16.0 完美防呆版</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -128,14 +128,14 @@
     .track-num { color: #b3b3b3; font-weight: 700; width: 30px; text-align: center; font-size: 1.1em; }
     .review-item-card { background: rgba(20,20,20,0.6); border-left: 4px solid #ffb300; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; text-align: left; border: 1px solid #333; }
 
-    .blog-style-modal { background: #1a1a1a; padding: 4vw; max-width: 95vw !important; width: 1400px !important; height: 90vh; }
-    .blog-title { font-size: 2.5em; font-weight: 900; color: #fff; margin: 0 0 10px 0; line-height: 1.3; }
+    /* 滿版部落格專屬內文 */
     .blog-meta { color: #888; font-size: 1em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
     .blog-divider { border: 0; border-top: 1px solid #333; margin-bottom: 25px; }
     .blog-content { font-size: 1.2em; line-height: 1.8; color: #ddd; background: transparent; border: none; padding: 0; overflow-y: visible; max-height: none; }
     .blog-download-box { background: #222; border: 1px dashed #444; border-left: 4px solid #0088ff; border-radius: 8px; padding: 25px; margin-top: 50px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
     .dl-info { display: flex; align-items: center; gap: 15px; }
 
+    /* 智慧播放器與隱藏迷你按鈕 */
     #global-player { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--player-height); background: rgba(15,15,15,0.95); border-top: 1px solid rgba(255,255,255,0.1); justify-content: space-between; align-items: center; padding: 0 20px; z-index: 3000; flex-wrap: wrap; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
     .gp-left { display: flex; align-items: center; gap: 15px; width: 280px; text-align: left; } #gp-cover { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); } .gp-info { display: flex; flex-direction: column; } #gp-title { color: white; font-weight: 700; font-size: 0.95em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; } #gp-artist { color: #b3b3b3; font-size: 0.8em; }
     .gp-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 15px; } .gp-control-btn { background: transparent; border: none; color: #b3b3b3; font-size: 1.5em; } .gp-control-btn:hover { color: white; transform: scale(1.1); } #gp-audio { width: 100%; max-width: 400px; height: 40px; outline: none; }
@@ -150,13 +150,16 @@
     #mini-player-toggle { display: none; position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: #000; font-size: 1.8em; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 3100; align-items: center; justify-content: center; transition: 0.2s; }
     #mini-player-toggle:hover { transform: scale(1.1); }
 
+    /* 🌟 v16.0 修復：加入 Toast 提示框樣式與實體盒子 */
     #toast-container { position: fixed; top: 80px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-    .toast { background: rgba(30,30,30,0.9); color: white; padding: 12px 20px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-weight: 700; backdrop-filter: blur(10px); animation: slideIn 0.3s forwards, fadeOut 0.3s forwards 2.7s; }
+    .toast { background: rgba(30,30,30,0.9); color: white; padding: 15px 25px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-weight: 700; font-size: 1.1em; backdrop-filter: blur(10px); animation: slideIn 0.3s forwards, fadeOut 0.3s forwards 4.7s; }
     .toast.error { border-left-color: var(--accent); }
     @keyframes slideIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } } @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
   </style>
 </head>
 <body>
+
+  <div id="toast-container"></div>
 
   <div id="disclaimer-overlay">
     <div class="disclaimer-box solid-panel" style="padding: 40px; margin: 20px; text-align: center;">
@@ -318,7 +321,7 @@
   </div>
 
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v15.9 名冊管理版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v16.0 防呆與密碼升級版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="switchPage('materials')">素材</button>
@@ -332,7 +335,13 @@
       <button id="nav-review-btn" class="btn-nav" onclick="switchPage('review')" style="display: none; color: #ffb300;">審核</button>
       <button id="nav-admin-btn" class="btn-nav" onclick="switchPage('admin')" style="display: none; color: var(--accent);">設定</button>
       <button id="login-btn-modal" class="btn-login" onclick="document.getElementById('login-modal').style.display='flex'">登入</button>
-      <div id="top-right-profile"><span id="tr-name" style="font-weight: bold;">...</span><img id="tr-img" src="" alt="Avatar"><button id="logout-btn" class="btn-logout">登出</button></div>
+      
+      <div id="top-right-profile">
+        <span id="tr-name" style="font-weight: bold;">...</span>
+        <img id="tr-img" src="" alt="Avatar">
+        <button id="change-pwd-btn" class="btn-logout" style="display: none; border-color: #00d4ff; color: #00d4ff;">🔑 改密碼</button>
+        <button id="logout-btn" class="btn-logout">登出</button>
+      </div>
     </div>
   </div>
 
@@ -450,7 +459,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website", storageBucket: "dogfish-website.firebasestorage.app", messagingSenderId: "501551191843", appId: "1:501551191843:web:32fd3c7a51c7a21722de96" };
@@ -467,7 +476,6 @@
     window.isEditMode = false;
     let initialRouteChecked = false;
 
-    // 全域媒體選取器
     window.lastSelectedMedia = null;
     document.addEventListener('click', (e) => {
         if(e.target.closest('.rich-editor-content') && ['IMG', 'VIDEO', 'IFRAME'].includes(e.target.tagName)) {
@@ -495,7 +503,7 @@
     if (localStorage.getItem('dogfish_disclaimer_agreed') === 'true') { document.getElementById('disclaimer-overlay').style.display = 'none'; }
     document.getElementById('agree-disclaimer-btn').addEventListener('click', () => { localStorage.setItem('dogfish_disclaimer_agreed', 'true'); document.getElementById('disclaimer-overlay').style.display = 'none'; showToast("歡迎進入！"); });
 
-    window.showToast = function(msg, type = 'success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg; c.appendChild(t); setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 3000); };
+    window.showToast = function(msg, type = 'success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg; c.appendChild(t); setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 4500); };
     window.copyToClipboard = function(text) { navigator.clipboard.writeText(text).then(() => showToast('🔗 連結複製成功！')).catch(() => showToast('❌ 複製失敗', 'error')); };
     document.getElementById('search-input').addEventListener('keyup', renderMaterialsByFilter);
 
@@ -562,7 +570,7 @@
             if(err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
                 showToast("❌ 沒有此帳號或密碼錯誤", "error");
             } else if (err.code === 'auth/operation-not-allowed') {
-                showToast("⚠️ 請通知站長到 Firebase 開啟「電子郵件/密碼」登入功能", "error");
+                showToast("⚠️ 系統阻擋：請站長先到 Firebase 後台開啟「電子郵件/密碼」登入！", "error");
             } else {
                 showToast("❌ 無法登入", "error"); 
             }
@@ -570,6 +578,24 @@
     });
 
     document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth).then(() => switchPage('blog')); });
+
+    // 🌟 秘密帳號更改密碼 🌟
+    document.getElementById('change-pwd-btn').addEventListener('click', async () => {
+        if(!auth.currentUser) return;
+        let newPwd = prompt("🔑 請輸入您要更改的新密碼 (至少6個字元)：");
+        if(!newPwd) return;
+        if(newPwd.length < 6) { showToast("❌ 密碼太短，至少需要6個字元！", "error"); return; }
+        try {
+            await updatePassword(auth.currentUser, newPwd);
+            showToast("✅ 密碼修改成功！下次登入請使用新密碼。");
+        } catch(e) {
+            if(e.code === 'auth/requires-recent-login') {
+                showToast("⚠️ 安全考量：請您先登出再重新登入一次，然後才能修改密碼！", "error");
+            } else {
+                showToast("❌ 修改失敗，請稍後再試", "error");
+            }
+        }
+    });
 
     document.getElementById('create-secret-btn').addEventListener('click', async () => {
         if(auth.currentUser.uid !== CREATOR_UID) { showToast("⚠️ 只有創世神可以配發帳號！", "error"); return; }
@@ -586,11 +612,10 @@
             document.getElementById('secret-create-username').value = "";
             document.getElementById('secret-create-password').value = "";
             secondaryAuth.signOut();
-            // 自動刷新名冊
             loadAdminUserList();
         } catch(err) {
             if(err.code === 'auth/operation-not-allowed') {
-                showToast("⚠️ 請先到 Firebase 後台開啟「電子郵件/密碼」登入！", "error");
+                showToast("⚠️ Firebase 阻擋：請先到 Firebase 後台開啟「電子郵件/密碼」登入！", "error");
             } else if(err.code === 'auth/email-already-in-use') {
                 showToast("❌ 無法建立：此秘密帳號已經存在", "error");
             } else {
@@ -599,7 +624,6 @@
         }
     });
 
-    // 🌟 核心：讀取全站會員與秘密帳號名冊 🌟
     window.loadAdminUserList = async function() {
         if(userRole !== 'admin') return;
         const listDiv = document.getElementById('admin-user-list');
@@ -636,7 +660,6 @@
         } catch(e) { listDiv.innerHTML = '<div style="color:var(--accent);">載入名冊失敗</div>'; }
     };
 
-    // 🌟 核心：刪除秘密帳號權限與資料 🌟
     window.deleteSecretUser = async function(docId, email) {
         let shortName = email.replace('@dogfish.secret', '');
         if(!confirm(`🚨 確定要刪除秘密帳號 [${shortName}] 嗎？\n這將會移除其在網站上的所有資料與權限。\n(若要徹底註銷其後台登入資格，請至 Firebase Authentication 刪除)`)) return;
@@ -644,7 +667,7 @@
             await deleteDoc(doc(db, "users", docId));
             await deleteDoc(doc(db, "permissions", email));
             showToast(`✅ 已註銷 [${shortName}] 的網站權限與資料！`);
-            loadAdminUserList(); // 重新整理名冊
+            loadAdminUserList(); 
         } catch(e) {
             showToast("❌ 刪除失敗", "error");
         }
@@ -655,10 +678,19 @@
         document.getElementById('login-btn-modal').style.display = 'none'; document.getElementById('top-right-profile').style.display = 'flex'; 
         
         let safeName = user.displayName;
-        if(!safeName && user.email.endsWith('@dogfish.secret')) { safeName = `㊙️ ${user.email.split('@')[0]}`; } 
+        let isSecret = user.email.endsWith('@dogfish.secret');
+        if(!safeName && isSecret) { safeName = `㊙️ ${user.email.split('@')[0]}`; } 
         else if(!safeName) { safeName = "匿名使用者"; }
         
         document.getElementById('tr-img').src = user.photoURL || 'https://via.placeholder.com/40'; 
+        
+        // 只有秘密帳號才顯示改密碼按鈕
+        if(isSecret) {
+            document.getElementById('change-pwd-btn').style.display = 'inline-block';
+        } else {
+            document.getElementById('change-pwd-btn').style.display = 'none';
+        }
+
         document.getElementById('chat-app-container').style.display = 'flex'; document.getElementById('chat-login-prompt').style.display = 'none';
         
         await setDoc(doc(db, "users", user.uid), { email: user.email.toLowerCase(), name: safeName, photo: user.photoURL || "" }, { merge: true });
@@ -1020,10 +1052,7 @@
         const activeNavBtn = Array.from(document.querySelectorAll('.btn-nav')).find(b => b.getAttribute('onclick')?.includes(pageId)); 
         if (activeNavBtn) activeNavBtn.classList.add('active'); 
         
-        // 切換到設定頁面時，自動載入名冊
-        if (pageId === 'admin' && userRole === 'admin') {
-            loadAdminUserList();
-        }
+        if (pageId === 'admin' && userRole === 'admin') { loadAdminUserList(); }
     }
     document.querySelectorAll('.tab-btn').forEach(button => { button.addEventListener('click', () => { document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); currentActiveTab = button.getAttribute('data-target'); renderMaterialsByFilter(); }); });
   </script>
