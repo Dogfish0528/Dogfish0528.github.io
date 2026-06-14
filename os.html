@@ -3,349 +3,756 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish OS Center</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+  <title>Dogfish OS 11 Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    :root { --primary: #1db954; --secondary: #1ed760; --accent: #ff1744; --border-color: rgba(255, 255, 255, 0.1); --font-main: 'Noto Sans TC', sans-serif; }
-    body { margin: 0; padding: 0; overflow: hidden; width: 100vw; height: 100vh; font-family: var(--font-main); user-select: none; }
-    a, button, input, select, textarea { cursor: pointer; }
-    
-    /* 🌟 Windows 桌面大容器 */
-    #desktop-area { width: 100vw; height: calc(100vh - 48px); position: absolute; top: 0; left: 0; overflow: hidden; }
-    
-    /* 🪟 Windows 核心視窗結構 */
-    .os-window {
-        position: absolute; width: 75%; max-width: 1000px; height: 60vh;
-        display: none; flex-direction: column; overflow: hidden; z-index: 10; box-sizing: border-box;
+    /* =========================================================
+       系統底層變數與全域設定 (Fluent Design System)
+    ========================================================= */
+    :root {
+      --sys-bg: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+      --taskbar-bg: rgba(32, 32, 32, 0.75);
+      --window-bg: rgba(30, 30, 30, 0.85);
+      --window-border: rgba(255, 255, 255, 0.15);
+      --primary: #0078D4;
+      --primary-hover: #106EBE;
+      --text-main: #ffffff;
+      --text-muted: #cccccc;
+      --win-radius: 12px;
     }
-    .os-window.active { display: flex; }
-    .os-title-bar { height: 36px; display: flex; align-items: center; justify-content: space-between; padding-left: 12px; cursor: grab; flex-shrink: 0; }
-    .os-title-bar:active { cursor: grabbing; }
-    .os-window-title { font-weight: bold; font-size: 0.9em; display: flex; align-items: center; gap: 8px; }
-    .os-window-controls { display: flex; height: 100%; align-items: center; }
-    .os-btn { width: 45px; height: 100%; border: none; background: transparent; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; }
-    .os-content-area { flex: 1; padding: 20px; overflow-y: auto; background: rgba(20,20,20,0.4); }
 
-    /* 📌 Windows 底部工作列 */
-    #os-taskbar { position: fixed; bottom: 0; left: 0; width: 100%; height: 48px; z-index: 99999; display: flex; align-items: center; padding: 0 10px; box-shadow: 0 -2px 10px rgba(0,0,0,0.5); box-sizing: border-box; }
-    #os-start-btn { display: flex; align-items: center; justify-content: center; font-weight: bold; border: none; height: 100%; cursor: pointer; }
-    .taskbar-apps { display: flex; gap: 6px; flex: 1; height: 100%; align-items: center; padding: 0 15px; overflow-x: auto; }
-    .taskbar-tab { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border: none; color: white; font-weight: bold; font-size: 0.85em; transition: 0.2s; border-radius: 4px; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .taskbar-system-tray { display: flex; align-items: center; gap: 15px; font-weight: bold; font-size: 0.9em; padding-right: 10px; }
+    * { box-sizing: border-box; font-family: 'Segoe UI', 'Noto Sans TC', sans-serif; }
+    body { margin: 0; overflow: hidden; width: 100vw; height: 100vh; background: var(--sys-bg) no-repeat center center fixed; background-size: cover; color: var(--text-main); user-select: none; transition: background 0.5s; }
+    a, button { cursor: pointer; }
 
-    /* ⊞ 開始功能表 */
-    #start-menu { display: none; position: fixed; bottom: 54px; width: 320px; background: rgba(25,25,25,0.95); border: 1px solid #444; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 999999; padding: 15px; backdrop-filter: blur(20px); }
-    #start-menu.active { display: block; animation: startUp 0.15s ease-out; }
-    @keyframes startUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    .start-item { display: flex; align-items: center; gap: 12px; padding: 12px; width: 100%; background: transparent; border: none; color: white; text-align: left; font-weight: bold; border-radius: 6px; font-size: 0.95em; }
-    .start-item:hover { background: rgba(255,255,255,0.1); color: var(--primary); }
-
-    /* ================== 🎨 系統四大主題套件包 ================== */
-    /* 1️⃣ Windows 11 主題 (現代置中、毛玻璃) */
-    body.theme-win11 { background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop') no-repeat center center fixed; background-size: cover; }
-    body.theme-win11 #os-taskbar { background: rgba(32,32,32,0.75); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.1); justify-content: center; }
-    body.theme-win11 .taskbar-apps { justify-content: center; }
-    body.theme-win11 #os-start-btn { background: transparent; color: #00d4ff; font-size: 1.3em; padding: 0 15px; } body.theme-win11 #os-start-btn:hover { background: rgba(255,255,255,0.1); }
-    body.theme-win11 .taskbar-tab { background: rgba(255,255,255,0.05); } body.theme-win11 .taskbar-tab:hover { background: rgba(255,255,255,0.1); } body.theme-win11 .taskbar-tab.open-active { background: rgba(255,255,255,0.15); box-shadow: inset 0 -3px 0 var(--primary); color: var(--primary); }
-    body.theme-win11 .os-window { background: rgba(25,25,25,0.85); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); }
-    body.theme-win11 .os-title-bar { background: transparent; color: white; } body.theme-win11 .os-btn { color: white; } body.theme-win11 .os-btn:hover { background: rgba(255,255,255,0.1); } body.theme-win11 .os-btn-close:hover { background: #e81123; color: white; border-top-right-radius: 9px; }
-    body.theme-win11 #start-menu { left: calc(50% - 160px); border-radius: 12px; }
-
-    /* 2️⃣ Windows XP 主題 (正宗藍天白雲大草原、立體發光藍框) */
-    body.theme-winxp { background: url('https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_background%29.jpg') no-repeat center center fixed; background-size: cover; }
-    body.theme-winxp #os-taskbar { background: linear-gradient(to bottom, #245edb 0%, #3f8cf3 9%, #245edb 18%, #245edb 92%, #1f4fa1 100%); justify-content: flex-start; border-top: none; }
-    body.theme-winxp .taskbar-apps { justify-content: flex-start; }
-    body.theme-winxp #os-start-btn { background: linear-gradient(to bottom, #499e3a 0%, #388629 100%); color: white; font-style: italic; font-size: 1.1em; border-radius: 0 12px 12px 0; padding: 0 20px; box-shadow: inset 0 1px 2px white; }
-    body.theme-winxp .taskbar-tab { background: #3a80f1; border: 1px solid #1a52b8; border-radius: 3px; } body.theme-winxp .taskbar-tab.open-active { background: #1f4ba3; }
-    body.theme-winxp .os-window { background: #ece9d8 !important; border: 4px solid #0055e5; border-radius: 8px 8px 0 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    body.theme-winxp .os-title-bar { background: linear-gradient(to right, #0058e6 0%, #3a93ff 100%); color: white; height: 30px; }
-    body.theme-winxp .os-content-area { background: #fff; color: #000; border: 1px solid #0055e5; border-top: none; }
-    body.theme-winxp .os-btn { background: linear-gradient(to bottom, #fff 0%, #d8d8d8 100%); border: 1px solid #555; border-radius: 3px; width: 22px; height: 22px; margin: 0 2px; color: black; }
-    body.theme-winxp .os-btn-close { background: linear-gradient(to bottom, #f37d73 0%, #e53c2f 100%); color: white; }
-    body.theme-winxp #start-menu { left: 0; background: #245edb; border-radius: 6px 6px 0 0; }
-
-    /* 3️⃣ Windows 98 主題 (硬核復古經典、灰底立體浮雕邊框) */
-    body.theme-win98 { background: #008080; }
-    body.theme-win98 #os-taskbar { background: #c0c0c0; border-top: 2px solid #fff; box-shadow: inset 0 1px 0 #dfdfdf; justify-content: flex-start; height: 38px; color: black; }
-    body.theme-win98 .taskbar-apps { justify-content: flex-start; }
-    body.theme-win98 #os-start-btn { background: #c0c0c0; color: black; font-weight: bold; border: 2px solid; border-color: #fff #808080 #808080 #fff; padding: 0 12px; height: 28px; }
-    body.theme-win98 .taskbar-tab { background: #c0c0c0; border: 2px solid; border-color: #fff #808080 #808080 #fff; color: black; border-radius: 0; height: 28px; } body.theme-win98 .taskbar-tab.open-active { border-color: #808080 #fff #fff #808080; background: #dfdfdf; }
-    body.theme-win98 .os-window { background: #c0c0c0 !important; border: 2px solid; border-color: #fff #000 #000 #fff; border-radius: 0; padding: 2px !important; box-shadow: inset 1px 1px 0 #dfdfdf; }
-    body.theme-win98 .os-title-bar { background: #000080; color: white; height: 24px; margin: 2px; }
-    body.theme-win98 .os-content-area { background: #fff; color: #000; border: 2px solid; border-color: #808080 #fff #fff #808080; margin: 2px; }
-    body.theme-win98 .os-btn { background: #c0c0c0; border: 2px solid; border-color: #fff #808080 #808080 #fff; color: black; width: 18px; height: 18px; font-size: 10px; padding: 0; margin-right: 2px; }
-    body.theme-win98 #start-menu { left: 0; background: #c0c0c0; border: 2px solid; border-color: #fff #000 #000 #fff; border-radius: 0; color: black; }
-
-    /* 共用網格與卡片設定 */
-    .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    .article-card { background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; cursor: pointer; color: white; text-align: left; }
-    body.theme-winxp .article-card, body.theme-win98 .article-card { background: #fff; color: #000; border: 1px solid #777; }
-    .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
-    .material-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
-    body.theme-winxp .material-item, body.theme-win98 .material-item { background: #f0f0f0; color: #000; border: 1px solid #888; }
-    .route-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 6px; margin-bottom: 5px; }
-    body.theme-winxp .route-item, body.theme-win98 .route-item { background: #e0e0e0; color: black; border: 1px solid #aaa; }
-    .sfx-push-btn { width: 80px; height: 90px; border-radius: 50%; border: 3px solid #fff; display: block; margin: 0 auto 10px; box-shadow: 0 5px 0 #222; }
+    /* =========================================================
+       桌面與捷徑圖示 (Desktop Icons)
+    ========================================================= */
+    #desktop-area { width: 100vw; height: calc(100vh - 48px); position: relative; padding: 10px; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: 10px; }
     
-    .chat-app { display: flex; height: 52vh; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
-    .chat-sidebar { width: 220px; background: rgba(0,0,0,0.5); display: flex; flex-direction: column; text-align: left; }
-    body.theme-winxp .chat-sidebar, body.theme-win98 .chat-sidebar { background: #d6d3ce; border-right: 2px solid #fff; }
-    .chat-list { flex: 1; overflow-y: auto; }
-    .chat-list-item { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; }
-    .chat-list-item:hover, .chat-list-item.active { background: var(--primary); color: black; }
-    .chat-main { flex: 1; display: flex; flex-direction: column; background: rgba(255,255,255,0.05); }
-    body.theme-winxp .chat-main, body.theme-win98 .chat-main { background: #fff; }
-    .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-    .chat-bubble { padding: 8px 12px; border-radius: 12px; font-size: 0.9em; max-width: 80%; word-break: break-word; }
-    .chat-row.me { align-self: flex-end; } .chat-row.me .chat-bubble { background: #85e04f; color: black; }
-    .chat-row.other { align-self: flex-start; } .chat-row.other .chat-bubble { background: #dfdfdf; color: black; }
-    .chat-input-area { display: flex; gap: 10px; padding: 10px; background: rgba(0,0,0,0.3); }
-    body.theme-winxp .chat-input-area, body.theme-win98 .chat-input-area { background: #d6d3ce; border-top: 2px solid #808080; }
-    .chat-input { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #555; }
+    .desktop-icon { width: 74px; height: 85px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px; border-radius: 4px; transition: 0.1s; cursor: pointer; border: 1px solid transparent; }
+    .desktop-icon:hover { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); }
+    .desktop-icon.selected { background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); }
+    .desktop-icon img { width: 42px; height: 42px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+    .desktop-icon span { font-size: 11px; text-align: center; text-shadow: 0 1px 3px #000, 0 1px 4px #000; line-height: 1.2; word-break: break-all; }
+
+    /* =========================================================
+       Windows 11 視窗系統核心 (Window Manager)
+    ========================================================= */
+    .os-window {
+      position: absolute; display: none; flex-direction: column; background: var(--window-bg);
+      border: 1px solid var(--window-border); border-radius: var(--win-radius);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05) inset;
+      backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+      overflow: hidden; z-index: 10;
+      /* 預設開啟動畫 */
+      transform: scale(0.95); opacity: 0; transition: transform 0.2s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.2s ease;
+    }
+    .os-window.active { display: flex; transform: scale(1); opacity: 1; }
+    
+    .os-title-bar { height: 36px; display: flex; align-items: center; justify-content: space-between; padding-left: 12px; flex-shrink: 0; cursor: grab; }
+    .os-title-bar:active { cursor: grabbing; }
+    .os-window-title { font-size: 12px; display: flex; align-items: center; gap: 8px; }
+    .os-window-title img { width: 16px; height: 16px; }
+    
+    .os-window-controls { display: flex; height: 100%; }
+    .os-btn { width: 46px; height: 100%; border: none; background: transparent; display: flex; justify-content: center; align-items: center; transition: 0.1s; fill: #fff; }
+    .os-btn svg { width: 10px; height: 10px; }
+    .os-btn:hover { background: rgba(255, 255, 255, 0.1); }
+    .os-btn-close:hover { background: #E81123; fill: #fff; }
+
+    .os-content-area { flex: 1; overflow-y: auto; position: relative; background: rgba(20, 20, 20, 0.5); }
+
+    /* =========================================================
+       工作列與開始功能表 (Taskbar & Start Menu)
+    ========================================================= */
+    #os-taskbar { position: fixed; bottom: 0; left: 0; width: 100vw; height: 48px; background: var(--taskbar-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-top: 1px solid var(--window-border); z-index: 99999; display: flex; align-items: center; padding: 0 15px; }
+    
+    /* 置中應用程式區 (Win11 Style) */
+    .taskbar-center { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 100%; }
+    
+    .taskbar-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: transparent; transition: 0.2s; position: relative; }
+    .taskbar-btn img { width: 24px; height: 24px; transition: transform 0.1s; }
+    .taskbar-btn:hover { background: rgba(255, 255, 255, 0.08); }
+    .taskbar-btn:active img { transform: scale(0.85); }
+    .taskbar-btn.open-active::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 16px; height: 3px; background: #0078D4; border-radius: 3px; }
+    .taskbar-btn.open-inactive::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 6px; height: 3px; background: #888; border-radius: 3px; }
+
+    .taskbar-tray { display: flex; align-items: center; gap: 15px; padding-right: 10px; height: 100%; font-size: 12px; }
+    .taskbar-tray-item { display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding: 0 8px; border-radius: 4px; transition: 0.2s; cursor: pointer; height: 80%; }
+    .taskbar-tray-item:hover { background: rgba(255,255,255,0.1); }
+
+    /* 開始功能表 UI */
+    #start-menu { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%) translateY(20px); width: 600px; height: 600px; background: var(--window-bg); border: 1px solid var(--window-border); border-radius: var(--win-radius); box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); z-index: 999999; display: none; opacity: 0; transition: 0.2s cubic-bezier(0.1, 0.9, 0.2, 1); flex-direction: column; padding: 30px; }
+    #start-menu.active { display: flex; transform: translateX(-50%) translateY(0); opacity: 1; }
+    
+    .start-search { width: 100%; height: 40px; background: rgba(0,0,0,0.4); border: 1px solid var(--window-border); border-radius: 20px; padding: 0 20px; color: white; outline: none; margin-bottom: 25px; font-size: 14px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
+    .start-search:focus { border-color: var(--primary); }
+    
+    .start-section-title { font-size: 14px; font-weight: 600; margin-bottom: 15px; padding-left: 5px; }
+    .start-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; }
+    .start-app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 8px; border: none; background: transparent; color: white; transition: 0.1s; }
+    .start-app img { width: 32px; height: 32px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3)); }
+    .start-app span { font-size: 11px; }
+    .start-app:hover { background: rgba(255,255,255,0.08); }
+
+    .start-power { margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid var(--window-border); }
+    .user-profile { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: bold; }
+    .user-profile img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #555; }
+    .power-btn { background: transparent; border: none; padding: 8px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+    .power-btn:hover { background: rgba(255,255,255,0.1); }
+
+    /* =========================================================
+       內建應用程式介面 (Apps CSS)
+    ========================================================= */
+    /* 🧮 計算機 (Calculator) */
+    .calc-container { display: flex; flex-direction: column; height: 100%; padding: 5px; background: rgba(20,20,20,0.8); }
+    .calc-display { height: 100px; text-align: right; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
+    .calc-history { color: #888; font-size: 14px; min-height: 20px; }
+    .calc-result { font-size: 48px; font-weight: bold; color: white; margin: 0; outline: none; border: none; background: transparent; text-align: right; width: 100%; }
+    .calc-buttons { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+    .calc-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; color: white; font-size: 20px; font-weight: 500; transition: 0.1s; }
+    .calc-btn:hover { background: rgba(255,255,255,0.1); }
+    .calc-btn.op { background: rgba(255,255,255,0.1); }
+    .calc-btn.equal { background: var(--primary); color: white; }
+    .calc-btn.equal:hover { background: var(--primary-hover); }
+
+    /* 🎨 小畫家 (Paint) */
+    .paint-toolbar { display: flex; gap: 10px; padding: 10px; background: rgba(40,40,40,0.8); border-bottom: 1px solid var(--border-color); align-items: center; }
+    .paint-color-picker { width: 30px; height: 30px; padding: 0; border: none; border-radius: 4px; cursor: pointer; }
+    .paint-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; transition: 0.2s; }
+    .paint-btn:hover { background: rgba(255,255,255,0.2); }
+    .paint-canvas-container { flex: 1; background: #ffffff; overflow: auto; display: flex; justify-content: center; align-items: center; }
+    canvas { background: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.5); cursor: crosshair; touch-action: none; }
+
+    /* ⚙️ 設定 (Settings) */
+    .settings-layout { display: flex; height: 100%; }
+    .settings-sidebar { width: 200px; border-right: 1px solid var(--border-color); padding: 10px; }
+    .settings-nav { width: 100%; text-align: left; background: transparent; border: none; padding: 10px; border-radius: 6px; color: white; margin-bottom: 5px; transition: 0.2s; }
+    .settings-nav.active, .settings-nav:hover { background: rgba(255,255,255,0.1); }
+    .settings-content { flex: 1; padding: 30px; }
+    .wallpaper-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+    .wallpaper-thumb { width: 100%; height: 80px; border-radius: 6px; border: 2px solid transparent; cursor: pointer; object-fit: cover; transition: 0.2s; }
+    .wallpaper-thumb:hover { transform: scale(1.05); }
+    .wallpaper-thumb.active { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,120,212,0.5); }
+
+    /* 🔥 駭客終端 (Matrix) */
+    .matrix-bg { background: black; flex: 1; overflow: hidden; position: relative; }
+    .matrix-canvas { display: block; width: 100%; height: 100%; }
+
+    /* 狗魚大廳原有組件套用新 UI */
+    .dogfish-btn { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; transition: 0.2s; }
+    .dogfish-btn:hover { background: var(--primary-hover); }
+    .dogfish-card { background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; transition: 0.2s; }
+    .dogfish-card:hover { background: rgba(0,0,0,0.6); border-color: var(--primary); }
+
   </style>
 </head>
-<body class="theme-win11 os-desktop-mode">
+<body>
 
   <div id="desktop-area">
-    
-    <div id="page-blog" class="os-window active">
-      <div class="os-title-bar"><div class="os-window-title">🖥️ 我的電腦 (大廳中控台)</div><div class="os-window-controls"><button class="os-btn" onclick="minimizeWindow('blog')">─</button><button class="os-btn" onclick="toggleMaximize(this)">⬜</button><button class="os-btn os-btn-close" onclick="closeWindow('blog')">✕</button></div></div>
-      <div class="os-content-area">
-          <div style="text-align: center; padding: 30px; background: rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
-            <h2 style="margin-top:0; background: linear-gradient(90deg, #1db954, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2em;">Dogfish OS 系統大廳</h2>
-            <p style="color:#b3b3b3;">歡迎來到虛擬視窗化作業系統。點擊下方按鈕或開始功能表可開啟多工視窗！</p>
-            <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:20px;">
-                <button class="btn-action" onclick="openWindow('materials')">📂 開啟素材庫</button>
-                <button class="btn-blue-dl" onclick="openWindow('software')" style="border-radius:20px;">🧰 開啟軟體推薦</button>
-            </div>
-          </div>
-          <div class="solid-panel" style="padding: 20px; text-align: left; border-left: 5px solid #ffb300;">
-              <strong style="color: #ffb300; font-size: 1.1em; display:block; margin-bottom:10px;">🔗 全站直連代碼總覽</strong>
-              <div id="dynamic-routes-list"><p style="color:#888;">正在讀取直連路由資料...</p></div>
-          </div>
+    <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('blog')">
+      <img src="https://cdn-icons-png.flaticon.com/512/3067/3067260.png" alt="Computer">
+      <span>Dogfish 核心</span>
+    </div>
+    <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('materials')">
+      <img src="https://cdn-icons-png.flaticon.com/512/3767/3767084.png" alt="Folder">
+      <span>素材資料夾</span>
+    </div>
+    <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('paint')">
+      <img src="https://cdn-icons-png.flaticon.com/512/2970/2970785.png" alt="Paint">
+      <span>小畫家</span>
+    </div>
+    <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('calc')">
+      <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" alt="Calculator">
+      <span>計算機</span>
+    </div>
+    <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('matrix')">
+      <img src="https://cdn-icons-png.flaticon.com/512/2920/2920138.png" alt="Terminal">
+      <span>CMD (駭客)</span>
+    </div>
+    <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="window.location.href='index.html'">
+      <img src="https://cdn-icons-png.flaticon.com/512/825/825442.png" alt="Exit">
+      <span>返回網頁版</span>
+    </div>
+  </div>
+
+  <div id="page-blog" class="os-window" style="width: 800px; height: 500px;">
+    <div class="os-title-bar">
+      <div class="os-window-title"><img src="https://cdn-icons-png.flaticon.com/512/3067/3067260.png"> Dogfish Studio 核心大廳</div>
+      <div class="os-window-controls">
+        <button class="os-btn" onclick="minimizeWindow('blog')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
+        <button class="os-btn" onclick="toggleMaximize(this)"><svg viewBox="0 0 10 10"><path d="M1,1 h8 v8 h-8 z" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
+        <button class="os-btn os-btn-close" onclick="closeWindow('blog')"><svg viewBox="0 0 10 10"><path d="M0,0 L10,10 M10,0 L0,10" stroke="#fff" stroke-width="1.5"/></svg></button>
       </div>
     </div>
-
-    <div id="page-materials" class="os-window">
-      <div class="os-title-bar"><div class="os-window-title">📂 網路資料夾 \\共享素材庫</div><div class="os-window-controls"><button class="os-btn" onclick="minimizeWindow('materials')">─</button><button class="os-btn" onclick="toggleMaximize(this)">⬜</button><button class="os-btn os-btn-close" onclick="closeWindow('materials')">✕</button></div></div>
-      <div class="os-content-area">
-          <div class="controls-wrapper">
-              <div class="category-tabs"><button class="tab-btn active" data-target="全部">所有檔案</button><button class="tab-btn" data-target="音樂">🎵 音樂專輯</button><button class="tab-btn" data-target="音效">🔊 小音效</button><button class="tab-btn" data-target="GIF">🖼️ 圖片/GIF</button></div>
-              <div class="search-bar-container"><input type="text" id="search-input" class="input-box" placeholder="搜尋檔案..." style="padding:6px 12px;"></div>
-          </div>
-          <div id="material-container" class="material-list"></div>
+    <div class="os-content-area" style="padding: 40px; text-align: center;">
+      <h1 style="font-size: 3em; margin-bottom: 10px; color: var(--primary);">Dogfish OS 11</h1>
+      <p style="color: #ccc; margin-bottom: 40px;">歡迎來到基於 Web 技術打造的終極虛擬作業系統。</p>
+      <div style="display: flex; gap: 20px; justify-content: center;">
+        <button class="dogfish-btn" onclick="openWindow('settings')" style="padding: 15px 30px; font-size: 1.2em;">⚙️ 系統設定</button>
+        <button class="dogfish-btn" onclick="openWindow('matrix')" style="background: #000; border: 1px solid #0f0; color: #0f0; padding: 15px 30px; font-size: 1.2em;">⌨️ 終端機</button>
       </div>
     </div>
+  </div>
 
-    <div id="page-software" class="os-window">
-      <div class="os-title-bar"><div class="os-window-title">🧰 應用程式大廳 \\軟體推薦</div><div class="os-window-controls"><button class="os-btn" onclick="minimizeWindow('software')">─</button><button class="os-btn" onclick="toggleMaximize(this)">⬜</button><button class="os-btn os-btn-close" onclick="closeWindow('software')">✕</button></div></div>
-      <div class="os-content-area"><div id="software-container" class="article-grid"></div></div>
-    </div>
-
-    <div id="page-commands" class="os-window">
-      <div class="os-title-bar"><div class="os-window-title">💻 命令提示字元 \\實用指令庫</div><div class="os-window-controls"><button class="os-btn" onclick="minimizeWindow('commands')">─</button><button class="os-btn" onclick="toggleMaximize(this)">⬜</button><button class="os-btn os-btn-close" onclick="closeWindow('commands')">✕</button></div></div>
-      <div class="os-content-area"><div id="commands-container" class="article-grid"></div></div>
-    </div>
-
-    <div id="page-chat" class="os-window">
-      <div class="os-title-bar"><div class="os-window-title">💬 即時通訊 \\Dogfish Messenger</div><div class="os-window-controls"><button class="os-btn" onclick="minimizeWindow('chat')">─</button><button class="os-btn" onclick="toggleMaximize(this)">⬜</button><button class="os-btn os-btn-close" onclick="closeWindow('chat')">✕</button></div></div>
-      <div class="os-content-area">
-          <div class="chat-app" id="chat-app-container" style="display: none;">
-            <div class="chat-sidebar">
-              <div style="padding: 10px; display:flex; flex-direction:column; gap:5px; border-bottom: 1px solid rgba(255,255,255,0.1); box-sizing:border-box;">
-                <input type="email" id="invite-email" class="input-box" placeholder="搜尋好友 Email" style="padding:6px; font-size:0.85em; width:100%;">
-                <button class="btn-action" onclick="sendFriendInvite()" style="padding:6px; font-size:0.85em; width:100%;">➕ 新增好友</button>
-              </div>
-              <div id="invite-list"></div><div id="chat-list" class="chat-list"></div>
-            </div>
-            <div class="chat-main">
-              <div class="chat-main-header" id="current-chat-header" style="padding:10px; background:rgba(0,0,0,0.2); font-weight:bold; color:var(--primary);">請選擇聯絡人</div>
-              <div class="chat-messages" id="chat-messages"></div>
-              <div class="chat-input-area" id="chat-input-area" style="display:none;"><input type="text" id="chat-input" class="chat-input" placeholder="鍵入訊息..."><button id="chat-send-btn" class="btn-action" style="border-radius:4px; padding:8px 15px;">發送</button></div>
-            </div>
-          </div>
-          <div id="chat-login-prompt" style="text-align: center; padding: 40px; color: #888;">⚠️ 請先在網站主頁登入帳號，才能解鎖此處的 Messenger 通訊功能！</div>
+  <div id="page-paint" class="os-window" style="width: 700px; height: 500px;">
+    <div class="os-title-bar">
+      <div class="os-window-title"><img src="https://cdn-icons-png.flaticon.com/512/2970/2970785.png"> 小畫家</div>
+      <div class="os-window-controls">
+        <button class="os-btn" onclick="minimizeWindow('paint')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
+        <button class="os-btn" onclick="toggleMaximize(this)"><svg viewBox="0 0 10 10"><path d="M1,1 h8 v8 h-8 z" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
+        <button class="os-btn os-btn-close" onclick="closeWindow('paint')"><svg viewBox="0 0 10 10"><path d="M0,0 L10,10 M10,0 L0,10" stroke="#fff" stroke-width="1.5"/></svg></button>
       </div>
     </div>
+    <div class="paint-toolbar">
+      <input type="color" id="paint-color" class="paint-color-picker" value="#000000">
+      <input type="range" id="paint-size" min="1" max="20" value="3">
+      <button class="paint-btn" onclick="document.getElementById('paint-color').value='#ffffff'">🧽 橡皮擦</button>
+      <button class="paint-btn" onclick="clearCanvas()">🗑️ 清除畫布</button>
+    </div>
+    <div class="paint-canvas-container">
+      <canvas id="dogfishCanvas" width="800" height="600"></canvas>
+    </div>
+  </div>
 
+  <div id="page-calc" class="os-window" style="width: 320px; height: 500px;">
+    <div class="os-title-bar">
+      <div class="os-window-title"><img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png"> 計算機</div>
+      <div class="os-window-controls">
+        <button class="os-btn" onclick="minimizeWindow('calc')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
+        <button class="os-btn os-btn-close" onclick="closeWindow('calc')"><svg viewBox="0 0 10 10"><path d="M0,0 L10,10 M10,0 L0,10" stroke="#fff" stroke-width="1.5"/></svg></button>
+      </div>
+    </div>
+    <div class="calc-container">
+      <div class="calc-display">
+        <div class="calc-history" id="calc-history"></div>
+        <input type="text" class="calc-result" id="calc-result" value="0" readonly>
+      </div>
+      <div class="calc-buttons">
+        <button class="calc-btn op" onclick="calcAction('C')">C</button>
+        <button class="calc-btn op" onclick="calcAction('CE')">CE</button>
+        <button class="calc-btn op" onclick="calcAction('%')">%</button>
+        <button class="calc-btn op" onclick="calcAction('/')">÷</button>
+        
+        <button class="calc-btn" onclick="calcAction('7')">7</button>
+        <button class="calc-btn" onclick="calcAction('8')">8</button>
+        <button class="calc-btn" onclick="calcAction('9')">9</button>
+        <button class="calc-btn op" onclick="calcAction('*')">×</button>
+        
+        <button class="calc-btn" onclick="calcAction('4')">4</button>
+        <button class="calc-btn" onclick="calcAction('5')">5</button>
+        <button class="calc-btn" onclick="calcAction('6')">6</button>
+        <button class="calc-btn op" onclick="calcAction('-')">−</button>
+        
+        <button class="calc-btn" onclick="calcAction('1')">1</button>
+        <button class="calc-btn" onclick="calcAction('2')">2</button>
+        <button class="calc-btn" onclick="calcAction('3')">3</button>
+        <button class="calc-btn op" onclick="calcAction('+')">+</button>
+        
+        <button class="calc-btn op" onclick="calcAction('+/-')">±</button>
+        <button class="calc-btn" onclick="calcAction('0')">0</button>
+        <button class="calc-btn op" onclick="calcAction('.')">.</button>
+        <button class="calc-btn equal" onclick="calcAction('=')">=</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-settings" class="os-window" style="width: 700px; height: 450px;">
+    <div class="os-title-bar">
+      <div class="os-window-title"><img src="https://cdn-icons-png.flaticon.com/512/2040/2040504.png"> 設定</div>
+      <div class="os-window-controls">
+        <button class="os-btn" onclick="minimizeWindow('settings')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
+        <button class="os-btn" onclick="toggleMaximize(this)"><svg viewBox="0 0 10 10"><path d="M1,1 h8 v8 h-8 z" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
+        <button class="os-btn os-btn-close" onclick="closeWindow('settings')"><svg viewBox="0 0 10 10"><path d="M0,0 L10,10 M10,0 L0,10" stroke="#fff" stroke-width="1.5"/></svg></button>
+      </div>
+    </div>
+    <div class="settings-layout">
+      <div class="settings-sidebar">
+        <button class="settings-nav active">個人化 (背景)</button>
+        <button class="settings-nav">系統資訊</button>
+      </div>
+      <div class="settings-content" style="background: rgba(0,0,0,0.3);">
+        <h2>個人化桌布</h2>
+        <p style="color:#aaa;">選擇你的 Windows 虛擬桌面背景：</p>
+        <div class="wallpaper-grid">
+          <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop" class="wallpaper-thumb active" onclick="setWallpaper(this, 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')">
+          <img src="https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_background%29.jpg" class="wallpaper-thumb" onclick="setWallpaper(this, 'https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_background%29.jpg')">
+          <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=500&auto=format&fit=crop" class="wallpaper-thumb" onclick="setWallpaper(this, 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2564&auto=format&fit=crop')">
+          <img src="https://images.unsplash.com/photo-1538370965046-79c0d6907d47?q=80&w=500&auto=format&fit=crop" class="wallpaper-thumb" onclick="setWallpaper(this, 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?q=80&w=2564&auto=format&fit=crop')">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-matrix" class="os-window" style="width: 600px; height: 400px; background: black; border: 1px solid #333;">
+    <div class="os-title-bar" style="background: #111;">
+      <div class="os-window-title" style="color: #fff;"><img src="https://cdn-icons-png.flaticon.com/512/2920/2920138.png"> C:\Windows\System32\cmd.exe</div>
+      <div class="os-window-controls">
+        <button class="os-btn" onclick="minimizeWindow('matrix')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
+        <button class="os-btn" onclick="toggleMaximize(this)"><svg viewBox="0 0 10 10"><path d="M1,1 h8 v8 h-8 z" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
+        <button class="os-btn os-btn-close" onclick="closeWindow('matrix')"><svg viewBox="0 0 10 10"><path d="M0,0 L10,10 M10,0 L0,10" stroke="#fff" stroke-width="1.5"/></svg></button>
+      </div>
+    </div>
+    <div class="matrix-bg">
+      <canvas id="matrixCanvas" class="matrix-canvas"></canvas>
+    </div>
+  </div>
+
+  <div id="page-materials" class="os-window" style="width: 800px; height: 500px;">
+    <div class="os-title-bar">
+      <div class="os-window-title"><img src="https://cdn-icons-png.flaticon.com/512/3767/3767084.png"> 共享素材庫</div>
+      <div class="os-window-controls">
+        <button class="os-btn" onclick="minimizeWindow('materials')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
+        <button class="os-btn" onclick="toggleMaximize(this)"><svg viewBox="0 0 10 10"><path d="M1,1 h8 v8 h-8 z" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
+        <button class="os-btn os-btn-close" onclick="closeWindow('materials')"><svg viewBox="0 0 10 10"><path d="M0,0 L10,10 M10,0 L0,10" stroke="#fff" stroke-width="1.5"/></svg></button>
+      </div>
+    </div>
+    <div class="os-content-area">
+      <h2 style="margin-top:0;">📂 網路資料夾 (資料載入中...)</h2>
+      <p style="color:#aaa;">此區域保留給 Firebase 資料庫串接，您可以像以前一樣在此預覽音樂、音效。</p>
+    </div>
   </div>
 
   <div id="start-menu">
-      <div style="border-bottom:1px solid #444; padding-bottom:10px; margin-bottom:10px; font-weight:bold; color:var(--primary); font-size:1.1em;">🦈 Dogfish Programs</div>
-      <button class="start-item" onclick="openWindow('blog')">🖥️ 我的電腦 (大廳)</button>
-      <button class="start-item" onclick="openWindow('materials')">📂 共享素材庫</button>
-      <button class="start-item" onclick="openWindow('software')">🧰 軟體推薦大廳</button>
-      <button class="start-item" onclick="openWindow('commands')">💻 實用指令知識庫</button>
-      <button class="start-item" onclick="openWindow('chat')">💬 Dogfish Messenger</button>
-      <hr style="border-color:#444;">
-      <button class="start-item" onclick="window.location.href='index.html'" style="color:var(--accent);">🔌 關機 (返回常規網頁版)</button>
+    <input type="text" class="start-search" placeholder="輸入以搜尋應用程式、設定與檔案...">
+    <div class="start-section-title">已釘選 (Pinned)</div>
+    <div class="start-grid">
+      <button class="start-app" onclick="openWindow('blog')">
+        <img src="https://cdn-icons-png.flaticon.com/512/3067/3067260.png"><span>大廳</span>
+      </button>
+      <button class="start-app" onclick="openWindow('paint')">
+        <img src="https://cdn-icons-png.flaticon.com/512/2970/2970785.png"><span>小畫家</span>
+      </button>
+      <button class="start-app" onclick="openWindow('calc')">
+        <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png"><span>計算機</span>
+      </button>
+      <button class="start-app" onclick="openWindow('settings')">
+        <img src="https://cdn-icons-png.flaticon.com/512/2040/2040504.png"><span>設定</span>
+      </button>
+      <button class="start-app" onclick="openWindow('matrix')">
+        <img src="https://cdn-icons-png.flaticon.com/512/2920/2920138.png"><span>終端機</span>
+      </button>
+      <button class="start-app" onclick="openWindow('materials')">
+        <img src="https://cdn-icons-png.flaticon.com/512/3767/3767084.png"><span>素材庫</span>
+      </button>
+    </div>
+    
+    <div class="start-power">
+      <div class="user-profile">
+        <img src="https://via.placeholder.com/100/1db954/fff?text=D" alt="User">
+        <span>Dogfish Admin</span>
+      </div>
+      <button class="power-btn" onclick="window.location.href='index.html'" title="關機 (回網頁版)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+      </button>
+    </div>
   </div>
 
   <div id="os-taskbar">
-    <button id="os-start-btn" onclick="toggleStartMenu()">⊞ 開始</button>
-    <div class="taskbar-apps">
-        <button id="task-tab-blog" class="taskbar-tab open-active" onclick="clickTaskbarTab('blog')">我的電腦</button>
-        <button id="task-tab-materials" class="taskbar-tab" onclick="clickTaskbarTab('materials')" style="display:none;">素材庫</button>
-        <button id="task-tab-software" class="taskbar-tab" onclick="clickTaskbarTab('software')" style="display:none;">軟體推薦</button>
-        <button id="task-tab-commands" class="taskbar-tab" onclick="clickTaskbarTab('commands')" style="display:none;">指令庫</button>
-        <button id="task-tab-chat" class="taskbar-tab" onclick="clickTaskbarTab('chat')" style="display:none;">Messenger</button>
+    <div class="taskbar-center">
+      <button id="os-start-btn" class="taskbar-btn" onclick="toggleStartMenu()">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e6/Windows_11_logo.svg" alt="Start">
+      </button>
+      
+      <button id="task-tab-blog" class="taskbar-btn" onclick="clickTaskbarTab('blog')" style="display:none;" title="核心大廳">
+        <img src="https://cdn-icons-png.flaticon.com/512/3067/3067260.png">
+      </button>
+      <button id="task-tab-paint" class="taskbar-btn" onclick="clickTaskbarTab('paint')" style="display:none;" title="小畫家">
+        <img src="https://cdn-icons-png.flaticon.com/512/2970/2970785.png">
+      </button>
+      <button id="task-tab-calc" class="taskbar-btn" onclick="clickTaskbarTab('calc')" style="display:none;" title="計算機">
+        <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png">
+      </button>
+      <button id="task-tab-settings" class="taskbar-btn" onclick="clickTaskbarTab('settings')" style="display:none;" title="設定">
+        <img src="https://cdn-icons-png.flaticon.com/512/2040/2040504.png">
+      </button>
+      <button id="task-tab-matrix" class="taskbar-btn" onclick="clickTaskbarTab('matrix')" style="display:none;" title="終端機">
+        <img src="https://cdn-icons-png.flaticon.com/512/2920/2920138.png">
+      </button>
+      <button id="task-tab-materials" class="taskbar-btn" onclick="clickTaskbarTab('materials')" style="display:none;" title="素材庫">
+        <img src="https://cdn-icons-png.flaticon.com/512/3767/3767084.png">
+      </button>
     </div>
-    <div class="taskbar-system-tray">
-        <select id="theme-selector" onchange="changeOSTheme(this.value)" style="background: #222; color: white; border: 1px solid #555; padding: 4px 8px; font-size: 0.85em; outline: none; border-radius:4px;">
-            <option value="win11">Windows 11</option>
-            <option value="winxp">Windows XP</option>
-            <option value="win98">Windows 98</option>
-        </select>
-        <span id="os-clock" style="color: white; font-family: monospace;">00:00</span>
+    
+    <div class="taskbar-tray">
+      <div class="taskbar-tray-item">
+        <span>TW</span>
+      </div>
+      <div class="taskbar-tray-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Z"></path><path d="M12 8v4l3 3"></path></svg>
+      </div>
+      <div class="taskbar-tray-item" style="align-items: center; padding-right:15px;">
+        <span id="os-time" style="font-size: 13px;">00:00</span>
+        <span id="os-date" style="font-size: 11px; color: #ccc;">2026/06/14</span>
+      </div>
     </div>
   </div>
 
-  <div id="article-modal" class="spotify-modal"><div class="modal-content"><div class="modal-header"><h2 id="article-modal-title" style="margin:0; color:white;"></h2><span class="modal-close-btn" onclick="document.getElementById('article-modal').style.display='none'">&times;</span></div><div class="modal-body" id="article-modal-body"></div></div></div>
-  <div id="album-modal" class="spotify-modal"><div class="modal-content"><div class="modal-header"><h2 id="modal-album-title" style="margin:0; color:white;">專輯</h2><span class="modal-close-btn" onclick="document.getElementById('album-modal').style.display='none'">&times;</span></div><div class="modal-body"><div id="modal-album-cover-space"></div><div id="modal-track-list"></div></div></div></div>
-  <div id="global-player" style="display:none;"><audio id="gp-audio" controls></audio><span id="gp-title"></span><span id="gp-artist"></span><img id="gp-cover" src=""><div id="gp-visualizer"></div></div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
-
-    const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website", storageBucket: "dogfish-website.firebasestorage.app", messagingSenderId: "501551191843", appId: "1:501551191843:web:32fd3c7a51c7a21722de96" };
-    const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+  <script>
+    // ---------------------------------------------------------
+    // 1. 視窗層級與管理系統 (Window Manager)
+    // ---------------------------------------------------------
+    let highestZIndex = 100;
     
-    let fetchedMaterialsList = []; let currentActiveTab = "全部"; let highestZIndex = 1000;
-    let myChats = []; let currentChatId = null; let activeChatUnsub = null; let invitesUnsub = null; let chatListUnsub = null;
-    const gpAudio = document.getElementById('gp-audio'); let currentModalAlbum = null; let globalPlaylist = []; let globalTrackIndex = 0;
-
-    // 🌟 v17.2 視窗運作核心邏輯 🌟
-    window.openWindow = function(pageId) {
-        document.getElementById('start-menu').classList.remove('active');
+    function openWindow(pageId) {
+        document.getElementById('start-menu').classList.remove('active'); // 關閉開始選單
         const win = document.getElementById(`page-${pageId}`);
         const tab = document.getElementById(`task-tab-${pageId}`);
+        
+        // 取消桌面圖示選取
+        document.querySelectorAll('.desktop-icon').forEach(icon => icon.classList.remove('selected'));
+
         if(win) {
             win.classList.add('active');
-            highestZIndex++; win.style.zIndex = highestZIndex;
-            // 亮起對應的工作列標籤
-            document.querySelectorAll('.os-window').forEach(w => w.classList.remove('window-focused'));
-            win.classList.add('window-focused');
+            bringToFront(win);
+            
+            // 開啟視窗時如果有特定初始化，寫在這裡
+            if(pageId === 'matrix' && !window.matrixInterval) initMatrix();
         }
         if(tab) {
             tab.style.display = 'flex';
-            document.querySelectorAll('.taskbar-tab').forEach(b => b.classList.remove('open-active'));
+            document.querySelectorAll('.taskbar-btn').forEach(b => b.classList.remove('open-active'));
             tab.classList.add('open-active');
+            tab.classList.remove('open-inactive');
         }
-    };
+    }
 
-    window.closeWindow = function(pageId) {
+    function closeWindow(pageId) {
+        const win = document.getElementById(`page-${pageId}`);
+        const tab = document.getElementById(`task-tab-${pageId}`);
+        if(win) {
+            win.classList.remove('active');
+            // 恢復原本大小
+            if(win.dataset.maximized === 'true') {
+                toggleMaximize(win.querySelector('.os-btn-max'));
+            }
+        }
+        if(tab) {
+            tab.style.display = 'none';
+            tab.classList.remove('open-active', 'open-inactive');
+        }
+    }
+
+    function minimizeWindow(pageId) {
         const win = document.getElementById(`page-${pageId}`);
         const tab = document.getElementById(`task-tab-${pageId}`);
         if(win) win.classList.remove('active');
-        if(tab) tab.style.display = 'none';
-    };
+        if(tab) {
+            tab.classList.remove('open-active');
+            tab.classList.add('open-inactive');
+        }
+    }
 
-    window.minimizeWindow = function(pageId) {
+    function clickTaskbarTab(pageId) {
         const win = document.getElementById(`page-${pageId}`);
         const tab = document.getElementById(`task-tab-${pageId}`);
-        if(win) win.classList.remove('active');
-        if(tab) tab.classList.remove('open-active');
-    };
-
-    window.clickTaskbarTab = function(pageId) {
-        const win = document.getElementById(`page-${pageId}`);
-        const tab = document.getElementById(`task-tab-${pageId}`);
-        if(win.classList.contains('active') && tab.classList.contains('open-active')) {
-            // 如果視窗本來就是開的，點擊工作列等於最小化
-            minimizeWindow(pageId);
+        
+        if(win && win.classList.contains('active') && tab.classList.contains('open-active')) {
+            minimizeWindow(pageId); // 點擊當前視窗圖示 => 最小化
         } else {
-            // 如果是縮小狀態，點擊立刻叫到最前面
-            openWindow(pageId);
+            openWindow(pageId); // 點擊非當前視窗圖示 => 開啟並置頂
         }
-    };
+    }
 
-    window.toggleStartMenu = function() { document.getElementById('start-menu').classList.toggle('active'); };
-    document.getElementById('desktop-area').addEventListener('click', (e) => { if(!e.target.closest('#os-start-btn') && !e.target.closest('#start-menu')) document.getElementById('start-menu').classList.remove('active'); });
-
-    window.toggleMaximize = function(btn) {
+    function toggleMaximize(btn) {
         const win = btn.closest('.os-window');
         if(win.dataset.maximized === 'true') {
-            win.style.width = '75%'; win.style.height = '60vh'; win.style.top = win.dataset.oldTop || '50px'; win.style.left = win.dataset.oldLeft || '50px'; win.dataset.maximized = 'false';
+            win.style.width = win.dataset.oldWidth || '700px';
+            win.style.height = win.dataset.oldHeight || '500px';
+            win.style.top = win.dataset.oldTop || '50px';
+            win.style.left = win.dataset.oldLeft || '50px';
+            win.style.borderRadius = '12px';
+            win.dataset.maximized = 'false';
         } else {
-            win.dataset.oldTop = win.style.top; win.dataset.oldLeft = win.style.left;
-            win.style.width = '100vw'; win.style.height = 'calc(100vh - 48px)'; win.style.top = '0'; win.style.left = '0'; win.dataset.maximized = 'true';
+            win.dataset.oldWidth = win.style.width;
+            win.dataset.oldHeight = win.style.height;
+            win.dataset.oldTop = win.style.top;
+            win.dataset.oldLeft = win.style.left;
+            
+            win.style.width = '100vw';
+            win.style.height = 'calc(100vh - 48px)';
+            win.style.top = '0';
+            win.style.left = '0';
+            win.style.borderRadius = '0';
+            win.dataset.maximized = 'true';
         }
-    };
-
-    // 實體拖曳引擎
-    function makeDraggable(elmnt) {
-      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0; const titleBar = elmnt.querySelector(".os-title-bar");
-      elmnt.addEventListener("mousedown", () => { highestZIndex++; elmnt.style.zIndex = highestZIndex; document.querySelectorAll('.taskbar-tab').forEach(b => b.classList.remove('open-active')); let shortId = elmnt.id.replace('page-', ''); let tab = document.getElementById(`task-tab-${shortId}`); if(tab) tab.classList.add('open-active'); });
-      if (titleBar) { titleBar.onmousedown = dragMouseDown; }
-      function dragMouseDown(e) { e.preventDefault(); pos3 = e.clientX; pos4 = e.clientY; document.onmouseup = closeDragElement; document.onmousemove = elementDrag; }
-      function elementDrag(e) { e.preventDefault(); pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY; pos3 = e.clientX; pos4 = e.clientY; elmnt.style.top = (elmnt.offsetTop - pos2) + "px"; elmnt.style.left = (elmnt.offsetLeft - pos1) + "px"; }
-      function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
     }
-    document.querySelectorAll('.os-window').forEach((win, index) => { makeDraggable(win); win.style.top = (40 + index * 40) + 'px'; win.style.left = (60 + index * 40) + 'px'; win.dataset.maximized = 'false'; });
 
-    // 🌟 系統時鐘引擎 🌟
-    function updateClock() { const now = new Date(); document.getElementById('os-clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); }
+    function bringToFront(elmnt) {
+        highestZIndex++;
+        elmnt.style.zIndex = highestZIndex;
+        // 同步更新工作列底線
+        let shortId = elmnt.id.replace('page-', '');
+        document.querySelectorAll('.taskbar-btn').forEach(b => {
+            if(b.id !== 'os-start-btn') b.classList.remove('open-active');
+        });
+        const tab = document.getElementById(`task-tab-${shortId}`);
+        if(tab && elmnt.classList.contains('active')) {
+            tab.classList.add('open-active');
+            tab.classList.remove('open-inactive');
+        }
+    }
+
+    // 視窗拖曳系統 (改進版，點擊內容區也會移至最上層)
+    function makeDraggable(elmnt) {
+      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      const titleBar = elmnt.querySelector(".os-title-bar");
+      
+      elmnt.addEventListener("mousedown", () => bringToFront(elmnt));
+
+      if (titleBar) {
+          titleBar.onmousedown = dragMouseDown;
+      }
+
+      function dragMouseDown(e) {
+          if (elmnt.dataset.maximized === 'true') return; // 最大化時不可拖曳
+          e.preventDefault();
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          document.onmouseup = closeDragElement;
+          document.onmousemove = elementDrag;
+      }
+
+      function elementDrag(e) {
+          e.preventDefault();
+          pos1 = pos3 - e.clientX;
+          pos2 = pos4 - e.clientY;
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          
+          let newTop = elmnt.offsetTop - pos2;
+          let newLeft = elmnt.offsetLeft - pos1;
+          
+          // 防止視窗標題列被拖出螢幕上方
+          if (newTop < 0) newTop = 0;
+          
+          elmnt.style.top = newTop + "px";
+          elmnt.style.left = newLeft + "px";
+      }
+
+      function closeDragElement() {
+          document.onmouseup = null;
+          document.onmousemove = null;
+      }
+    }
+    
+    // 初始化所有視窗位置與拖曳功能
+    document.querySelectorAll('.os-window').forEach((win, index) => { 
+        makeDraggable(win); 
+        win.style.top = (40 + index * 30) + 'px'; 
+        win.style.left = (60 + index * 30) + 'px'; 
+        win.dataset.maximized = 'false'; 
+    });
+
+    // 桌面圖示選取邏輯
+    function selectIcon(element) {
+        document.querySelectorAll('.desktop-icon').forEach(icon => icon.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    // 開始功能表開關
+    function toggleStartMenu() {
+        document.getElementById('start-menu').classList.toggle('active');
+    }
+
+    // 點擊桌面空白處關閉開始選單 & 取消圖示選取
+    document.getElementById('desktop-area').addEventListener('mousedown', (e) => {
+        if (!e.target.closest('.desktop-icon')) {
+            document.querySelectorAll('.desktop-icon').forEach(icon => icon.classList.remove('selected'));
+        }
+        if (!e.target.closest('#start-menu') && !e.target.closest('#os-start-btn')) {
+            document.getElementById('start-menu').classList.remove('active');
+        }
+    });
+
+    // 時鐘更新
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('os-time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+        document.getElementById('os-date').innerText = now.toLocaleDateString();
+    }
     setInterval(updateClock, 1000); updateClock();
 
-    // 🌟 主題切換器 🌟
-    window.changeOSTheme = function(theme) { document.body.classList.remove('theme-win11', 'theme-winxp', 'theme-win98'); document.body.classList.add('theme-' + theme); localStorage.setItem('dogfish_os_theme', theme); };
-    let savedTheme = localStorage.getItem('dogfish_os_theme') || 'win11'; document.getElementById('theme-selector').value = savedTheme; changeOSTheme(savedTheme);
+    // ---------------------------------------------------------
+    // 2. 應用程式：系統設定 (Settings - 換桌布)
+    // ---------------------------------------------------------
+    function setWallpaper(element, url) {
+        // 移除其他外框
+        document.querySelectorAll('.wallpaper-thumb').forEach(thumb => thumb.classList.remove('active'));
+        element.classList.add('active');
+        // 更換底色
+        document.body.style.backgroundImage = `url('${url}')`;
+        // 記錄到本地快取
+        localStorage.setItem('dogfish_wallpaper', url);
+    }
+    
+    // 讀取上次的桌布
+    let savedWall = localStorage.getItem('dogfish_wallpaper');
+    if (savedWall) { document.body.style.backgroundImage = `url('${savedWall}')`; }
 
-    // 🌟 核心數據連動 🌟
-    onSnapshot(query(collection(db, "categorized_materials"), orderBy("timestamp", "desc")), (snap) => { fetchedMaterialsList = []; snap.forEach((d) => { let data = d.data(); data.id = d.id; fetchedMaterialsList.push(data); }); renderMaterialsByFilter(); renderDynamicRoutes(); });
 
-    function renderMaterialsByFilter() {
-      const container = document.getElementById('material-container'); if(!container) return; container.innerHTML = '';
-      const softContainer = document.getElementById('software-container'); softContainer.innerHTML = '';
-      const cmdContainer = document.getElementById('commands-container'); cmdContainer.innerHTML = '';
-      const search = document.getElementById('search-input').value.toLowerCase(); 
+    // ---------------------------------------------------------
+    // 3. 應用程式：計算機 (Calculator Logic)
+    // ---------------------------------------------------------
+    let calcCurrentVal = '0';
+    let calcPrevVal = '';
+    let calcOperator = '';
+    let calcAwaitingNext = false;
+    
+    function calcAction(action) {
+        const resultDisplay = document.getElementById('calc-result');
+        const historyDisplay = document.getElementById('calc-history');
 
-      let sItems = fetchedMaterialsList.filter(i => i.category === "軟體");
-      sItems.forEach(d => {
-        const c = document.createElement('div'); c.className = 'article-card'; let img = getOptimalImageUrl(d.coverUrl) || 'https://via.placeholder.com/800x400/111/fff?text=Software';
-        c.innerHTML = `<img src="${img}" style="width:100%;height:120px;object-fit:cover;"><div style="padding:10px;"><strong style="font-size:1em;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.fileName}</strong><span style="font-size:0.8em;color:#888;">點擊閱讀教學</span></div>`;
-        c.addEventListener('click', () => openArticleModal(d)); softContainer.appendChild(c);
-      });
-
-      let lItems = fetchedMaterialsList.filter(i => i.category === "指令");
-      lItems.forEach(d => {
-        const c = document.createElement('div'); c.className = 'article-card';
-        c.innerHTML = `<div style="padding:15px;"><strong style="font-size:1em;display:block;color:var(--primary);">💻 ${d.fileName}</strong><span style="font-size:0.8em;color:#888;margin-top:5px;display:block;">點擊查看指令碼</span></div>`;
-        c.addEventListener('click', () => openArticleModal(d)); cmdContainer.appendChild(c);
-      });
-
-      const renderGrouped = (items, renderer) => { const grps = {}; items.forEach(d => { let f = `📁 資料夾：${d.folderName || '未分類'}`; if (!grps[f]) grps[f] = []; grps[f].push(d); }); Object.keys(grps).sort().forEach(folder => { const h = document.createElement('div'); h.className = 'folder-header'; h.innerHTML = folder; container.appendChild(h); grps[folder].forEach(d => renderer(d, container)); }); };
-      if (currentActiveTab === "全部" || currentActiveTab === "音樂") {
-        const albums = {}; fetchedMaterialsList.forEach(item => { if (!["音樂", "背景音樂", "人聲"].includes(item.category)) return; let albName = item.albumName || "獨立單曲"; if (search && !albName.toLowerCase().includes(search) && !item.fileName.toLowerCase().includes(search)) return; if (!albums[albName]) albums[albName] = { name: albName, coverUrl: item.coverUrl || "", tracks: [] }; albums[albName].tracks.push(item); });
-        Object.values(albums).forEach(album => { album.tracks.sort((a, b) => (a.trackOrder ?? 99) - (b.trackOrder ?? 99)); const c = document.createElement('div'); c.className = 'material-item'; let img = getOptimalImageUrl(album.coverUrl); let coverHTML = img ? `<img class="album-art-img" src="${img}" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:6px;">` : `<div style="width:100%;aspect-ratio:1/1;background:#222;border-radius:6px;"></div>`; c.innerHTML = `${coverHTML}<div style="margin-top:5px;"><strong style="font-size:0.9em;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${album.name}</strong><span style="font-size:0.75em;color:#888;">${album.tracks.length} 首曲目</span></div>`; c.addEventListener('click', () => openAlbumModal(album)); container.appendChild(c); });
-      }
-      const rSFX = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; let s = `background-color:#ff1744;`; if(d.btnStyle && d.btnStyle.startsWith('http')) s=`background-image:url('${getOptimalImageUrl(d.btnStyle)}');background-size:cover;border:none;`; else if(d.btnStyle) s=`background-color:${d.btnStyle};`; c.innerHTML = `<button class="sfx-push-btn" style="${s}" onclick="playSFX('${d.fileName}', '${d.fileUrl}')"></button><strong style="font-size:0.9em;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.fileName}</strong><a href="${getOptimalAudioUrl(d.fileUrl)}" target="_blank" class="btn-blue-dl" style="padding:4px 10px; font-size:0.75em; margin-top:5px; border-radius:4px; box-shadow:none;">📥 下載</a>`; p.appendChild(c); };
-      const rGIF = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; c.innerHTML = `<img src="${getOptimalImageUrl(d.fileUrl)}" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:6px;"><strong>${d.fileName}</strong><a href="${d.fileUrl}" target="_blank" class="btn-blue-dl" style="padding:4px 10px; font-size:0.75em; margin-top:5px; border-radius:4px; box-shadow:none;">📥 下載</a>`; p.appendChild(c); };
-      if (currentActiveTab === "全部" || currentActiveTab === "音效") renderGrouped(fetchedMaterialsList.filter(i => i.category === "音效" && (!search || i.fileName.toLowerCase().includes(search))), rSFX);
-      if (currentActiveTab === "全部" || currentActiveTab === "GIF") renderGrouped(fetchedMaterialsList.filter(i => i.category === "GIF" && (!search || i.fileName.toLowerCase().includes(search))), rGIF);
+        if (action === 'C') {
+            calcCurrentVal = '0'; calcPrevVal = ''; calcOperator = ''; calcAwaitingNext = false;
+            historyDisplay.innerText = '';
+        } else if (action === 'CE') {
+            calcCurrentVal = '0';
+        } else if (action === '+/-') {
+            calcCurrentVal = (parseFloat(calcCurrentVal) * -1).toString();
+        } else if (action === '%') {
+            calcCurrentVal = (parseFloat(calcCurrentVal) / 100).toString();
+        } else if (['+', '-', '*', '/'].includes(action)) {
+            if (calcOperator && !calcAwaitingNext) {
+                // 如果已經有運算符且正在輸入，先算出來
+                calcAction('=');
+            }
+            calcPrevVal = calcCurrentVal;
+            calcOperator = action;
+            calcAwaitingNext = true;
+            let displayOp = action === '*' ? '×' : (action === '/' ? '÷' : action);
+            historyDisplay.innerText = `${calcPrevVal} ${displayOp}`;
+        } else if (action === '=') {
+            if (!calcOperator) return;
+            let result = 0;
+            let n1 = parseFloat(calcPrevVal);
+            let n2 = parseFloat(calcCurrentVal);
+            switch (calcOperator) {
+                case '+': result = n1 + n2; break;
+                case '-': result = n1 - n2; break;
+                case '*': result = n1 * n2; break;
+                case '/': result = n2 === 0 ? '錯誤' : n1 / n2; break;
+            }
+            historyDisplay.innerText = `${calcPrevVal} ${calcOperator.replace('*','×').replace('/','÷')} ${calcCurrentVal} =`;
+            calcCurrentVal = result.toString();
+            calcOperator = '';
+            calcAwaitingNext = true;
+        } else {
+            // 數字或小數點
+            if (calcAwaitingNext) {
+                calcCurrentVal = action === '.' ? '0.' : action;
+                calcAwaitingNext = false;
+            } else {
+                if (action === '.' && calcCurrentVal.includes('.')) return;
+                calcCurrentVal = calcCurrentVal === '0' && action !== '.' ? action : calcCurrentVal + action;
+            }
+        }
+        
+        resultDisplay.value = calcCurrentVal;
     }
 
-    window.openArticleModal = function(data) { document.getElementById('article-modal-title').innerText = data.fileName; document.getElementById('article-modal-body').innerHTML = `<div class="rich-editor-content" style="border:none; background:transparent; font-size:1.1em; line-height:1.8;">${data.descriptionHTML || '無描述內容。'}</div>` + (data.fileUrl ? `<div style="margin-top:20px; text-align:right;"><a href="${data.fileUrl}" target="_blank" class="btn-blue-dl">${data.btnText || '🔗 前往外部下載'}</a></div>` : ''); document.getElementById('article-modal').style.display = 'flex'; };
-    window.openAlbumModal = function(album) { currentModalAlbum = album; const m = document.getElementById('album-modal'); document.getElementById('modal-album-title').innerText = album.name; let img = getOptimalImageUrl(album.coverUrl); document.getElementById('modal-album-cover-space').innerHTML = img ? `<img src="${img}" style="width:100px;height:100px;object-fit:cover;border-radius:6px;margin-bottom:15px;">` : ''; const lc = document.getElementById('modal-track-list'); lc.innerHTML = ''; album.tracks.forEach((t, idx) => { const row = document.createElement('div'); row.className = 'track-row'; row.innerHTML = `<div style="display:flex;justify-content:between;width:100%;align-items:center;padding:8px;border-bottom:1px solid rgba(255,255,255,0.05); box-sizing:border-box;"><div><span style="color:#888;margin-right:10px;">${idx+1}</span><strong>${t.fileName}</strong></div><button class="btn-action" style="padding:4px 10px;font-size:0.8em;" onclick="playTrackFromModal(${idx})">▶ 播放</button></div>`; lc.appendChild(row); }); m.style.display = 'flex'; };
-    
-    window.playSFX = function(name, url) { globalPlaylist = [{ fileName: name, fileUrl: url, albumName: "單曲預覽" }]; globalTrackIndex = 0; playCurrentGlobalTrack(); }; window.loadAndPlayPlaylist = function(tracks, startIndex = 0) { if (!tracks || tracks.length === 0) return; globalPlaylist = tracks; globalTrackIndex = startIndex; playCurrentGlobalTrack(); }; window.playTrackFromModal = function(index) { if (!currentModalAlbum || !currentModalAlbum.tracks) return; loadAndPlayPlaylist(currentModalAlbum.tracks, index); };
-    window.playCurrentGlobalTrack = function() { if (globalPlaylist.length === 0) return; let t = globalPlaylist[globalTrackIndex]; gpAudio.src = getOptimalAudioUrl(t.fileUrl); gpAudio.play().then(() => showToast(`🎵 正在播放: ${t.fileName}`)).catch(() => window.open(t.fileUrl, '_blank')); };
-    
-    function renderDynamicRoutes() { const list = document.getElementById('dynamic-routes-list'); if(!list) return; let html = ''; fetchedMaterialsList.forEach(item => { if(item.routeCode && item.routeCode.trim() !== '') { html += `<div class="route-item"><span><b>?go=${item.routeCode}</b> ➔ ${item.fileName}</span><button class="btn-copy" onclick="navigator.clipboard.writeText(window.location.href.split('os.html')[0]+'?go=${item.routeCode}').then(()=>showToast('📋 路由網址複製成功！'))">複製</button></div>`; } }); list.innerHTML = html || '<p style="color:#888;">尚無設定直連路由的文章。</p>'; }
+    // ---------------------------------------------------------
+    // 4. 應用程式：小畫家 (Dogfish Paint)
+    // ---------------------------------------------------------
+    const canvas = document.getElementById('dogfishCanvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
 
-    // 通訊連動
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        document.getElementById('chat-app-container').style.display = 'flex'; document.getElementById('chat-login-prompt').style.display = 'none';
-        let safeName = user.displayName || `㊙️ ${user.email.split('@')[0]}`;
-        const uRef = collection(db, "users"); if (user.uid === CREATOR_UID) { userRole = "admin"; } else { try { const d = await getDoc(doc(db, "permissions", user.email.toLowerCase())); userRole = d.exists() ? d.data().role : "user"; } catch (e) {} } if(userRole === 'admin') loadAdminUserList();
-        chatListUnsub = onSnapshot(collection(db, "chats"), (snapshot) => { myChats = []; snapshot.forEach(docSnap => { const data = docSnap.data(); if (data.participants && data.participants.includes(user.uid)) { myChats.push({ id: docSnap.id, ...data }); } }); renderChatList(); });
-      }
-    });
-    // 限制壓縮長度，點擊標籤事件綁定
-    document.querySelectorAll('.category-tabs').forEach(el => el.addEventListener('click', (e) => { if(e.target.classList.contains('tab-btn')) { el.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); e.target.classList.add('active'); currentActiveTab = e.target.dataset.target; renderMaterialsByFilter(); } }));
+    // 設定畫布白底
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    function startDraw(e) {
+        isDrawing = true;
+        draw(e);
+    }
+    function endDraw() {
+        isDrawing = false;
+        ctx.beginPath();
+    }
+    function draw(e) {
+        if (!isDrawing) return;
+        
+        // 取得相對於 canvas 的座標 (處理視窗拖曳與捲動問題)
+        const rect = canvas.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+
+        ctx.lineWidth = document.getElementById('paint-size').value;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = document.getElementById('paint-color').value;
+
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseleave', endDraw);
+
+    function clearCanvas() {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // ---------------------------------------------------------
+    // 5. 應用程式：駭客終端機 (Matrix Rain)
+    // ---------------------------------------------------------
+    function initMatrix() {
+        const mCanvas = document.getElementById('matrixCanvas');
+        const mCtx = mCanvas.getContext('2d');
+        
+        // 確保符合視窗大小
+        mCanvas.width = mCanvas.parentElement.offsetWidth;
+        mCanvas.height = mCanvas.parentElement.offsetHeight;
+
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%""\'#&_(),.;:?!\\|{}<>[]^~'.split('');
+        const fontSize = 14;
+        const columns = mCanvas.width / fontSize;
+        const drops = [];
+        for (let i = 0; i < columns; i++) { drops[i] = 1; }
+
+        function drawMatrix() {
+            // 半透明黑色遮罩，製造殘影效果
+            mCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+            
+            mCtx.fillStyle = '#0F0'; // 經典矩陣綠
+            mCtx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                mCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > mCanvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        window.matrixInterval = setInterval(drawMatrix, 33);
+        
+        // 視窗大小改變時重設 Canvas 大小
+        const observer = new ResizeObserver(() => {
+            mCanvas.width = mCanvas.parentElement.offsetWidth;
+            mCanvas.height = mCanvas.parentElement.offsetHeight;
+        });
+        observer.observe(document.getElementById('page-matrix'));
+    }
+
+    // ---------------------------------------------------------
+    // 預設開啟「核心大廳」
+    // ---------------------------------------------------------
+    window.onload = () => {
+        setTimeout(() => {
+            openWindow('blog');
+        }, 500);
+    }
   </script>
 </body>
 </html>
