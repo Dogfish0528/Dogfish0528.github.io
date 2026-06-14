@@ -1,7 +1,18 @@
+const CACHE_NAME = 'dogfish-app-v1';
+
 self.addEventListener('install', (event) => {
-    console.log('Service Worker 安裝成功！');
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(['./index.html']);
+        })
+    );
+    self.skipWaiting();
 });
 
 self.addEventListener('fetch', (event) => {
-    // 這裡暫時不做離線快取，單純讓瀏覽器判定我們符合 App 資格
+    event.respondWith(
+        fetch(event.request).catch(() => {
+            return caches.match(event.request);
+        })
+    );
 });
