@@ -16,32 +16,17 @@
        系統底層與全域變數
     ========================================================= */
     :root { 
-        --primary: #1db954; 
-        --secondary: #1ed760; 
-        --accent: #ff1744; 
-        --beautify: #ff00ff;
-        --border-color: rgba(255, 255, 255, 0.1); 
-        --font-main: 'Noto Sans TC', sans-serif; 
-        --player-height: 90px; 
+        --primary: #1db954; --secondary: #1ed760; --accent: #ff1744; --beautify: #ff00ff;
+        --border-color: rgba(255, 255, 255, 0.1); --font-main: 'Noto Sans TC', sans-serif; --player-height: 90px; 
     }
     
     body { 
-        background: linear-gradient(-45deg, #0a0a0a, #1a0b12, #0d141e, #0a110d); 
-        background-size: 400% 400%; 
-        animation: gradientBG 20s ease infinite; 
-        color: #ffffff; 
-        font-family: var(--font-main); 
-        margin: 0; 
-        padding: 0; 
-        overflow-x: hidden; 
-        transition: padding-bottom 0.3s ease; 
+        background: linear-gradient(-45deg, #0a0a0a, #1a0b12, #0d141e, #0a110d); background-size: 400% 400%; 
+        animation: gradientBG 20s ease infinite; color: #ffffff; font-family: var(--font-main); 
+        margin: 0; padding: 0; overflow-x: hidden; transition: padding-bottom 0.3s ease; 
     }
     
-    @keyframes gradientBG { 
-        0% { background-position: 0% 50%; } 
-        50% { background-position: 100% 50%; } 
-        100% { background-position: 0% 50%; } 
-    }
+    @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     
     a, button, input, select, textarea { cursor: pointer; }
     
@@ -54,10 +39,8 @@
        免責聲明遮罩
     ========================================================= */
     #disclaimer-overlay { 
-        position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-        background: rgba(0,0,0,0.9); z-index: 9999999; 
-        display: flex; align-items: center; justify-content: center; 
-        backdrop-filter: blur(10px); 
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9999999; 
+        display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); 
     }
 
     /* =========================================================
@@ -87,9 +70,7 @@
     
     .nav-links { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .btn-nav { background: transparent; color: #b3b3b3; border: none; padding: 6px 12px; font-size: 0.95em; font-weight: 700; border-radius: 8px; transition: 0.2s; } 
-    .btn-nav:hover { color: white; background: rgba(255,255,255,0.1); } 
-    .btn-nav.active { background: rgba(255,255,255,0.15); color: white; }
-    
+    .btn-nav:hover { color: white; background: rgba(255,255,255,0.1); } .btn-nav.active { background: rgba(255,255,255,0.15); color: white; }
     .btn-login { padding: 6px 16px; border-radius: 20px; font-weight: bold; background: white; color: black; border: none; }
     .btn-logout { background: transparent; color: #888; font-size: 0.8em; padding: 4px 12px; border-radius: 8px; border: 1px solid #444; transition: 0.2s; }
     
@@ -108,24 +89,11 @@
     .os-toggle-btn { background: linear-gradient(135deg, #00d4ff, #1db954); color: #000; font-weight: 900; box-shadow: 0 0 15px rgba(0,212,255,0.4); border: none; padding: 6px 16px; border-radius: 20px; transition: 0.3s; text-decoration: none; display: inline-block; } 
     .os-toggle-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(0,212,255,0.6); color:#000; }
     
-    /* =========================================================
-       駭客開機畫面與急救區
-    ========================================================= */
-    #boot-screen { 
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-        background: #050505; z-index: 9999999; display: flex; flex-direction: column; 
-        padding: 40px; font-family: 'Consolas', monospace; color: #0f0; 
-        transition: opacity 0.5s ease; pointer-events: none; 
-    }
+    /* 駭客開機畫面與急救區 */
+    #boot-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 9999999; display: flex; flex-direction: column; padding: 40px; font-family: 'Consolas', monospace; color: #0f0; transition: opacity 0.5s ease; pointer-events: none; }
     .boot-text { margin: 5px 0; font-size: 1.2em; opacity: 0; animation: typeIn 0.1s forwards; text-shadow: 0 0 5px #0f0; }
     @keyframes typeIn { to { opacity: 1; } }
-    
-    .terminal-box { 
-        background: #000; border: 1px solid #333; border-left: 4px solid var(--accent); 
-        border-radius: 8px; padding: 20px; font-family: 'Consolas', monospace; 
-        color: #0f0; height: 250px; overflow-y: auto; margin-bottom: 20px; 
-        box-shadow: inset 0 0 20px rgba(0,255,0,0.1); 
-    }
+    .terminal-box { background: #000; border: 1px solid #333; border-left: 4px solid var(--accent); border-radius: 8px; padding: 20px; font-family: 'Consolas', monospace; color: #0f0; height: 250px; overflow-y: auto; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,255,0,0.1); }
     .log-line { margin: 5px 0; font-size: 0.9em; }
 
     /* =========================================================
@@ -141,7 +109,6 @@
     .search-input:focus { border-color: var(--primary); width: 260px; } 
     .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.9em; }
     
-    /* 素材庫樣式 */
     .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; } 
     .material-item { background: rgba(20,20,20,0.5); border: 1px solid var(--border-color); padding: 16px; border-radius: 12px; transition: 0.3s; display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; backdrop-filter: blur(5px); } 
     .material-item:hover { background: rgba(30,30,30,0.8); box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: translateY(-3px); border-color: #444; } 
@@ -152,23 +119,19 @@
     .sfx-push-btn { width: 110px; height: 120px; border-radius: 50%; background-size: cover; background-position: center; border: 4px solid #fff; margin: 0 auto 15px; display: block; transition: 0.1s; box-shadow: 0 8px 0 #111, 0 15px 20px rgba(0,0,0,0.5); } 
     .sfx-push-btn:active { transform: translateY(8px); box-shadow: 0 0px 0 #111, 0 5px 10px rgba(0,0,0,0.5); }
     
-    /* 文章與軟體卡片樣式 */
     .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; } 
     .article-card { background: rgba(20,20,20,0.5); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid var(--border-color); text-align: left; backdrop-filter: blur(5px); position: relative; } 
     .article-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(29, 185, 84, 0.2); } 
-    .article-info { padding: 20px; } 
-    .article-title { font-size: 1.5em; font-weight: 900; margin: 0 0 10px; color: white; }
+    .article-info { padding: 20px; } .article-title { font-size: 1.5em; font-weight: 900; margin: 0 0 10px; color: white; }
 
-    /* 🌟 Win11 美化專屬卡片樣式 🌟 */
+    /* Win11 美化專屬卡片 */
     .beautify-card { background: rgba(255,0,255,0.05); border: 1px solid rgba(255,0,255,0.2); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; text-align: left; position: relative; }
     .beautify-card:hover { border-color: var(--beautify); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255,0,255,0.3); background: rgba(255,0,255,0.1); }
     .beautify-card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .beautify-info { padding: 20px; }
     .beautify-badge { position: absolute; top: 15px; right: 15px; background: var(--beautify); color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold; box-shadow: 0 2px 10px rgba(255,0,255,0.5); z-index: 5; }
 
-    /* =========================================================
-       聊天系統 (Messenger)
-    ========================================================= */
+    /* 聊天系統 */
     .chat-app { display: flex; height: 75vh; background: rgba(30,30,30,0.7); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; backdrop-filter: blur(10px); } 
     .chat-sidebar { width: 280px; background: rgba(20,20,20,0.8); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; text-align: left; flex-grow: 1; min-width: 250px; } 
     .chat-sidebar-header { padding: 15px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; } 
@@ -225,9 +188,7 @@
     .blog-download-box { background: #222; border: 1px dashed #444; border-left: 4px solid #0088ff; border-radius: 8px; padding: 25px; margin-top: 50px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); } 
     .dl-info { display: flex; align-items: center; gap: 15px; }
 
-    /* =========================================================
-       音樂播放器 (Global Player)
-    ========================================================= */
+    /* 音樂播放器 */
     #global-player { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--player-height); background: rgba(15,15,15,0.95); border-top: 1px solid rgba(255,255,255,0.1); justify-content: space-between; align-items: center; padding: 0 20px; z-index: 3000; flex-wrap: wrap; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 -5px 20px rgba(0,0,0,0.5); } 
     .gp-left { display: flex; align-items: center; gap: 15px; width: 280px; text-align: left; } 
     #gp-cover { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); } 
@@ -253,9 +214,7 @@
     #mini-player-toggle { display: none; position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: #000; font-size: 1.8em; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 3100; align-items: center; justify-content: center; transition: 0.2s; } 
     #mini-player-toggle:hover { transform: scale(1.1); }
 
-    /* =========================================================
-       系統提示 (Toast) 與其他工具
-    ========================================================= */
+    /* 提示系統與其他 */
     #toast-container { position: fixed; top: 80px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; } 
     .toast { background: rgba(30,30,30,0.9); color: white; padding: 15px 25px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-weight: 700; font-size: 1.1em; backdrop-filter: blur(10px); animation: slideIn 0.3s forwards, fadeOut 0.3s forwards 4.7s; } 
     .toast.error { border-left-color: var(--accent); } 
@@ -266,7 +225,6 @@
     .route-item:hover { background: rgba(29, 185, 84, 0.1); border-left: 4px solid var(--primary); } 
     .route-code-badge { background: var(--primary); color: black; font-weight: 900; padding: 3px 8px; border-radius: 6px; font-size: 0.9em; margin-right: 10px; }
 
-    /* 上帝模式邊框 */
     body.god-mode { border: 2px solid var(--accent); } 
     body.god-mode .admin-overlay { display: flex !important; } 
     .admin-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 20; flex-direction: column; justify-content: center; align-items: center; gap: 15px; backdrop-filter: blur(4px); border-radius: inherit; animation: fadeInOverlay 0.2s; } 
@@ -432,7 +390,7 @@
   </div>
 
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v18.8 滿血修復版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v18.9 滿血修復版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="switchPage('materials')">素材</button>
@@ -442,8 +400,8 @@
       
       <button class="btn-nav" onclick="switchPage('beautify')" style="color: var(--beautify); font-weight: 900; text-shadow: 0 0 5px rgba(255,0,255,0.5);">✨ Win11 美化</button>
 
-      <button id="nav-add-btn" class="btn-nav" onclick="document.getElementById('upload-modal').style.display='flex';" style="display: none; color: #1ed760; font-weight: 900;">➕ 發布</button>
-      <button id="nav-edit-mode-btn" class="btn-nav" onclick="toggleEditMode()" style="display: none; color: #00d4ff; border: 1px solid #00d4ff;">🖌️ 編輯模式</button>
+      <button id="nav-add-btn" class="btn-nav" style="display: none; color: #1ed760; font-weight: 900;">➕ 發布</button>
+      <button id="nav-edit-mode-btn" class="btn-nav" style="display: none; color: #00d4ff; border: 1px solid #00d4ff;">🖌️ 編輯模式</button>
       <button id="nav-review-btn" class="btn-nav" onclick="switchPage('review')" style="display: none; color: #ffb300;">審核</button>
       <button id="nav-admin-btn" class="btn-nav" onclick="switchPage('admin')" style="display: none; color: var(--accent);">設定</button>
       
@@ -644,7 +602,6 @@
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"; 
     import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
     
-    // Firebase 初始化
     const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website", storageBucket: "dogfish-website.firebasestorage.app", messagingSenderId: "501551191843", appId: "1:501551191843:web:32fd3c7a51c7a21722de96" }; 
     const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1"; 
     const app = initializeApp(firebaseConfig); 
@@ -654,7 +611,6 @@
     const secondaryApp = initializeApp(firebaseConfig, "Secondary"); 
     const secondaryAuth = getAuth(secondaryApp);
     
-    // 全域變數
     let fetchedMaterialsList = []; 
     let pendingMaterialsList = []; 
     let currentActiveTab = "全部"; 
@@ -674,179 +630,8 @@
     let initialRouteChecked = false;
 
     // ==========================================
-    // 基礎工具與功能 (Utils)
-    // ==========================================
-    window.copyFullUrl = function(routeParams) { 
-        let currentUrl = window.location.href.split('?')[0]; 
-        let fullUrl = currentUrl + routeParams; 
-        navigator.clipboard.writeText(fullUrl).then(() => { showToast('🔗 完整跳轉網址已複製！'); }).catch(() => { showToast('❌ 複製失敗', 'error'); }); 
-    };
-
-    window.showToast = function(msg, type = 'success') { 
-        const c = document.getElementById('toast-container'); 
-        const t = document.createElement('div'); 
-        t.className = `toast ${type}`; 
-        t.innerText = msg; 
-        c.appendChild(t); 
-        setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 4500); 
-    }; 
-
-    window.copyToClipboard = function(text) { 
-        navigator.clipboard.writeText(text).then(() => showToast('🔗 連結複製成功！')).catch(() => showToast('❌ 複製失敗', 'error')); 
-    }; 
-
-    // 富文本編輯器功能
-    window.lastSelectedMedia = null; 
-    document.addEventListener('click', (e) => { 
-        if(e.target.closest('.rich-editor-content') && ['IMG', 'VIDEO', 'IFRAME'].includes(e.target.tagName)) { 
-            window.lastSelectedMedia = e.target; 
-            document.querySelectorAll('.rich-editor-content *:is(img,video,iframe)').forEach(el => el.style.outline = 'none'); 
-            e.target.style.outline = '3px solid #ffb300'; 
-        } else if (e.target.closest('.rich-editor-content')) { 
-            document.querySelectorAll('.rich-editor-content *:is(img,video,iframe)').forEach(el => el.style.outline = 'none'); 
-            window.lastSelectedMedia = null; 
-        } 
-    });
-
-    window.resizeSelectedMedia = function(editorId) { 
-        if(!window.lastSelectedMedia || !document.getElementById(editorId).contains(window.lastSelectedMedia)) { 
-            showToast("⚠️ 請先點擊選取要修改的圖片或影片！", "error"); return; 
-        } 
-        let currentWidth = window.lastSelectedMedia.style.width || "100%"; 
-        let newWidth = prompt("📐 請輸入新的顯示寬度 (例如: 100%, 80%, 50%):", currentWidth); 
-        if(newWidth) { 
-            window.lastSelectedMedia.style.width = newWidth; 
-            window.lastSelectedMedia.style.outline = 'none'; 
-            window.lastSelectedMedia = null; 
-            showToast("✅ 大小修改成功！"); 
-        } 
-    };
-
-    window.insertEditorContent = function(editorId, type) { 
-        let typeName = type === 'img' ? '圖片' : (type === 'yt' ? 'YouTube' : '影片 (MP4/WebM)'); 
-        let url = prompt(`請輸入 ${typeName} 網址:`); 
-        if (!url) return; 
-        document.getElementById(editorId).focus(); 
-        
-        if (type === 'img') { 
-            document.execCommand('insertImage', false, url); 
-        } else if (type === 'video') { 
-            let width = prompt("請輸入影片顯示寬度 (預設為 100%):", "100%"); 
-            if (width === null) return; 
-            if (width.trim() === "") width = "100%"; 
-            document.execCommand('insertHTML', false, `<video src="${url}" style="width:${width}; max-width: 100%; border-radius:8px; margin:15px 0; background:#000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer;" controls muted playsinline></video><br>`); 
-        } else { 
-            let ytId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/); 
-            if (ytId && ytId[1]) { 
-                document.execCommand('insertHTML', false, `<iframe src="https://www.youtube.com/embed/${ytId[1]}" frameborder="0" allowfullscreen contenteditable="false" style="width:100%; aspect-ratio: 16/9; border-radius:8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer;"></iframe><br>`); 
-            } else { 
-                showToast("❌ 無效的 YouTube 網址", "error"); 
-            } 
-        } 
-    }; 
-
-    window.insertLink = function(editorId) { 
-        let text = prompt("請輸入連結顯示文字 (例如: 點我下載):"); 
-        if (!text) return; 
-        let url = prompt("請輸入真實連結網址 (例如: https://...):"); 
-        if (!url) return; 
-        document.getElementById(editorId).focus(); 
-        let html = `<a href="${url}" target="_blank" style="color: #0088ff; text-decoration: underline; font-weight: bold;">${text}</a>`; 
-        document.execCommand('insertHTML', false, html); 
-    };
-
-    // 音樂播放器功能
-    window.hidePlayer = function() { 
-        document.getElementById('global-player').style.display = 'none'; 
-        document.getElementById('mini-player-toggle').style.display = 'flex'; 
-        document.body.style.paddingBottom = '0px'; 
-    }; 
-    
-    window.showPlayer = function() { 
-        document.getElementById('global-player').style.display = 'flex'; 
-        document.getElementById('mini-player-toggle').style.display = 'none'; 
-        document.body.style.paddingBottom = '90px'; 
-    };
-
-    window.playSFX = function(name, url) { 
-        globalPlaylist = [{ fileName: name, fileUrl: url, albumName: "單曲預覽" }]; 
-        globalTrackIndex = 0; 
-        playCurrentGlobalTrack(); 
-    }; 
-    
-    window.loadAndPlayPlaylist = function(tracks, startIndex = 0) { 
-        if (!tracks || tracks.length === 0) return; 
-        globalPlaylist = tracks; 
-        globalTrackIndex = startIndex; 
-        playCurrentGlobalTrack(); 
-    }; 
-    
-    window.playTrackFromModal = function(index) { 
-        if (!currentModalAlbum || !currentModalAlbum.tracks) return; 
-        loadAndPlayPlaylist(currentModalAlbum.tracks, index); 
-    };
-    
-    window.playCurrentGlobalTrack = function() { 
-        if (globalPlaylist.length === 0) return; 
-        let t = globalPlaylist[globalTrackIndex]; 
-        gpAudio.src = getOptimalAudioUrl(t.fileUrl); 
-        document.getElementById('gp-title').innerText = t.fileName; 
-        document.getElementById('gp-artist').innerText = t.albumName || "Dogfish Studio"; 
-        let c = getOptimalImageUrl(t.coverUrl); 
-        document.getElementById('gp-cover').src = c ? c : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="; 
-        showPlayer(); 
-        gpAudio.play().catch(e => { showToast("⚠️ 背景播放器攔截，改為另開網頁下載", "error"); window.open(t.fileUrl, '_blank'); }); 
-    };
-    
-    window.playNextTrack = function() { 
-        if (globalPlaylist.length === 0) return; 
-        globalTrackIndex = (globalTrackIndex + 1) % globalPlaylist.length; 
-        playCurrentGlobalTrack(); 
-    }; 
-    
-    window.playPrevTrack = function() { 
-        if (globalPlaylist.length === 0) return; 
-        globalTrackIndex = (globalTrackIndex - 1 + globalPlaylist.length) % globalPlaylist.length; 
-        playCurrentGlobalTrack(); 
-    };
-    
-    gpAudio.addEventListener('ended', playNextTrack); 
-    gpAudio.addEventListener('play', () => document.getElementById('gp-visualizer').classList.remove('paused')); 
-    gpAudio.addEventListener('pause', () => document.getElementById('gp-visualizer').classList.add('paused'));
-
-    // 資料解析輔助
-    function extractGDriveId(url) { 
-        if (!url) return null; 
-        let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/); 
-        return m ? m[1] : null; 
-    } 
-    
-    function getOptimalImageUrl(url) { 
-        if (!url) return ""; 
-        const id = extractGDriveId(url); 
-        return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w800` : url; 
-    } 
-    
-    function getOptimalAudioUrl(url) { 
-        if (!url) return ""; 
-        if (url.includes("cdn.discordapp.com") || url.includes("attachments")) return url; 
-        const id = extractGDriveId(url); 
-        return id ? `https://docs.google.com/uc?export=download&id=${id}` : url; 
-    }
-
-    // ==========================================
     // 事件綁定 (Event Listeners) - 🌟 完整修復區 🌟
     // ==========================================
-
-    // 免責聲明事件
-    if (localStorage.getItem('dogfish_disclaimer_agreed') === 'true') { 
-        document.getElementById('disclaimer-overlay').style.display = 'none'; 
-    } 
-    document.getElementById('agree-disclaimer-btn').addEventListener('click', () => { 
-        localStorage.setItem('dogfish_disclaimer_agreed', 'true'); 
-        document.getElementById('disclaimer-overlay').style.display = 'none'; 
-        showToast("歡迎進入！"); 
-    });
 
     // Modal 開關事件
     document.getElementById('login-btn-modal').addEventListener('click', () => {
@@ -855,18 +640,38 @@
     document.getElementById('login-close-btn').addEventListener('click', () => {
         document.getElementById('login-modal').style.display = 'none';
     });
+    
+    const navAddBtn = document.getElementById('nav-add-btn');
+    if(navAddBtn) {
+        navAddBtn.addEventListener('click', () => {
+            document.getElementById('upload-modal').style.display = 'flex';
+        });
+    }
+    
     document.getElementById('upload-close-btn').addEventListener('click', () => {
         document.getElementById('upload-modal').style.display = 'none';
     });
+    
+    document.getElementById('close-article-btn').addEventListener('click', () => { 
+        document.getElementById('article-modal').style.display = 'none'; 
+        document.getElementById('article-desc').innerHTML=''; 
+    });
+    
     document.getElementById('close-edit-btn').addEventListener('click', () => { 
         document.getElementById('edit-modal').style.display = 'none'; 
     });
+    
     document.getElementById('modal-close-btn').addEventListener('click', () => { 
         document.getElementById('album-modal').style.display = 'none'; 
     });
 
+    const navEditModeBtn = document.getElementById('nav-edit-mode-btn');
+    if(navEditModeBtn) {
+        navEditModeBtn.addEventListener('click', () => { window.toggleEditMode(); });
+    }
+
     // 搜尋框事件
-    document.getElementById('search-input').addEventListener('keyup', renderMaterialsByFilter);
+    document.getElementById('search-input').addEventListener('keyup', () => renderMaterialsByFilter());
 
     // 登入相關事件
     document.getElementById('google-login-btn').addEventListener('click', () => { 
@@ -962,6 +767,27 @@
     }); 
 
     // 發布與編輯事件
+    document.getElementById('add-mat-btn').addEventListener('click', async () => { 
+        const name = document.getElementById('mat-name').value.trim(); 
+        const type = document.getElementById('mat-type-select').value; 
+        const rawUrl = document.getElementById('mat-url').value.trim(); 
+        if (!name) { showToast("⚠️ 請輸入標題名稱！", "error"); return; } 
+        let safeUploaderName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; 
+        const ex = getUploadData('mat'); 
+        try { 
+            const col = (userRole === "admin") ? "categorized_materials" : "pending_materials"; 
+            await addDoc(collection(db, col), { fileName: name, category: type, fileUrl: rawUrl, ...ex, uploaderName: safeUploaderName, timestamp: serverTimestamp() }); 
+            showToast("✅ 即時發布成功！已自動更新"); 
+            document.getElementById('upload-modal').style.display='none'; 
+            document.getElementById('mat-name').value = ""; 
+            document.getElementById('mat-url').value = ""; 
+            let re = document.getElementById('mat-rich-editor'); 
+            if(re) re.innerHTML = ""; 
+        } catch (error) { 
+            showToast("❌ 儲存發生錯誤", "error"); 
+        } 
+    });
+
     document.getElementById('save-edit-btn').addEventListener('click', async () => { 
         const id = document.getElementById('edit-id').value; 
         const name = document.getElementById('edit-name').value.trim(); 
@@ -974,6 +800,19 @@
         } catch(e) {
             showToast("❌ 更新失敗", "error");
         } 
+    });
+
+    // 表單切換連動
+    document.getElementById('mat-type-select').addEventListener('change', (e) => renderUploadFields(e.target.value, 'mat')); 
+    
+    // Tab 分類按鈕綁定
+    document.querySelectorAll('.tab-btn').forEach(button => { 
+        button.addEventListener('click', () => { 
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); 
+            button.classList.add('active'); 
+            currentActiveTab = button.getAttribute('data-target'); 
+            renderMaterialsByFilter(); 
+        }); 
     });
 
     // ==========================================
@@ -1007,10 +846,9 @@
         } 
     } 
     
-    document.getElementById('mat-type-select').addEventListener('change', (e) => renderUploadFields(e.target.value, 'mat')); 
+    // 初始化載入
     renderUploadFields("音樂", 'mat');
 
-    // 發布邏輯
     function getUploadData(prefix) { 
         const type = document.getElementById(`${prefix}-type-select`)?.value || document.getElementById('edit-category').value; 
         let editor = document.getElementById(prefix === 'mat' ? 'mat-rich-editor' : 'edit-rich-editor'); 
@@ -1034,27 +872,6 @@
         } 
         return d; 
     }
-
-    document.getElementById('add-mat-btn').addEventListener('click', async () => { 
-        const name = document.getElementById('mat-name').value.trim(); 
-        const type = document.getElementById('mat-type-select').value; 
-        const rawUrl = document.getElementById('mat-url').value.trim(); 
-        if (!name) { showToast("⚠️ 請輸入標題名稱！", "error"); return; } 
-        let safeUploaderName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; 
-        const ex = getUploadData('mat'); 
-        try { 
-            const col = (userRole === "admin") ? "categorized_materials" : "pending_materials"; 
-            await addDoc(collection(db, col), { fileName: name, category: type, fileUrl: rawUrl, ...ex, uploaderName: safeUploaderName, timestamp: serverTimestamp() }); 
-            showToast("✅ 即時發布成功！已自動更新"); 
-            document.getElementById('upload-modal').style.display='none'; 
-            document.getElementById('mat-name').value = ""; 
-            document.getElementById('mat-url').value = ""; 
-            let re = document.getElementById('mat-rich-editor'); 
-            if(re) re.innerHTML = ""; 
-        } catch (error) { 
-            showToast("❌ 儲存發生錯誤", "error"); 
-        } 
-    });
 
     // ==========================================
     // 資料抓取與渲染
@@ -1259,15 +1076,6 @@
         }, 300); 
     };
 
-    document.querySelectorAll('.tab-btn').forEach(button => { 
-        button.addEventListener('click', () => { 
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); 
-            button.classList.add('active'); 
-            currentActiveTab = button.getAttribute('data-target'); 
-            renderMaterialsByFilter(); 
-        }); 
-    });
-
     // 路由與頁面切換
     function renderDynamicRoutes() { 
         const routeList = document.getElementById('dynamic-routes-list'); 
@@ -1351,7 +1159,8 @@
         document.getElementById('nav-review-btn').style.display = 'none'; 
         document.getElementById('nav-edit-mode-btn').style.display = 'none'; 
         window.isEditMode = false; document.body.classList.remove('god-mode'); 
-        const editBtn = document.getElementById('nav-edit-mode-btn'); editBtn.classList.remove('active'); editBtn.innerHTML = "🖌️ 編輯模式"; 
+        const editBtn = document.getElementById('nav-edit-mode-btn'); 
+        if(editBtn) { editBtn.classList.remove('active'); editBtn.innerHTML = "🖌️ 編輯模式"; }
         
         if (!user) return; 
         
@@ -1372,37 +1181,7 @@
         document.getElementById('tr-name').innerHTML = `${roleTag} ${safeName}`; 
     }
 
-    window.loadAdminUserList = async function() { 
-        if(userRole !== 'admin') return; 
-        const listDiv = document.getElementById('admin-user-list'); listDiv.innerHTML = '<div style="color:#888;">正在讀取名冊資料...</div>'; 
-        try { 
-            const uSnap = await getDocs(query(collection(db, "users"))); 
-            const pSnap = await getDocs(collection(db, "permissions")); 
-            let pMap = {}; pSnap.forEach(d => pMap[d.id] = d.data().role); listDiv.innerHTML = ''; 
-            uSnap.forEach(docSnap => { 
-                let d = docSnap.data(); let email = d.email; let role = pMap[email] || 'user'; let isSecret = email.endsWith('@dogfish.secret'); 
-                let roleBadge = role === 'admin' ? '👑 管理員' : (role === 'reviewer' ? '🛡️ 審核員' : (role === 'contributor' ? '✍️ 貢獻者' : '👤 一般會員')); 
-                let typeBadge = isSecret ? '<span style="background:var(--accent); color:white; padding:2px 6px; border-radius:4px; font-size:0.7em; margin-left:8px;">秘密帳號</span>' : '<span style="background:#0088ff; color:white; padding:2px 6px; border-radius:4px; font-size:0.7em; margin-left:8px;">Google</span>'; 
-                let delBtn = isSecret ? `<button onclick="deleteSecretUser('${docSnap.id}', '${email}')" class="btn-del" style="padding:6px 12px; font-size:0.85em;">🗑️ 註銷刪除</button>` : ''; 
-                listDiv.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); padding:12px 15px; border-radius:8px; border:1px solid #333; transition: 0.2s;"><div style="display:flex; align-items:center; gap:12px;"><img src="${d.photo || 'https://via.placeholder.com/40'}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:1px solid #555;"><div><strong style="color:white; font-size:1.05em;">${d.name}</strong> ${typeBadge}<div style="color:#888; font-size:0.85em; margin-top:2px;">${roleBadge} | ${email.replace('@dogfish.secret', '')}</div></div></div><div>${delBtn}</div></div>`; 
-            }); 
-        } catch(e) { listDiv.innerHTML = '<div style="color:var(--accent);">載入名冊失敗</div>'; } 
-    };
-
-    window.deleteSecretUser = async function(docId, email) { 
-        let shortName = email.replace('@dogfish.secret', ''); 
-        if(!confirm(`🚨 確定要刪除秘密帳號 [${shortName}] 嗎？\n⚠️ 注意：這只會移除他的網站權限！\n若要『徹底釋放這個帳號名稱』以便日後重新建立，請務必到 Firebase 後台的 Authentication 刪除該帳號！`)) return; 
-        try { 
-            await deleteDoc(doc(db, "users", docId)); 
-            await deleteDoc(doc(db, "permissions", email)); 
-            showToast(`✅ 已註銷 [${shortName}] 的網站權限與資料！`); 
-            loadAdminUserList(); 
-        } catch(e) { showToast("❌ 刪除失敗", "error"); } 
-    };
-
-    // ==========================================
     // 聊天室功能
-    // ==========================================
     function initChatSystem(user) { 
         const invitesQ = query(collection(db, "invites"), where("toEmail", "==", user.email.toLowerCase()), where("status", "==", "pending")); 
         invitesUnsub = onSnapshot(invitesQ, (snapshot) => { 
@@ -1423,16 +1202,17 @@
         }); 
     }
     
-    window.sendFriendInvite = async function() { let email = document.getElementById('invite-email').value; if(!email) return; email = email.trim().toLowerCase(); try { const uSnap = await getDocs(query(collection(db, "users"), where("email", "==", email))); if(uSnap.empty) { showToast('❌ 對方尚未登入過本站', 'error'); return; } let safeName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; await addDoc(collection(db, "invites"), { fromUid: auth.currentUser.uid, fromName: safeName, fromPhoto: auth.currentUser.photoURL || '', toEmail: email, status: "pending", timestamp: serverTimestamp() }); showToast("✅ 好友邀請已發送！"); document.getElementById('invite-email').value = ''; } catch(e) { showToast("❌ 發送失敗", "error"); } }
-    window.acceptInvite = async function(inviteId, fUid, fName, fPhoto) { try { let safeName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; await addDoc(collection(db, "chats"), { type: "private", participants: [auth.currentUser.uid, fUid], names: { [auth.currentUser.uid]: safeName, [fUid]: fName }, photos: { [auth.currentUser.uid]: auth.currentUser.photoURL || '', [fUid]: fPhoto }, timestamp: serverTimestamp() }); await updateDoc(doc(db, "invites", inviteId), { status: "accepted" }); showToast("✅ 已確認好友！"); } catch(e) {} }
-    window.createGroupChat = async function() { const name = prompt("請輸入群組名稱："); if(!name) return; try { await addDoc(collection(db, "chats"), { type: "group", name: name, owner: auth.currentUser.uid, participants: [auth.currentUser.uid], timestamp: serverTimestamp() }); showToast("✅ 群組建立成功！"); } catch(e) {} }
+    document.getElementById('chat-send-btn').addEventListener('click', sendChatMessage); 
+    document.getElementById('chat-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(); });
     
-    function renderChatList() { const list = document.getElementById('chat-list'); list.innerHTML = ''; myChats.forEach(chat => { const isGrp = chat.type === 'group'; let name = isGrp ? `👥 ${chat.name}` : chat.names[chat.participants.find(u => u !== auth.currentUser.uid)]; let pic = isGrp ? 'https://via.placeholder.com/40/1db954/fff?text=G' : (chat.photos[chat.participants.find(u => u !== auth.currentUser.uid)] || 'https://via.placeholder.com/40/888/fff?text=U'); const item = document.createElement('div'); item.className = `chat-list-item ${chat.id === currentChatId ? 'active' : ''}`; item.onclick = () => openChat(chat.id, name, isGrp, chat.owner); item.innerHTML = `<img src="${pic}" class="chat-list-avatar"><div class="chat-list-name">${name}</div>`; list.appendChild(item); }); }
-    function openChat(chatId, chatName, isGrp, ownerId) { currentChatId = chatId; renderChatList(); let addBtn = (isGrp && ownerId === auth.currentUser.uid) ? `<button onclick="addGroupMember('${chatId}')" class="btn-action" style="padding:4px 8px; font-size:0.8em;">➕ 拉人進群</button>` : ''; document.getElementById('current-chat-header').innerHTML = `<span>${chatName}</span> ${addBtn}`; document.getElementById('chat-input-area').style.display = 'flex'; if(activeChatUnsub) activeChatUnsub(); const q = query(collection(db, `chats/${chatId}/messages`), orderBy("timestamp", "desc"), limit(50)); activeChatUnsub = onSnapshot(q, (snapshot) => { const msgs = []; snapshot.forEach(d => msgs.push(d.data())); msgs.reverse(); const container = document.getElementById('chat-messages'); container.innerHTML = ''; msgs.forEach(m => { const isMe = m.uid === auth.currentUser.uid; const time = m.timestamp ? new Date(m.timestamp.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''; const row = document.createElement('div'); row.className = `chat-row ${isMe ? 'me' : 'other'}`; let pPic = m.photoURL || 'https://via.placeholder.com/40/888/fff?text=U'; row.innerHTML = `${isMe ? '' : `<img src="${pPic}" class="chat-avatar">`}<div class="chat-bubble-wrap">${isMe ? '' : `<span class="chat-name">${m.displayName}</span>`}<div style="display:flex; gap:5px;">${isMe ? `<span class="chat-time">${time}</span>` : ''}<div class="chat-bubble">${m.text}</div>${isMe ? '' : `<span class="chat-time">${time}</span>`}</div></div>`; container.appendChild(row); }); container.scrollTop = container.scrollHeight; }); }
-    
-    window.addGroupMember = async function(chatId) { let email = prompt("請輸入要拉入群組的 Email (或秘密帳號@dogfish.secret)："); if(!email) return; email = email.trim().toLowerCase(); try { const uSnap = await getDocs(query(collection(db, "users"), where("email", "==", email))); if(uSnap.empty) { showToast('❌ 對方尚未登入過本站', 'error'); return; } const newUid = uSnap.docs[0].id; const cRef = doc(db, "chats", chatId); const cSnap = await getDoc(cRef); let p = cSnap.data().participants; if(!p.includes(newUid)) { p.push(newUid); await updateDoc(cRef, { participants: p }); showToast("✅ 已成功拉入群組！"); } } catch(e) {} }
-    document.getElementById('chat-send-btn').addEventListener('click', sendChatMessage); document.getElementById('chat-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(); });
-    async function sendChatMessage() { const inp = document.getElementById('chat-input'); const txt = inp.value.trim(); if (!txt || !currentChatId) return; inp.value = ''; try { let safeName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; await addDoc(collection(db, `chats/${currentChatId}/messages`), { uid: auth.currentUser.uid, displayName: safeName, photoURL: auth.currentUser.photoURL || '', text: txt, timestamp: serverTimestamp() }); } catch (e) {} }
+    async function sendChatMessage() { 
+        const inp = document.getElementById('chat-input'); const txt = inp.value.trim(); 
+        if (!txt || !currentChatId) return; inp.value = ''; 
+        try { 
+            let safeName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; 
+            await addDoc(collection(db, `chats/${currentChatId}/messages`), { uid: auth.currentUser.uid, displayName: safeName, photoURL: auth.currentUser.photoURL || '', text: txt, timestamp: serverTimestamp() }); 
+        } catch (e) { showToast("發送失敗", "error"); } 
+    }
 
     // ==========================================
     // 🌟 駭客開機畫面 (Hacker Boot Sequence)
@@ -1447,7 +1227,7 @@
             "> MOUNTING VIRTUAL DOM... [OK]",
             "> BYPASSING MAINFRAME ENCRYPTION...",
             "> ACCESS GRANTED.",
-            "> WELCOME TO DOGFISH STUDIO V18.8"
+            "> WELCOME TO DOGFISH STUDIO V18.9"
         ];
         
         let i = 0;
@@ -1541,6 +1321,23 @@
         
         alert("☢️ 重灌程序已就緒，即將重新啟動系統...");
         window.location.reload(true);
+    };
+
+    window.toggleEditMode = function() { 
+        if(userRole !== 'admin') return; 
+        window.isEditMode = !window.isEditMode; 
+        const btn = document.getElementById('nav-edit-mode-btn'); 
+        if(window.isEditMode) { 
+            document.body.classList.add('god-mode'); 
+            btn.classList.add('active'); 
+            btn.innerHTML = "❌ 關閉編輯"; 
+            showToast("🖌️ 文章編輯模式已開啟"); 
+        } else { 
+            document.body.classList.remove('god-mode'); 
+            btn.classList.remove('active'); 
+            btn.innerHTML = "🖌️ 編輯模式"; 
+            showToast("✅ 已關閉編輯模式"); 
+        } 
     };
 
     if ('serviceWorker' in navigator) { 
