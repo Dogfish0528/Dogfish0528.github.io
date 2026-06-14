@@ -3,183 +3,146 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish OS 11 Pro - Ultimate Edition</title>
+  <title>Dogfish OS 11 Ultimate</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;800&display=swap" rel="stylesheet">
-  
   <style>
     /* =========================================================
-       系統底層變數與全域設定 (Fluent Design System)
+       系統底層變數與全域設定 (Win11 Fluent Design System)
     ========================================================= */
     :root {
       --sys-bg: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
-      --taskbar-bg: rgba(32, 32, 32, 0.75);
+      --taskbar-bg: rgba(28, 28, 28, 0.75);
       --taskbar-hover: rgba(255, 255, 255, 0.08);
-      --window-bg: rgba(32, 32, 32, 0.85);
-      --window-border: rgba(255, 255, 255, 0.15);
+      --window-bg: rgba(35, 35, 35, 0.85);
+      --window-border: rgba(255, 255, 255, 0.12);
       --primary: #0078D4;
       --primary-hover: #106EBE;
       --text-main: #ffffff;
-      --text-muted: #cccccc;
-      --win-radius: 12px;
-      --font-main: 'Segoe UI', 'Noto Sans TC', sans-serif;
+      --win-radius: 10px;
     }
 
-    * { box-sizing: border-box; font-family: var(--font-main); }
+    * { box-sizing: border-box; font-family: 'Segoe UI', 'Noto Sans TC', sans-serif; }
     body { 
-      margin: 0; 
-      overflow: hidden; 
-      width: 100vw; 
-      height: 100vh; 
-      background: var(--sys-bg) no-repeat center center fixed; 
-      background-size: cover; 
-      color: var(--text-main); 
-      user-select: none; 
-      transition: background 0.5s ease;
+      margin: 0; overflow: hidden; width: 100vw; height: 100vh; 
+      background: var(--sys-bg) no-repeat center center fixed; background-size: cover; 
+      color: var(--text-main); user-select: none; transition: background 0.5s ease;
     }
+    a, button, input { cursor: pointer; outline: none; }
     
-    a, button { cursor: pointer; }
-    
-    /* 滾動條美化 */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
 
     /* =========================================================
-       桌面與滑鼠右鍵選單 (Desktop & Context Menu)
+       桌面與滑鼠右鍵選單 (Desktop)
     ========================================================= */
     #desktop-area { 
-      width: 100vw; 
-      height: calc(100vh - 48px); 
-      position: relative; 
-      padding: 10px; 
-      display: flex; 
-      flex-direction: column; 
-      flex-wrap: wrap; 
-      align-content: flex-start; 
-      gap: 15px; 
+      width: 100vw; height: calc(100vh - 50px); position: relative; padding: 10px; 
+      display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: 5px; 
     }
     
     .desktop-icon { 
-      width: 80px; 
-      height: 90px; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: flex-start; 
-      padding: 8px 5px; 
-      border-radius: 6px; 
-      transition: background 0.1s; 
-      cursor: pointer; 
-      border: 1px solid transparent; 
+      width: 76px; height: 85px; display: flex; flex-direction: column; align-items: center; 
+      justify-content: flex-start; padding: 6px; border-radius: 4px; transition: 0.1s; 
+      cursor: pointer; border: 1px solid transparent; 
     }
     .desktop-icon:hover { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); }
     .desktop-icon.selected { background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); }
-    .desktop-icon img { width: 48px; height: 48px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); pointer-events: none; }
-    .desktop-icon span { font-size: 12px; text-align: center; text-shadow: 0 1px 3px #000, 0 1px 4px #000; line-height: 1.2; font-weight: 400; }
+    .desktop-icon img { width: 44px; height: 44px; object-fit: contain; margin-bottom: 4px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); pointer-events: none; }
+    .desktop-icon span { font-size: 11px; text-align: center; text-shadow: 0 1px 3px #000, 0 1px 4px #000; line-height: 1.2; }
 
-    /* Win11 右鍵選單 */
     #context-menu {
-      position: fixed; display: none; width: 220px; background: rgba(35, 35, 35, 0.95);
+      position: fixed; display: none; width: 240px; background: rgba(30, 30, 30, 0.95);
       border: 1px solid var(--window-border); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 9999999; padding: 5px;
+      backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 9999999; padding: 6px;
       opacity: 0; transform: scale(0.95); transition: opacity 0.15s ease, transform 0.15s ease;
     }
     #context-menu.active { display: block; opacity: 1; transform: scale(1); }
-    .context-item {
-      padding: 8px 12px; display: flex; align-items: center; gap: 10px; font-size: 13px;
-      color: white; border-radius: 5px; cursor: pointer; transition: 0.1s;
-    }
+    .context-item { padding: 8px 12px; display: flex; align-items: center; gap: 10px; font-size: 13px; color: white; border-radius: 5px; transition: 0.1s; }
     .context-item:hover { background: rgba(255, 255, 255, 0.1); }
-    .context-divider { height: 1px; background: var(--window-border); margin: 5px 0; }
+    .context-divider { height: 1px; background: var(--window-border); margin: 6px 0; }
 
     /* =========================================================
-       Win11 視窗系統核心 (Window Manager & Animations)
+       Win11 視窗系統核心 (Window Manager)
     ========================================================= */
     .os-window {
       position: absolute; display: none; flex-direction: column; background: var(--window-bg);
       border: 1px solid var(--window-border); border-radius: var(--win-radius);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+      box-shadow: 0 15px 50px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.15);
       backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px);
       overflow: hidden; z-index: 10;
-      /* 🌟 Win11 專屬彈出動畫 */
-      transform: scale(0.92); opacity: 0; 
-      transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.2s ease, width 0.2s, height 0.2s, top 0.2s, left 0.2s;
+      /* 🌟 彈性回饋啟動動畫 */
+      transform: scale(0.9); opacity: 0; 
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.1), opacity 0.2s ease, width 0.2s, height 0.2s, top 0.2s, left 0.2s;
     }
-    
-    /* 關閉動畫狀態 */
-    .os-window.closing { transform: scale(0.92); opacity: 0; pointer-events: none; }
-    
-    /* 開啟動畫狀態 */
+    .os-window.closing { transform: scale(0.9); opacity: 0; pointer-events: none; }
     .os-window.active { display: flex; transform: scale(1); opacity: 1; }
+    .os-window.maximized { border-radius: 0; border: none; }
     
-    .os-title-bar { height: 38px; display: flex; align-items: center; justify-content: space-between; padding-left: 15px; flex-shrink: 0; cursor: grab; background: transparent; }
+    .os-title-bar { height: 36px; display: flex; align-items: center; justify-content: space-between; padding-left: 15px; flex-shrink: 0; cursor: grab; background: transparent; }
     .os-title-bar:active { cursor: grabbing; }
-    .os-window-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; pointer-events: none; }
+    .os-window-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; pointer-events: none; }
     .os-window-title img { width: 16px; height: 16px; }
     
     .os-window-controls { display: flex; height: 100%; }
     .os-btn { width: 46px; height: 100%; border: none; background: transparent; display: flex; justify-content: center; align-items: center; transition: 0.15s; fill: #fff; }
-    .os-btn svg { width: 11px; height: 11px; }
+    .os-btn svg { width: 10px; height: 10px; }
     .os-btn:hover { background: rgba(255, 255, 255, 0.1); }
-    .os-btn-close:hover { background: #E81123; fill: #fff; border-top-right-radius: 11px; }
-
-    .os-content-area { flex: 1; overflow-y: auto; position: relative; background: rgba(20, 20, 20, 0.6); }
-    
-    /* 最大化時取消圓角 */
-    .os-window.maximized { border-radius: 0; border: none; }
+    .os-btn-close:hover { background: #E81123; fill: #fff; }
     .os-window.maximized .os-btn-close:hover { border-top-right-radius: 0; }
+
+    .os-content-area { flex: 1; overflow-y: auto; position: relative; background: rgba(20, 20, 20, 0.5); }
 
     /* =========================================================
        工作列與開始功能表 (Taskbar & Start Menu)
     ========================================================= */
-    #os-taskbar { position: fixed; bottom: 0; left: 0; width: 100vw; height: 48px; background: var(--taskbar-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-top: 1px solid var(--window-border); z-index: 99999; display: flex; align-items: center; padding: 0 15px; }
+    #os-taskbar { position: fixed; bottom: 0; left: 0; width: 100vw; height: 50px; background: var(--taskbar-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-top: 1px solid rgba(255,255,255,0.08); z-index: 99999; display: flex; align-items: center; padding: 0 15px; }
     
-    .taskbar-center { flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px; height: 100%; }
+    .taskbar-center { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; height: 100%; }
     
-    /* 🌟 正宗 Win11 開始按鈕 */
-    .start-btn-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: transparent; transition: 0.2s; position: relative; }
-    .start-btn-icon svg { width: 22px; height: 22px; transition: transform 0.1s; }
+    /* 🌟 正宗 Win11 3D 開始按鈕 */
+    .start-btn-icon { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: transparent; transition: 0.2s; position: relative; }
+    .start-btn-icon img { width: 28px; height: 28px; transition: transform 0.1s; }
     .start-btn-icon:hover { background: var(--taskbar-hover); }
-    .start-btn-icon:active svg { transform: scale(0.85); }
+    .start-btn-icon:active img { transform: scale(0.85); }
 
-    .taskbar-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: transparent; transition: 0.2s; position: relative; }
+    .taskbar-btn { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: none; background: transparent; transition: 0.2s; position: relative; }
     .taskbar-btn img { width: 24px; height: 24px; transition: transform 0.1s; pointer-events: none; }
     .taskbar-btn:hover { background: var(--taskbar-hover); }
     .taskbar-btn:active img { transform: scale(0.85); }
     
-    /* 🌟 Win11 工作列開啟指示器 (小藥丸) */
-    .taskbar-btn.open-active::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 16px; height: 3px; background: var(--primary); border-radius: 3px; transition: width 0.2s; }
-    .taskbar-btn.open-inactive::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 6px; height: 3px; background: #888; border-radius: 3px; transition: width 0.2s; }
+    .taskbar-btn.open-active::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 16px; height: 3px; background: var(--primary); border-radius: 3px; transition: width 0.2s; }
+    .taskbar-btn.open-inactive::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 6px; height: 3px; background: #888; border-radius: 3px; transition: width 0.2s; }
 
-    .taskbar-tray { display: flex; align-items: center; gap: 10px; padding-right: 10px; height: 100%; font-size: 12px; }
+    .taskbar-tray { display: flex; align-items: center; gap: 15px; padding-right: 10px; height: 100%; font-size: 12px; }
     .taskbar-tray-item { display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding: 0 10px; border-radius: 6px; transition: 0.2s; cursor: pointer; height: 80%; }
     .taskbar-tray-item:hover { background: var(--taskbar-hover); }
 
-    /* 🌟 Win11 開始功能表 */
+    /* 開始功能表 */
     #start-menu { 
-      position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%) translateY(30px); 
-      width: 600px; height: 620px; background: var(--window-bg); border: 1px solid var(--window-border); 
+      position: fixed; bottom: 65px; left: 50%; transform: translateX(-50%) translateY(30px); 
+      width: 600px; height: 640px; background: rgba(35, 35, 35, 0.95); border: 1px solid var(--window-border); 
       border-radius: var(--win-radius); box-shadow: 0 20px 60px rgba(0,0,0,0.6); 
       backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); z-index: 999999; 
-      display: none; opacity: 0; transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.2s ease; 
-      flex-direction: column; padding: 35px 35px 15px 35px; 
+      display: none; opacity: 0; transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.1), opacity 0.2s ease; 
+      flex-direction: column; padding: 35px; 
     }
     #start-menu.active { display: flex; transform: translateX(-50%) translateY(0); opacity: 1; }
     
-    .start-search { width: 100%; height: 40px; background: rgba(0,0,0,0.4); border: 1px solid var(--window-border); border-radius: 20px; padding: 0 20px; color: white; outline: none; margin-bottom: 30px; font-size: 14px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); transition: 0.2s; }
+    .start-search { width: 100%; height: 42px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 0 20px; color: white; outline: none; margin-bottom: 30px; font-size: 14px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); transition: 0.2s; }
     .start-search:focus { border-color: var(--primary); background: rgba(0,0,0,0.6); }
     
-    .start-section-title { font-size: 14px; font-weight: 600; margin-bottom: 20px; padding-left: 5px; display: flex; justify-content: space-between; align-items: center; }
+    .start-section-title { font-size: 14px; font-weight: 600; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
     .start-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 20px; }
-    .start-app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px 5px; border-radius: 8px; border: none; background: transparent; color: white; transition: 0.15s; }
+    .start-app { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px; padding: 12px 5px; border-radius: 8px; border: none; background: transparent; color: white; transition: 0.15s; }
     .start-app img { width: 32px; height: 32px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3)); transition: transform 0.1s; }
     .start-app span { font-size: 11px; font-weight: 400; text-align: center; }
     .start-app:hover { background: rgba(255,255,255,0.08); }
     .start-app:active img { transform: scale(0.9); }
 
     .start-power { margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid var(--window-border); }
-    .user-profile { display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; cursor: pointer; padding: 5px 10px; border-radius: 6px; transition: 0.2s; }
+    .user-profile { display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; padding: 5px 10px; border-radius: 6px; transition: 0.2s; }
     .user-profile:hover { background: rgba(255,255,255,0.1); }
     .user-profile img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #555; }
     .power-btn { background: transparent; border: none; padding: 10px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
@@ -190,20 +153,20 @@
     ========================================================= */
     /* 🧮 1. 計算機 */
     .calc-container { display: flex; flex-direction: column; height: 100%; background: transparent; }
-    .calc-display { height: 120px; text-align: right; padding: 20px; display: flex; flex-direction: column; justify-content: flex-end; }
-    .calc-history { color: #aaa; font-size: 14px; min-height: 20px; margin-bottom: 5px; }
-    .calc-result { font-size: 48px; font-weight: 600; color: white; margin: 0; outline: none; border: none; background: transparent; text-align: right; width: 100%; }
+    .calc-display { height: 130px; text-align: right; padding: 20px; display: flex; flex-direction: column; justify-content: flex-end; }
+    .calc-history { color: #aaa; font-size: 15px; min-height: 22px; margin-bottom: 5px; }
+    .calc-result { font-size: 52px; font-weight: 600; color: white; margin: 0; outline: none; border: none; background: transparent; text-align: right; width: 100%; }
     .calc-buttons { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 4px; }
-    .calc-btn { background: rgba(255,255,255,0.05); border: none; border-radius: 6px; color: white; font-size: 20px; font-weight: 500; transition: 0.1s; }
+    .calc-btn { background: rgba(255,255,255,0.05); border: none; border-radius: 6px; color: white; font-size: 22px; font-weight: 500; transition: 0.1s; }
     .calc-btn:hover { background: rgba(255,255,255,0.1); }
-    .calc-btn.op { background: rgba(255,255,255,0.1); }
+    .calc-btn.op { background: rgba(255,255,255,0.1); color: #00d4ff; }
     .calc-btn.equal { background: var(--primary); color: white; }
     .calc-btn.equal:hover { background: var(--primary-hover); }
 
     /* 🎨 2. 小畫家 */
     .paint-toolbar { display: flex; gap: 10px; padding: 10px; background: rgba(30,30,30,0.8); border-bottom: 1px solid var(--border-color); align-items: center; }
     .paint-color-picker { width: 32px; height: 32px; padding: 0; border: none; border-radius: 4px; cursor: pointer; background: transparent; }
-    .paint-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 6px 12px; border-radius: 4px; font-size: 13px; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
+    .paint-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 6px 12px; border-radius: 4px; font-size: 13px; transition: 0.2s; }
     .paint-btn:hover { background: rgba(255,255,255,0.2); }
     .paint-canvas-container { flex: 1; background: #e0e0e0; overflow: auto; display: flex; justify-content: center; align-items: center; padding: 20px; }
     canvas#dogfishCanvas { background: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.3); cursor: crosshair; touch-action: none; border-radius: 4px; }
@@ -235,7 +198,7 @@
     .browser-btn:hover { background: rgba(255,255,255,0.1); }
     .browser-url { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid #444; border-radius: 15px; padding: 6px 15px; color: white; outline: none; font-size: 14px; }
     .browser-url:focus { border-color: var(--primary); background: rgba(0,0,0,0.8); }
-    .browser-frame { flex: 1; width: 100%; border: none; background: #fff; }
+    .browser-frame { flex: 1; width: 100%; height: 100%; border: none; background: #fff; }
 
     /* 💣 7. 踩地雷 (Minesweeper) */
     .mine-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border-color); }
@@ -244,17 +207,37 @@
     .mine-face:active { border-style: inset; }
     .mine-grid-container { flex: 1; display: flex; justify-content: center; align-items: center; background: #bdbdbd; overflow: auto; padding: 20px; }
     .mine-grid { display: grid; border: 3px inset #fff; background: #7b7b7b; }
-    .mine-cell { width: 24px; height: 24px; background: #c0c0c0; border: 2px outset #fff; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; cursor: pointer; user-select: none; }
+    .mine-cell { width: 24px; height: 24px; background: #c0c0c0; border: 2px outset #fff; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; cursor: pointer; user-select: none; color: black; }
     .mine-cell.revealed { background: #bdbdbd; border: 1px solid #808080; border-right-color: #eee; border-bottom-color: #eee; cursor: default; }
     .mine-cell.mine { background: red; }
 
-    /* 狗魚大廳原有組件 */
-    .dogfish-btn { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; transition: 0.2s; font-size: 14px; box-shadow: 0 4px 10px rgba(0,120,212,0.3); }
+    /* 📸 8. 相機 (Camera) */
+    .camera-container { flex: 1; display: flex; flex-direction: column; background: #000; position: relative; }
+    .camera-view { flex: 1; object-fit: cover; width: 100%; }
+    .camera-controls { height: 80px; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; gap: 20px; }
+    .camera-capture-btn { width: 50px; height: 50px; border-radius: 50%; background: white; border: 4px solid #555; cursor: pointer; transition: 0.2s; }
+    .camera-capture-btn:active { transform: scale(0.9); background: #ccc; }
+
+    /* ⏱️ 9. 時鐘 (Clock) */
+    .clock-app { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); }
+    .big-clock { font-size: 80px; font-weight: 200; margin-bottom: 10px; }
+    .big-date { font-size: 20px; color: #aaa; margin-bottom: 40px; }
+    .stopwatch-controls { display: flex; gap: 15px; }
+
+    /* 🌤️ 10. 天氣 (Weather) */
+    .weather-app { flex: 1; display: flex; flex-direction: column; background: linear-gradient(to bottom, #1e3c72, #2a5298); padding: 40px; color: white; }
+    .weather-temp { font-size: 72px; font-weight: bold; }
+    .weather-desc { font-size: 24px; margin-bottom: 20px; }
+    .weather-forecast { display: flex; gap: 15px; margin-top: auto; }
+    .forecast-card { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; flex: 1; text-align: center; }
+
+    /* 狗魚大廳與素材庫組件 */
+    .dogfish-btn { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; transition: 0.2s; font-size: 14px; }
     .dogfish-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
     
-    .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; padding: 15px; }
+    .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 15px; }
     .material-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; transition: 0.2s; cursor: pointer; }
-    .material-item:hover { background: rgba(255,255,255,0.1); transform: translateY(-3px); border-color: rgba(255,255,255,0.3); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+    .material-item:hover { background: rgba(255,255,255,0.1); transform: translateY(-3px); border-color: rgba(255,255,255,0.3); }
     .mat-mock-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; margin-bottom: 10px; background: #222; }
 
     .category-tabs { display: flex; gap: 8px; padding: 15px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.2); }
@@ -266,46 +249,42 @@
 </head>
 <body>
 
-  <!-- =========================================================
-       Windows 桌面區域 (Desktop)
-  ========================================================= -->
   <div id="desktop-area">
-    <!-- 桌面捷徑 (雙擊開啟) -->
     <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('blog')">
-      <img src="https://cdn-icons-png.flaticon.com/512/3067/3067260.png" alt="Computer">
-      <span>Dogfish 核心</span>
+      <img src="https://img.icons8.com/color/512/windows-11.png" alt="System"><span>系統核心</span>
     </div>
     <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('materials')">
-      <img src="https://cdn-icons-png.flaticon.com/512/3767/3767084.png" alt="Folder">
-      <span>資源回收筒</span>
+      <img src="https://img.icons8.com/color/512/folder-invoices--v1.png" alt="Folder"><span>共享素材庫</span>
     </div>
     <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('browser')">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg" alt="Edge">
-      <span>Microsoft Edge</span>
+      <img src="https://img.icons8.com/color/512/ms-edge-new.png" alt="Edge"><span>Microsoft Edge</span>
     </div>
     <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('notepad')">
-      <img src="https://cdn-icons-png.flaticon.com/512/3358/3358043.png" alt="Notepad">
-      <span>記事本</span>
+      <img src="https://img.icons8.com/color/512/notepad.png" alt="Notepad"><span>記事本</span>
     </div>
     <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('paint')">
-      <img src="https://cdn-icons-png.flaticon.com/512/2970/2970785.png" alt="Paint">
-      <span>小畫家</span>
+      <img src="https://img.icons8.com/color/512/paint.png" alt="Paint"><span>小畫家</span>
     </div>
     <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('calc')">
-      <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" alt="Calculator">
-      <span>計算機</span>
+      <img src="https://img.icons8.com/color/512/calculator--v1.png" alt="Calculator"><span>計算機</span>
+    </div>
+    <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('camera')">
+      <img src="https://img.icons8.com/color/512/camera--v1.png" alt="Camera"><span>相機</span>
+    </div>
+    <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('weather')">
+      <img src="https://img.icons8.com/color/512/partly-cloudy-day--v1.png" alt="Weather"><span>天氣</span>
+    </div>
+    <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('clock')">
+      <img src="https://img.icons8.com/color/512/clock--v1.png" alt="Clock"><span>時鐘</span>
     </div>
     <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('minesweeper')">
-      <img src="https://cdn-icons-png.flaticon.com/512/6008/6008709.png" alt="Mine">
-      <span>踩地雷</span>
+      <img src="https://img.icons8.com/color/512/mine-cart.png" alt="Mine"><span>踩地雷</span>
     </div>
     <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="openWindow('matrix')">
-      <img src="https://cdn-icons-png.flaticon.com/512/2920/2920138.png" alt="Terminal">
-      <span>終端機</span>
+      <img src="https://img.icons8.com/color/512/console.png" alt="Terminal"><span>命令提示字元</span>
     </div>
   </div>
 
-  <!-- 滑鼠右鍵選單 -->
   <div id="context-menu">
     <div class="context-item" onclick="document.location.reload()">🔄 重新整理</div>
     <div class="context-divider"></div>
@@ -315,14 +294,9 @@
     <div class="context-item" onclick="window.location.href='index.html'" style="color: #ff4444;">🔌 返回一般網頁</div>
   </div>
 
-  <!-- =========================================================
-       Windows 視窗群 (Apps)
-  ========================================================= -->
-
-  <!-- 1. 狗魚核心大廳 -->
   <div id="page-blog" class="os-window" style="width: 750px; height: 500px;">
     <div class="os-title-bar">
-      <div class="os-window-title"><img src="https://cdn-icons-png.flaticon.com/512/3067/3067260.png"> 系統資訊</div>
+      <div class="os-window-title"><img src="https://img.icons8.com/color/512/windows-11.png"> 系統資訊</div>
       <div class="os-window-controls">
         <button class="os-btn" onclick="minimizeWindow('blog')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
         <button class="os-btn os-btn-max" onclick="toggleMaximize(this)"><svg viewBox="0 0 10 10"><path d="M1,1 h8 v8 h-8 z" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
@@ -330,10 +304,9 @@
       </div>
     </div>
     <div class="os-content-area" style="padding: 50px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/e/e6/Windows_11_logo.svg" style="width: 80px; margin-bottom: 20px;">
+      <img src="https://img.icons8.com/color/512/windows-11.png" style="width: 90px; margin-bottom: 20px;">
       <h1 style="font-size: 2.5em; margin: 0 0 10px 0; font-weight: 800;">Dogfish OS 11 <span style="color:var(--primary);">Pro</span></h1>
       <p style="color: #aaa; margin-bottom: 30px; font-size: 14px;">版本 26H2 (OS 組建 22631.3737)<br>Dogfish Studio 獨家開發授權</p>
-      
       <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
         <button class="dogfish-btn" onclick="openWindow('materials')">📂 瀏覽素材庫</button>
         <button class="dogfish-btn" onclick="openWindow('settings')" style="background: rgba(255,255,255,0.1);">⚙️ 變更桌布</button>
@@ -341,10 +314,9 @@
     </div>
   </div>
 
-  <!-- 2. 共享素材庫 (修復版+假資料) -->
   <div id="page-materials" class="os-window" style="width: 850px; height: 550px;">
     <div class="os-title-bar">
-      <div class="os-window-title"><img src="https://cdn-icons-png.flaticon.com/512/3767/3767084.png"> 共享素材庫</div>
+      <div class="os-window-title"><img src="https://img.icons8.com/color/512/folder-invoices--v1.png"> 共享素材庫</div>
       <div class="os-window-controls">
         <button class="os-btn" onclick="minimizeWindow('materials')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
         <button class="os-btn os-btn-max" onclick="toggleMaximize(this)"><svg viewBox="0 0 10 10"><path d="M1,1 h8 v8 h-8 z" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
@@ -352,21 +324,19 @@
       </div>
     </div>
     <div class="category-tabs">
-        <button class="tab-btn active">所有檔案</button>
-        <button class="tab-btn">🎵 音樂</button>
-        <button class="tab-btn">🖼️ 圖片</button>
+        <button class="tab-btn active" onclick="switchMaterialTab(this, '全部')">所有檔案</button>
+        <button class="tab-btn" onclick="switchMaterialTab(this, '音樂')">🎵 音樂/音效</button>
+        <button class="tab-btn" onclick="switchMaterialTab(this, '圖片')">🖼️ 圖片/GIF</button>
     </div>
     <div class="os-content-area" style="padding: 0;">
       <div id="material-container" class="material-list">
-        <!-- 這裡由 JS 動態填入 (真實或假資料) -->
-      </div>
+        </div>
     </div>
   </div>
 
-  <!-- 3. 記事本 (Notepad) -->
   <div id="page-notepad" class="os-window" style="width: 600px; height: 400px;">
     <div class="os-title-bar">
-      <div class="os-window-title"><img src="https://cdn-icons-png.flaticon.com/512/3358/3358043.png"> 未命名 - 記事本</div>
+      <div class="os-window-title"><img src="https://img.icons8.com/color/512/notepad.png"> 未命名 - 記事本</div>
       <div class="os-window-controls">
         <button class="os-btn" onclick="minimizeWindow('notepad')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
         <button class="os-btn os-btn-max" onclick="toggleMaximize(this)"><svg viewBox="0 0 10 10"><path d="M1,1 h8 v8 h-8 z" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
@@ -377,10 +347,9 @@
       <button onclick="saveNotepad()">檔案(F) ➔ 儲存</button>
       <button onclick="clearNotepad()">編輯(E) ➔ 清除</button>
     </div>
-    <textarea id="notepad-text" class="notepad-textarea" placeholder="在這裡輸入文字... (會自動記憶)"></textarea>
+    <textarea id="notepad-text" class="notepad-textarea" placeholder="在這裡輸入文字... (關閉視窗後自動記憶)"></textarea>
   </div>
 
-  <!-- 4. Edge 瀏覽器 -->
   <div id="page-browser" class="os-window" style="width: 900px; height: 600px;">
     <div class="os-title-bar">
       <div class="os-window-title"><img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg"> Microsoft Edge</div>
@@ -392,20 +361,19 @@
     </div>
     <div class="browser-toolbar">
       <button class="browser-btn" onclick="document.getElementById('browser-iframe').src = document.getElementById('browser-iframe').src">↻</button>
-      <button class="browser-btn" onclick="loadBrowserUrl('https://dogfish0528.github.io/')">🏠</button>
-      <input type="text" id="browser-input" class="browser-url" value="https://dogfish0528.github.io/" onkeypress="if(event.key==='Enter') loadBrowserUrl(this.value)">
-      <button class="browser-btn" style="font-size:12px; width:auto; padding:0 10px;" onclick="loadBrowserUrl(document.getElementById('browser-input').value)">前往</button>
+      <button class="browser-btn" onclick="loadBrowserUrl('https://zh.wikipedia.org/wiki/Special:Random')">🏠</button>
+      <input type="text" id="browser-input" class="browser-url" value="https://zh.wikipedia.org/wiki/Special:Random" onkeypress="if(event.key==='Enter') loadBrowserUrl(this.value)">
+      <button class="dogfish-btn" style="padding:6px 12px; margin-left:10px;" onclick="loadBrowserUrl(document.getElementById('browser-input').value)">前往</button>
     </div>
-    <iframe id="browser-iframe" class="browser-frame" src="https://dogfish0528.github.io/"></iframe>
+    <iframe id="browser-iframe" class="browser-frame" src="https://zh.wikipedia.org/wiki/Special:Random"></iframe>
   </div>
 
-  <!-- 5. 踩地雷 -->
   <div id="page-minesweeper" class="os-window" style="width: 320px; height: 420px; background: #bdbdbd;">
-    <div class="os-title-bar" style="background: #000080; color: white;">
-      <div class="os-window-title"><img src="https://cdn-icons-png.flaticon.com/512/6008/6008709.png"> 踩地雷</div>
+    <div class="os-title-bar" style="background: rgba(30,30,30,0.9); color: white;">
+      <div class="os-window-title"><img src="https://img.icons8.com/color/512/mine-cart.png"> 踩地雷</div>
       <div class="os-window-controls">
-        <button class="os-btn" style="background:#c0c0c0; border:2px outset #fff; color:black; width:20px; height:20px; margin:5px; padding:0;" onclick="minimizeWindow('minesweeper')">_</button>
-        <button class="os-btn os-btn-close" style="background:#c0c0c0; border:2px outset #fff; color:black; width:20px; height:20px; margin:5px; padding:0;" onclick="closeWindow('minesweeper')">X</button>
+        <button class="os-btn" onclick="minimizeWindow('minesweeper')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
+        <button class="os-btn os-btn-close" onclick="closeWindow('minesweeper')"><svg viewBox="0 0 10 10"><path d="M0,0 L10,10 M10,0 L0,10" stroke="#fff" stroke-width="1.5"/></svg></button>
       </div>
     </div>
     <div class="mine-header">
@@ -414,16 +382,13 @@
       <div class="mine-counter" id="mine-timer">000</div>
     </div>
     <div class="mine-grid-container">
-      <div class="mine-grid" id="mine-grid" style="grid-template-columns: repeat(9, 24px);">
-        <!-- 格子由 JS 生成 -->
-      </div>
+      <div class="mine-grid" id="mine-grid" style="grid-template-columns: repeat(9, 24px);"></div>
     </div>
   </div>
 
-  <!-- 6. 小畫家 -->
   <div id="page-paint" class="os-window" style="width: 700px; height: 500px;">
     <div class="os-title-bar">
-      <div class="os-window-title"><img src="https://cdn-icons-png.flaticon.com/512/2970/2970785.png"> 未命名 - 小畫家</div>
+      <div class="os-window-title"><img src="https://img.icons8.com/color/512/paint.png"> 未命名 - 小畫家</div>
       <div class="os-window-controls">
         <button class="os-btn" onclick="minimizeWindow('paint')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
         <button class="os-btn os-btn-max" onclick="toggleMaximize(this)"><svg viewBox="0 0 10 10"><path d="M1,1 h8 v8 h-8 z" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
@@ -441,10 +406,9 @@
     </div>
   </div>
 
-  <!-- 7. 計算機 -->
   <div id="page-calc" class="os-window" style="width: 320px; height: 500px;">
     <div class="os-title-bar">
-      <div class="os-window-title"><img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png"> 計算機</div>
+      <div class="os-window-title"><img src="https://img.icons8.com/color/512/calculator--v1.png"> 計算機</div>
       <div class="os-window-controls">
         <button class="os-btn" onclick="minimizeWindow('calc')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
         <button class="os-btn os-btn-close" onclick="closeWindow('calc')"><svg viewBox="0 0 10 10"><path d="M0,0 L10,10 M10,0 L0,10" stroke="#fff" stroke-width="1.5"/></svg></button>
@@ -456,38 +420,33 @@
         <input type="text" class="calc-result" id="calc-result" value="0" readonly>
       </div>
       <div class="calc-buttons">
-        <button class="calc-btn op" onclick="calcAction('C')">C</button>
-        <button class="calc-btn op" onclick="calcAction('CE')">CE</button>
-        <button class="calc-btn op" onclick="calcAction('%')">%</button>
-        <button class="calc-btn op" onclick="calcAction('/')">÷</button>
-        
-        <button class="calc-btn" onclick="calcAction('7')">7</button>
-        <button class="calc-btn" onclick="calcAction('8')">8</button>
-        <button class="calc-btn" onclick="calcAction('9')">9</button>
-        <button class="calc-btn op" onclick="calcAction('*')">×</button>
-        
-        <button class="calc-btn" onclick="calcAction('4')">4</button>
-        <button class="calc-btn" onclick="calcAction('5')">5</button>
-        <button class="calc-btn" onclick="calcAction('6')">6</button>
-        <button class="calc-btn op" onclick="calcAction('-')">−</button>
-        
-        <button class="calc-btn" onclick="calcAction('1')">1</button>
-        <button class="calc-btn" onclick="calcAction('2')">2</button>
-        <button class="calc-btn" onclick="calcAction('3')">3</button>
-        <button class="calc-btn op" onclick="calcAction('+')">+</button>
-        
-        <button class="calc-btn op" onclick="calcAction('+/-')">±</button>
-        <button class="calc-btn" onclick="calcAction('0')">0</button>
-        <button class="calc-btn op" onclick="calcAction('.')">.</button>
-        <button class="calc-btn equal" onclick="calcAction('=')">=</button>
+        <button class="calc-btn op" onclick="calcInput('clear')">C</button>
+        <button class="calc-btn op" onclick="calcInput('clear')">CE</button>
+        <button class="calc-btn op" onclick="calcInput('%')">%</button>
+        <button class="calc-btn op" onclick="calcInput('/')">÷</button>
+        <button class="calc-btn" onclick="calcInput('7')">7</button>
+        <button class="calc-btn" onclick="calcInput('8')">8</button>
+        <button class="calc-btn" onclick="calcInput('9')">9</button>
+        <button class="calc-btn op" onclick="calcInput('*')">×</button>
+        <button class="calc-btn" onclick="calcInput('4')">4</button>
+        <button class="calc-btn" onclick="calcInput('5')">5</button>
+        <button class="calc-btn" onclick="calcInput('6')">6</button>
+        <button class="calc-btn op" onclick="calcInput('-')">−</button>
+        <button class="calc-btn" onclick="calcInput('1')">1</button>
+        <button class="calc-btn" onclick="calcInput('2')">2</button>
+        <button class="calc-btn" onclick="calcInput('3')">3</button>
+        <button class="calc-btn op" onclick="calcInput('+')">+</button>
+        <button class="calc-btn op" onclick="calcInput('neg')">±</button>
+        <button class="calc-btn" onclick="calcInput('0')">0</button>
+        <button class="calc-btn op" onclick="calcInput('.')">.</button>
+        <button class="calc-btn equal" onclick="calcInput('=')">=</button>
       </div>
     </div>
   </div>
 
-  <!-- 8. 設定 (Settings) -->
   <div id="page-settings" class="os-window" style="width: 750px; height: 500px;">
     <div class="os-title-bar">
-      <div class="os-window-title"><img src="https://cdn-icons-png.flaticon.com/512/2040/2040504.png"> 設定</div>
+      <div class="os-window-title"><img src="https://img.icons8.com/color/512/2040/2040504.png"> 設定</div>
       <div class="os-window-controls">
         <button class="os-btn" onclick="minimizeWindow('settings')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
         <button class="os-btn os-btn-max" onclick="toggleMaximize(this)"><svg viewBox="0 0 10 10"><path d="M1,1 h8 v8 h-8 z" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
@@ -497,24 +456,25 @@
     <div class="settings-layout">
       <div class="settings-sidebar">
         <button class="settings-nav active">🖥️ 個人化</button>
-        <button class="settings-nav">🌐 網路和網際網路</button>
-        <button class="settings-nav">🛡️ 隱私權與安全性</button>
+        <button class="settings-nav">🌐 網路</button>
+        <button class="settings-nav">🛡️ 安全性</button>
       </div>
       <div class="settings-content">
         <h2 style="margin-top:0;">選擇您的背景</h2>
+        <p style="color:#aaa;">點擊即可套用至 Dogfish OS 虛擬桌面：</p>
         <div class="wallpaper-grid">
           <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop" class="wallpaper-thumb active" onclick="setWallpaper(this, 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')">
           <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=500&auto=format&fit=crop" class="wallpaper-thumb" onclick="setWallpaper(this, 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2564&auto=format&fit=crop')">
           <img src="https://images.unsplash.com/photo-1538370965046-79c0d6907d47?q=80&w=500&auto=format&fit=crop" class="wallpaper-thumb" onclick="setWallpaper(this, 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?q=80&w=2564&auto=format&fit=crop')">
+          <img src="https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_background%29.jpg" class="wallpaper-thumb" onclick="setWallpaper(this, 'https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_background%29.jpg')" title="XP 經典草地">
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 9. Hacker Terminal (Matrix) -->
   <div id="page-matrix" class="os-window" style="width: 650px; height: 450px; background: black;">
     <div class="os-title-bar" style="background: #111;">
-      <div class="os-window-title" style="color: #fff;"><img src="https://cdn-icons-png.flaticon.com/512/2920/2920138.png"> C:\Windows\System32\cmd.exe</div>
+      <div class="os-window-title" style="color: #fff;"><img src="https://img.icons8.com/color/512/console.png"> C:\Windows\System32\cmd.exe</div>
       <div class="os-window-controls">
         <button class="os-btn" onclick="minimizeWindow('matrix')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
         <button class="os-btn os-btn-max" onclick="toggleMaximize(this)"><svg viewBox="0 0 10 10"><path d="M1,1 h8 v8 h-8 z" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
@@ -526,48 +486,83 @@
     </div>
   </div>
 
-  <!-- =========================================================
-       開始功能表 (Start Menu)
-  ========================================================= -->
+  <div id="page-camera" class="os-window" style="width: 700px; height: 550px;">
+    <div class="os-title-bar">
+      <div class="os-window-title"><img src="https://img.icons8.com/color/512/camera--v1.png"> 相機</div>
+      <div class="os-window-controls">
+        <button class="os-btn" onclick="minimizeWindow('camera')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
+        <button class="os-btn os-btn-max" onclick="toggleMaximize(this)"><svg viewBox="0 0 10 10"><path d="M1,1 h8 v8 h-8 z" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
+        <button class="os-btn os-btn-close" onclick="closeCamera()">✕</button>
+      </div>
+    </div>
+    <div class="camera-container">
+      <video id="camera-stream" class="camera-view" autoplay playsinline></video>
+      <div class="camera-controls">
+        <button class="camera-capture-btn" onclick="alert('📸 喀嚓！(網頁版暫不支援存檔)')"></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-clock" class="os-window" style="width: 400px; height: 350px;">
+    <div class="os-title-bar">
+      <div class="os-window-title"><img src="https://img.icons8.com/color/512/clock--v1.png"> 時鐘</div>
+      <div class="os-window-controls">
+        <button class="os-btn" onclick="minimizeWindow('clock')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
+        <button class="os-btn os-btn-close" onclick="closeWindow('clock')">✕</button>
+      </div>
+    </div>
+    <div class="clock-app">
+      <div class="big-clock" id="app-clock-time">00:00</div>
+      <div class="big-date" id="app-clock-date">2026/06/14</div>
+      <div class="stopwatch-controls">
+        <button class="dogfish-btn" onclick="alert('碼錶功能開發中...')">⏱️ 啟動碼錶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-weather" class="os-window" style="width: 600px; height: 400px;">
+    <div class="os-title-bar" style="background: rgba(0,0,0,0.5);">
+      <div class="os-window-title"><img src="https://img.icons8.com/color/512/partly-cloudy-day--v1.png"> 天氣</div>
+      <div class="os-window-controls">
+        <button class="os-btn" onclick="minimizeWindow('weather')"><svg viewBox="0 0 10 10"><path d="M0,4 h10 v1 h-10 z"/></svg></button>
+        <button class="os-btn os-btn-close" onclick="closeWindow('weather')">✕</button>
+      </div>
+    </div>
+    <div class="weather-app">
+      <div style="font-size:20px; font-weight:bold;">台南市, 新營區</div>
+      <div class="weather-temp">28°C</div>
+      <div class="weather-desc">🌤️ 晴時多雲</div>
+      <div class="weather-forecast">
+        <div class="forecast-card"><div>明天</div><div style="font-size:30px;">☀️</div><div>30°C</div></div>
+        <div class="forecast-card"><div>後天</div><div style="font-size:30px;">🌧️</div><div>26°C</div></div>
+        <div class="forecast-card"><div>大後天</div><div style="font-size:30px;">☁️</div><div>27°C</div></div>
+      </div>
+    </div>
+  </div>
+
   <div id="start-menu">
     <input type="text" class="start-search" placeholder="輸入以搜尋應用程式、設定與檔案...">
-    <div class="start-section-title"><span>已釘選</span><button class="dogfish-btn" style="padding:4px 8px; font-size:11px;">所有應用程式 ></button></div>
+    <div class="start-section-title"><span>已釘選</span><button class="dogfish-btn" style="padding:4px 8px; font-size:11px; background:rgba(255,255,255,0.1);">所有應用程式 ></button></div>
     <div class="start-grid">
-      <button class="start-app" onclick="openWindow('blog')">
-        <img src="https://cdn-icons-png.flaticon.com/512/3067/3067260.png"><span>系統核心</span>
-      </button>
-      <button class="start-app" onclick="openWindow('browser')">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg"><span>Edge</span>
-      </button>
-      <button class="start-app" onclick="openWindow('materials')">
-        <img src="https://cdn-icons-png.flaticon.com/512/3767/3767084.png"><span>素材庫</span>
-      </button>
-      <button class="start-app" onclick="openWindow('notepad')">
-        <img src="https://cdn-icons-png.flaticon.com/512/3358/3358043.png"><span>記事本</span>
-      </button>
-      <button class="start-app" onclick="openWindow('paint')">
-        <img src="https://cdn-icons-png.flaticon.com/512/2970/2970785.png"><span>小畫家</span>
-      </button>
-      <button class="start-app" onclick="openWindow('calc')">
-        <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png"><span>計算機</span>
-      </button>
-      <button class="start-app" onclick="openWindow('minesweeper')">
-        <img src="https://cdn-icons-png.flaticon.com/512/6008/6008709.png"><span>踩地雷</span>
-      </button>
-      <button class="start-app" onclick="openWindow('settings')">
-        <img src="https://cdn-icons-png.flaticon.com/512/2040/2040504.png"><span>設定</span>
-      </button>
-      <button class="start-app" onclick="openWindow('matrix')">
-        <img src="https://cdn-icons-png.flaticon.com/512/2920/2920138.png"><span>終端機</span>
-      </button>
+      <button class="start-app" onclick="openWindow('blog')"><img src="https://img.icons8.com/color/512/windows-11.png"><span>系統核心</span></button>
+      <button class="start-app" onclick="openWindow('browser')"><img src="https://img.icons8.com/color/512/ms-edge-new.png"><span>Edge</span></button>
+      <button class="start-app" onclick="openWindow('materials')"><img src="https://img.icons8.com/color/512/folder-invoices--v1.png"><span>素材庫</span></button>
+      <button class="start-app" onclick="openWindow('notepad')"><img src="https://img.icons8.com/color/512/notepad.png"><span>記事本</span></button>
+      <button class="start-app" onclick="openWindow('paint')"><img src="https://img.icons8.com/color/512/paint.png"><span>小畫家</span></button>
+      <button class="start-app" onclick="openWindow('calc')"><img src="https://img.icons8.com/color/512/calculator--v1.png"><span>計算機</span></button>
+      <button class="start-app" onclick="openWindow('camera')"><img src="https://img.icons8.com/color/512/camera--v1.png"><span>相機</span></button>
+      <button class="start-app" onclick="openWindow('weather')"><img src="https://img.icons8.com/color/512/partly-cloudy-day--v1.png"><span>天氣</span></button>
+      <button class="start-app" onclick="openWindow('clock')"><img src="https://img.icons8.com/color/512/clock--v1.png"><span>時鐘</span></button>
+      <button class="start-app" onclick="openWindow('minesweeper')"><img src="https://img.icons8.com/color/512/mine-cart.png"><span>踩地雷</span></button>
+      <button class="start-app" onclick="openWindow('matrix')"><img src="https://img.icons8.com/color/512/console.png"><span>終端機</span></button>
+      <button class="start-app" onclick="openWindow('settings')"><img src="https://img.icons8.com/color/512/2040/2040504.png"><span>設定</span></button>
     </div>
     
     <div class="start-section-title" style="margin-top:10px;">建議</div>
-    <div style="display:flex; gap:15px; padding:10px; background:rgba(255,255,255,0.05); border-radius:8px;">
-        <img src="https://cdn-icons-png.flaticon.com/512/3358/3358043.png" style="width:32px; height:32px;">
+    <div style="display:flex; gap:15px; padding:10px; background:rgba(255,255,255,0.05); border-radius:8px; cursor:pointer;" onclick="openWindow('notepad')">
+        <img src="https://img.icons8.com/color/512/notepad.png" style="width:32px; height:32px;">
         <div style="display:flex; flex-direction:column; justify-content:center;">
-            <span style="font-size:13px; font-weight:bold;">readme.txt</span>
-            <span style="font-size:11px; color:#aaa;">剛剛修改過</span>
+            <span style="font-size:13px; font-weight:bold;">readme.txt</span><span style="font-size:11px; color:#aaa;">剛剛修改過</span>
         </div>
     </div>
     
@@ -577,58 +572,57 @@
         <span>Dogfish Admin</span>
       </div>
       <button class="power-btn" onclick="window.location.href='index.html'" title="關機 (回網頁版)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
       </button>
     </div>
   </div>
 
-  <!-- =========================================================
-       底部工作列 (Taskbar)
-  ========================================================= -->
   <div id="os-taskbar">
     <div class="taskbar-center">
-      <!-- 🌟 正宗 Win11 SVG 開始按鈕 -->
       <button id="os-start-btn" class="start-btn-icon" onclick="toggleStartMenu()">
-        <svg viewBox="0 0 88 88">
-          <rect x="0" y="0" width="40" height="40" rx="4" fill="#0078D4"/>
-          <rect x="48" y="0" width="40" height="40" rx="4" fill="#0078D4"/>
-          <rect x="0" y="48" width="40" height="40" rx="4" fill="#0078D4"/>
-          <rect x="48" y="48" width="40" height="40" rx="4" fill="#0078D4"/>
-        </svg>
+        <img src="https://img.icons8.com/color/512/windows-11.png" alt="Start">
       </button>
       
-      <!-- 任務欄圖示 -->
       <button id="task-tab-blog" class="taskbar-btn" onclick="clickTaskbarTab('blog')" style="display:none;" title="核心大廳">
-        <img src="https://cdn-icons-png.flaticon.com/512/3067/3067260.png">
+        <img src="https://img.icons8.com/color/512/windows-11.png">
+      </button>
+      <button id="task-tab-materials" class="taskbar-btn" onclick="clickTaskbarTab('materials')" style="display:none;" title="素材庫">
+        <img src="https://img.icons8.com/color/512/folder-invoices--v1.png">
       </button>
       <button id="task-tab-browser" class="taskbar-btn" onclick="clickTaskbarTab('browser')" style="display:none;" title="Edge">
         <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg">
       </button>
-      <button id="task-tab-materials" class="taskbar-btn" onclick="clickTaskbarTab('materials')" style="display:none;" title="素材庫">
-        <img src="https://cdn-icons-png.flaticon.com/512/3767/3767084.png">
-      </button>
       <button id="task-tab-notepad" class="taskbar-btn" onclick="clickTaskbarTab('notepad')" style="display:none;" title="記事本">
-        <img src="https://cdn-icons-png.flaticon.com/512/3358/3358043.png">
+        <img src="https://img.icons8.com/color/512/notepad.png">
       </button>
       <button id="task-tab-paint" class="taskbar-btn" onclick="clickTaskbarTab('paint')" style="display:none;" title="小畫家">
-        <img src="https://cdn-icons-png.flaticon.com/512/2970/2970785.png">
+        <img src="https://img.icons8.com/color/512/paint.png">
       </button>
       <button id="task-tab-calc" class="taskbar-btn" onclick="clickTaskbarTab('calc')" style="display:none;" title="計算機">
-        <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png">
+        <img src="https://img.icons8.com/color/512/calculator--v1.png">
+      </button>
+      <button id="task-tab-camera" class="taskbar-btn" onclick="clickTaskbarTab('camera')" style="display:none;" title="相機">
+        <img src="https://img.icons8.com/color/512/camera--v1.png">
+      </button>
+      <button id="task-tab-weather" class="taskbar-btn" onclick="clickTaskbarTab('weather')" style="display:none;" title="天氣">
+        <img src="https://img.icons8.com/color/512/partly-cloudy-day--v1.png">
+      </button>
+      <button id="task-tab-clock" class="taskbar-btn" onclick="clickTaskbarTab('clock')" style="display:none;" title="時鐘">
+        <img src="https://img.icons8.com/color/512/clock--v1.png">
       </button>
       <button id="task-tab-minesweeper" class="taskbar-btn" onclick="clickTaskbarTab('minesweeper')" style="display:none;" title="踩地雷">
-        <img src="https://cdn-icons-png.flaticon.com/512/6008/6008709.png">
+        <img src="https://img.icons8.com/color/512/mine-cart.png">
       </button>
       <button id="task-tab-settings" class="taskbar-btn" onclick="clickTaskbarTab('settings')" style="display:none;" title="設定">
-        <img src="https://cdn-icons-png.flaticon.com/512/2040/2040504.png">
+        <img src="https://img.icons8.com/color/512/2040/2040504.png">
       </button>
       <button id="task-tab-matrix" class="taskbar-btn" onclick="clickTaskbarTab('matrix')" style="display:none;" title="終端機">
-        <img src="https://cdn-icons-png.flaticon.com/512/2920/2920138.png">
+        <img src="https://img.icons8.com/color/512/console.png">
       </button>
     </div>
     
     <div class="taskbar-tray">
-      <div class="taskbar-tray-item"><span>ENG</span></div>
+      <div class="taskbar-tray-item"><span>TW</span></div>
       <div class="taskbar-tray-item">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Z"></path><path d="M12 8v4l3 3"></path></svg>
       </div>
@@ -639,21 +633,21 @@
     </div>
   </div>
 
-  <!-- =========================================================
-       系統核心 JavaScript 引擎
-  ========================================================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
     import { getFirestore, collection, getDocs, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
-    // 1. 視窗層級與管理系統
+    // ---------------------------------------------------------
+    // 1. 視窗層級與管理系統 (Window Manager)
+    // ---------------------------------------------------------
     let highestZIndex = 100;
     
     window.openWindow = function(pageId) {
         document.getElementById('start-menu').classList.remove('active');
+        document.getElementById('context-menu').classList.remove('active');
+        
         const win = document.getElementById(`page-${pageId}`);
         const tab = document.getElementById(`task-tab-${pageId}`);
-        
         document.querySelectorAll('.desktop-icon').forEach(icon => icon.classList.remove('selected'));
 
         if(win) {
@@ -661,9 +655,10 @@
             win.classList.add('active');
             bringToFront(win);
             
-            // App 初始化
+            // App 特定初始化
             if(pageId === 'matrix' && !window.matrixInterval) initMatrix();
             if(pageId === 'minesweeper' && !window.mineInited) { initMinesweeper(); window.mineInited = true; }
+            if(pageId === 'camera' && !window.cameraStream) initCamera();
         }
         if(tab) {
             tab.style.display = 'flex';
@@ -677,13 +672,11 @@
         const win = document.getElementById(`page-${pageId}`);
         const tab = document.getElementById(`task-tab-${pageId}`);
         if(win) {
-            // 執行關閉動畫
             win.classList.add('closing');
             setTimeout(() => {
                 win.classList.remove('active');
                 win.classList.remove('closing');
-            }, 200); // 等待 CSS 動畫結束
-            
+            }, 250); 
             if(win.dataset.maximized === 'true') {
                 toggleMaximize(win.querySelector('.os-btn-max'));
             }
@@ -702,7 +695,7 @@
             setTimeout(() => {
                 win.classList.remove('active');
                 win.classList.remove('closing');
-            }, 200);
+            }, 250);
         }
         if(tab) {
             tab.classList.remove('open-active');
@@ -713,11 +706,10 @@
     window.clickTaskbarTab = function(pageId) {
         const win = document.getElementById(`page-${pageId}`);
         const tab = document.getElementById(`task-tab-${pageId}`);
-        
         if(win && win.classList.contains('active') && tab.classList.contains('open-active')) {
-            minimizeWindow(pageId);
+            minimizeWindow(pageId); 
         } else {
-            openWindow(pageId);
+            openWindow(pageId); 
         }
     }
 
@@ -746,16 +738,12 @@
     }
 
     function bringToFront(elmnt) {
-        highestZIndex++;
-        elmnt.style.zIndex = highestZIndex;
+        highestZIndex++; elmnt.style.zIndex = highestZIndex;
         let shortId = elmnt.id.replace('page-', '');
-        document.querySelectorAll('.taskbar-btn').forEach(b => {
-            if(b.id !== 'os-start-btn') b.classList.remove('open-active');
-        });
+        document.querySelectorAll('.taskbar-btn').forEach(b => { if(b.id !== 'os-start-btn') b.classList.remove('open-active'); });
         const tab = document.getElementById(`task-tab-${shortId}`);
         if(tab && elmnt.classList.contains('active')) {
-            tab.classList.add('open-active');
-            tab.classList.remove('open-inactive');
+            tab.classList.add('open-active'); tab.classList.remove('open-inactive');
         }
     }
 
@@ -763,35 +751,18 @@
     function makeDraggable(elmnt) {
       let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
       const titleBar = elmnt.querySelector(".os-title-bar");
-      
       elmnt.addEventListener("mousedown", () => bringToFront(elmnt));
-
-      if (titleBar) {
-          titleBar.onmousedown = dragMouseDown;
-      }
-
+      if (titleBar) titleBar.onmousedown = dragMouseDown;
       function dragMouseDown(e) {
           if (elmnt.dataset.maximized === 'true') return;
-          e.preventDefault();
-          pos3 = e.clientX;
-          pos4 = e.clientY;
-          document.onmouseup = closeDragElement;
-          document.onmousemove = elementDrag;
+          e.preventDefault(); pos3 = e.clientX; pos4 = e.clientY;
+          document.onmouseup = closeDragElement; document.onmousemove = elementDrag;
       }
-
       function elementDrag(e) {
-          e.preventDefault();
-          pos1 = pos3 - e.clientX;
-          pos2 = pos4 - e.clientY;
-          pos3 = e.clientX;
-          pos4 = e.clientY;
-          
-          let newTop = elmnt.offsetTop - pos2;
-          let newLeft = elmnt.offsetLeft - pos1;
+          e.preventDefault(); pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY; pos3 = e.clientX; pos4 = e.clientY;
+          let newTop = elmnt.offsetTop - pos2; let newLeft = elmnt.offsetLeft - pos1;
           if (newTop < 0) newTop = 0;
-          
-          elmnt.style.top = newTop + "px";
-          elmnt.style.left = newLeft + "px";
+          elmnt.style.top = newTop + "px"; elmnt.style.left = newLeft + "px";
       }
       function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
     }
@@ -803,45 +774,40 @@
         win.dataset.maximized = 'false'; 
     });
 
-    // 桌面圖示與選單控制
+    // 桌面與選單互動
     window.selectIcon = function(element) {
         document.querySelectorAll('.desktop-icon').forEach(icon => icon.classList.remove('selected'));
         element.classList.add('selected');
     }
 
     window.toggleStartMenu = function() {
-        const menu = document.getElementById('start-menu');
-        menu.classList.toggle('active');
+        document.getElementById('start-menu').classList.toggle('active');
         document.getElementById('context-menu').classList.remove('active');
     }
 
     document.getElementById('desktop-area').addEventListener('mousedown', (e) => {
-        if (!e.target.closest('.desktop-icon')) {
-            document.querySelectorAll('.desktop-icon').forEach(icon => icon.classList.remove('selected'));
-        }
-        if (!e.target.closest('#start-menu') && !e.target.closest('#os-start-btn')) {
-            document.getElementById('start-menu').classList.remove('active');
-        }
-        if (!e.target.closest('#context-menu')) {
-            document.getElementById('context-menu').classList.remove('active');
-        }
+        if (!e.target.closest('.desktop-icon')) document.querySelectorAll('.desktop-icon').forEach(icon => icon.classList.remove('selected'));
+        if (!e.target.closest('#start-menu') && !e.target.closest('#os-start-btn')) document.getElementById('start-menu').classList.remove('active');
+        if (!e.target.closest('#context-menu')) document.getElementById('context-menu').classList.remove('active');
     });
 
-    // 滑鼠右鍵選單 (Context Menu)
     document.getElementById('desktop-area').addEventListener('contextmenu', (e) => {
         e.preventDefault();
         const ctxMenu = document.getElementById('context-menu');
-        ctxMenu.style.left = e.clientX + 'px';
-        ctxMenu.style.top = e.clientY + 'px';
+        ctxMenu.style.left = e.clientX + 'px'; ctxMenu.style.top = e.clientY + 'px';
         ctxMenu.classList.add('active');
         document.getElementById('start-menu').classList.remove('active');
     });
 
-    // 時鐘更新
     function updateClock() {
         const now = new Date();
-        document.getElementById('os-time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+        document.getElementById('os-time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
         document.getElementById('os-date').innerText = now.toLocaleDateString();
+        const appClockTime = document.getElementById('app-clock-time');
+        if(appClockTime) {
+            appClockTime.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+            document.getElementById('app-clock-date').innerText = now.toLocaleDateString();
+        }
     }
     setInterval(updateClock, 1000); updateClock();
 
@@ -857,37 +823,103 @@
     let savedWall = localStorage.getItem('dogfish_wallpaper');
     if (savedWall) { document.body.style.backgroundImage = `url('${savedWall}')`; }
 
+
     // ---------------------------------------------------------
-    // 3. Apps: 計算機 (Calculator)
+    // 3. Apps: 計算機 (Calculator Logic - 防呆重寫版)
     // ---------------------------------------------------------
-    let calcCurrentVal = '0', calcPrevVal = '', calcOperator = '', calcAwaitingNext = false;
-    window.calcAction = function(action) {
+    let calcStr = "0";
+    let calcEvalStr = "";
+    
+    window.calcInput = function(action) {
         const resDisp = document.getElementById('calc-result');
         const hisDisp = document.getElementById('calc-history');
 
-        if (action === 'C') { calcCurrentVal = '0'; calcPrevVal = ''; calcOperator = ''; calcAwaitingNext = false; hisDisp.innerText = ''; }
-        else if (action === 'CE') { calcCurrentVal = '0'; }
-        else if (action === '+/-') { calcCurrentVal = (parseFloat(calcCurrentVal) * -1).toString(); }
-        else if (action === '%') { calcCurrentVal = (parseFloat(calcCurrentVal) / 100).toString(); }
-        else if (['+', '-', '*', '/'].includes(action)) {
-            if (calcOperator && !calcAwaitingNext) calcAction('=');
-            calcPrevVal = calcCurrentVal; calcOperator = action; calcAwaitingNext = true;
-            hisDisp.innerText = `${calcPrevVal} ${action === '*' ? '×' : (action === '/' ? '÷' : action)}`;
+        if (action === 'clear') {
+            calcStr = "0"; calcEvalStr = ""; hisDisp.innerText = "";
         } else if (action === '=') {
-            if (!calcOperator) return;
-            let n1 = parseFloat(calcPrevVal), n2 = parseFloat(calcCurrentVal), res = 0;
-            if(calcOperator==='+') res=n1+n2; else if(calcOperator==='-') res=n1-n2; else if(calcOperator==='*') res=n1*n2; else if(calcOperator==='/') res=n1/n2;
-            hisDisp.innerText = `${calcPrevVal} ${calcOperator.replace('*','×').replace('/','÷')} ${calcCurrentVal} =`;
-            calcCurrentVal = res.toString(); calcOperator = ''; calcAwaitingNext = true;
+            try {
+                let finalEval = calcEvalStr + calcStr;
+                let result = eval(finalEval);
+                if (!isFinite(result)) result = "錯誤";
+                hisDisp.innerText = finalEval.replace(/\*/g, '×').replace(/\//g, '÷') + " =";
+                calcStr = result.toString();
+                calcEvalStr = "";
+            } catch (e) { calcStr = "錯誤"; }
+        } else if (['+', '-', '*', '/'].includes(action)) {
+            calcEvalStr += calcStr + action;
+            hisDisp.innerText = calcEvalStr.replace(/\*/g, '×').replace(/\//g, '÷');
+            calcStr = "0";
+        } else if (action === 'neg') {
+            calcStr = (parseFloat(calcStr) * -1).toString();
+        } else if (action === '%') {
+            calcStr = (parseFloat(calcStr) / 100).toString();
         } else {
-            if (calcAwaitingNext) { calcCurrentVal = action === '.' ? '0.' : action; calcAwaitingNext = false; }
-            else { if (action === '.' && calcCurrentVal.includes('.')) return; calcCurrentVal = calcCurrentVal === '0' && action !== '.' ? action : calcCurrentVal + action; }
+            if (calcStr === "0" && action !== '.') calcStr = action;
+            else if (action === '.' && calcStr.includes('.')) return;
+            else calcStr += action;
         }
-        resDisp.value = calcCurrentVal;
+        resDisp.value = calcStr;
+    }
+
+
+    // ---------------------------------------------------------
+    // 4. Apps: 共享素材庫 (Firebase + 智能假資料)
+    // ---------------------------------------------------------
+    let fetchedMaterialsList = [];
+    const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website" };
+    try {
+        const appInstance = initializeApp(firebaseConfig);
+        const dbInstance = getFirestore(appInstance);
+        onSnapshot(query(collection(dbInstance, "categorized_materials"), orderBy("timestamp", "desc")), (snap) => { 
+            fetchedMaterialsList = []; 
+            snap.forEach((d) => { let data = d.data(); data.id = d.id; fetchedMaterialsList.push(data); }); 
+            renderMaterialLibrary('全部'); 
+        }, (error) => { renderMaterialLibrary('全部'); });
+    } catch (e) { setTimeout(() => renderMaterialLibrary('全部'), 1000); }
+
+    window.switchMaterialTab = function(btn, category) {
+        document.querySelectorAll('#page-materials .tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderMaterialLibrary(category);
+    }
+
+    function renderMaterialLibrary(filterCat) {
+        const container = document.getElementById('material-container');
+        if(!container) return;
+        container.innerHTML = '';
+        
+        let listToRender = fetchedMaterialsList;
+        // 🌟 防呆：如果 Firebase 是空的，自動注入高級假資料 🌟
+        if (listToRender.length === 0) {
+            listToRender = [
+                { id: 'm1', fileName: "Cyberpunk City", category: "圖片", fileUrl: "https://images.unsplash.com/photo-1515630278258-407f66498911?w=500&q=80" },
+                { id: 'm2', fileName: "Retro Synthwave", category: "圖片", fileUrl: "https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?w=500&q=80" },
+                { id: 'm3', fileName: "System Warning", category: "音效", btnStyle: "#ff1744", fileUrl:"#" },
+                { id: 'm4', fileName: "Level Up", category: "音效", btnStyle: "#1db954", fileUrl:"#" },
+                { id: 'm5', fileName: "Dogfish 主題曲", category: "音樂", albumName: "精選輯", coverUrl: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=500&q=80", tracks: [] }
+            ];
+        }
+
+        listToRender.forEach(d => {
+            if(filterCat !== '全部' && !d.category.includes(filterCat)) return;
+
+            const c = document.createElement('div');
+            c.className = 'material-item';
+            
+            if (d.category === '圖片' || d.category === 'GIF') {
+                c.innerHTML = `<img src="${d.fileUrl}" class="mat-mock-img"><strong style="font-size:14px;">${d.fileName}</strong>`;
+            } else if (d.category === '音效') {
+                c.innerHTML = `<div style="width:60px;height:60px;border-radius:50%;background:${d.btnStyle||'#ff1744'};margin:0 auto 10px;box-shadow:0 4px 10px rgba(0,0,0,0.5);"></div><strong style="font-size:14px;">${d.fileName}</strong>`;
+            } else if (d.category === '音樂' || d.albumName) {
+                let img = d.coverUrl || 'https://via.placeholder.com/150/333/fff?text=Album';
+                c.innerHTML = `<img src="${img}" class="mat-mock-img"><strong style="font-size:14px;">${d.albumName || d.fileName}</strong>`;
+            }
+            container.appendChild(c);
+        });
     }
 
     // ---------------------------------------------------------
-    // 4. Apps: 小畫家 (Paint)
+    // 5. Apps: 小畫家 (Paint)
     // ---------------------------------------------------------
     const canvas = document.getElementById('dogfishCanvas');
     const ctx = canvas.getContext('2d');
@@ -910,7 +942,7 @@
     window.clearCanvas = function() { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
 
     // ---------------------------------------------------------
-    // 5. Apps: 終端機 (Matrix)
+    // 6. Apps: 終端機 (Matrix)
     // ---------------------------------------------------------
     function initMatrix() {
         const mCanvas = document.getElementById('matrixCanvas'); const mCtx = mCanvas.getContext('2d');
@@ -932,7 +964,7 @@
     }
 
     // ---------------------------------------------------------
-    // 6. Apps: 記事本 (Notepad)
+    // 7. Apps: 記事本 (Notepad)
     // ---------------------------------------------------------
     const noteArea = document.getElementById('notepad-text');
     noteArea.value = localStorage.getItem('dogfish_notepad') || '';
@@ -945,7 +977,7 @@
     }
 
     // ---------------------------------------------------------
-    // 7. Apps: Edge 瀏覽器
+    // 8. Apps: Edge 瀏覽器
     // ---------------------------------------------------------
     window.loadBrowserUrl = function(url) {
         if(!url.startsWith('http')) url = 'https://' + url;
@@ -954,15 +986,13 @@
     }
 
     // ---------------------------------------------------------
-    // 8. Apps: 踩地雷 (Minesweeper)
+    // 9. Apps: 踩地雷 (Minesweeper)
     // ---------------------------------------------------------
     let mineBoard = [], mineRows = 9, mineCols = 9, mineCount = 10, mineGameOver = false, mineFlags = 0;
     function initMinesweeper() {
         const grid = document.getElementById('mine-grid'); grid.innerHTML = '';
         document.getElementById('mine-face').innerText = '🙂'; document.getElementById('mine-count').innerText = '010';
         mineBoard = []; mineGameOver = false; mineFlags = 0;
-        
-        // 建立資料與 HTML
         for(let r=0; r<mineRows; r++) {
             let row = [];
             for(let c=0; c<mineCols; c++) {
@@ -978,15 +1008,11 @@
             }
             mineBoard.push(row);
         }
-        
-        // 佈雷
         let placed = 0;
         while(placed < mineCount) {
             let rr = Math.floor(Math.random() * mineRows), cc = Math.floor(Math.random() * mineCols);
             if(!mineBoard[rr][cc].isMine) { mineBoard[rr][cc].isMine = true; placed++; }
         }
-        
-        // 計算數字
         for(let r=0; r<mineRows; r++) {
             for(let c=0; c<mineCols; c++) {
                 if(mineBoard[r][c].isMine) continue;
@@ -1004,12 +1030,10 @@
         let cell = mineBoard[r][c]; cell.revealed = true;
         let div = document.getElementById(`mine-${r}-${c}`);
         div.classList.add('revealed');
-        
         if(cell.isMine) {
             div.classList.add('mine'); div.innerText = '💣';
             document.getElementById('mine-face').innerText = '😵';
             mineGameOver = true;
-            // 顯示所有地雷
             for(let i=0; i<mineRows; i++) for(let j=0; j<mineCols; j++) {
                 if(mineBoard[i][j].isMine) { document.getElementById(`mine-${i}-${j}`).innerText = '💣'; document.getElementById(`mine-${i}-${j}`).classList.add('revealed'); }
             }
@@ -1019,7 +1043,6 @@
                 const colors = ['', 'blue', 'green', 'red', 'darkblue', 'brown', 'cyan', 'black', 'gray'];
                 div.style.color = colors[cell.count];
             } else {
-                // 空白連鎖開啟
                 for(let i=-1; i<=1; i++) for(let j=-1; j<=1; j++) {
                     if(r+i>=0 && r+i<mineRows && c+j>=0 && c+j<mineCols) clickMine(r+i, c+j);
                 }
@@ -1037,64 +1060,33 @@
     }
 
     // ---------------------------------------------------------
-    // 9. 共享素材庫：Firebase 串接與「智能假資料」
+    // 10. Apps: 相機 (Camera)
     // ---------------------------------------------------------
-    const firebaseConfigSettings = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website", storageBucket: "dogfish-website.firebasestorage.app", messagingSenderId: "501551191843", appId: "1:501551191843:web:32fd3c7a51c7a21722de96" };
-    
-    // 將 Firebase 載入包在 Try Catch，防止錯誤卡死整個 OS
-    try {
-        const appInstance = initializeApp(firebaseConfigSettings);
-        const dbInstance = getFirestore(appInstance);
-        
-        onSnapshot(query(collection(dbInstance, "categorized_materials"), orderBy("timestamp", "desc")), (snap) => { 
-            fetchedMaterialsList = []; 
-            snap.forEach((d) => { let data = d.data(); data.id = d.id; fetchedMaterialsList.push(data); }); 
-            renderMaterialLibrary(); 
-        }, (error) => {
-            console.error("Firebase 連線失敗:", error);
-            renderMaterialLibrary(); // 就算失敗也執行，觸發假資料
-        });
-    } catch (e) {
-        console.error("Firebase 初始化失敗:", e);
-        setTimeout(renderMaterialLibrary, 1000);
-    }
-
-    function renderMaterialLibrary() {
-        const container = document.getElementById('material-container');
-        if(!container) return;
-        container.innerHTML = '';
-        
-        // 🌟 智能假資料系統 🌟
-        // 如果抓下來的清單是空的，我們自動塞幾筆超有質感的假資料進去！
-        if (fetchedMaterialsList.length === 0) {
-            fetchedMaterialsList = [
-                { id: 'm1', fileName: "Cyberpunk City", category: "圖片", fileUrl: "https://images.unsplash.com/photo-1515630278258-407f66498911?w=500&q=80" },
-                { id: 'm2', fileName: "Retro Synthwave", category: "圖片", fileUrl: "https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?w=500&q=80" },
-                { id: 'm3', fileName: "霓虹警告音效", category: "音效", btnStyle: "#ff1744" },
-                { id: 'm4', fileName: "升級成功提示", category: "音效", btnStyle: "#1db954" },
-                { id: 'm5', fileName: "Dogfish 主題曲", category: "音樂", albumName: "精選輯", coverUrl: "https://via.placeholder.com/150/1db954/fff?text=Music", tracks: [] }
-            ];
+    window.cameraStream = null;
+    function initCamera() {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                window.cameraStream = stream;
+                const video = document.getElementById('camera-stream');
+                video.srcObject = stream;
+            })
+            .catch(function (error) {
+                console.log("相機權限被拒絕或無設備", error);
+            });
         }
-
-        fetchedMaterialsList.forEach(d => {
-            const c = document.createElement('div');
-            c.className = 'material-item';
-            
-            if (d.category === '圖片' || d.category === 'GIF') {
-                c.innerHTML = `<img src="${d.fileUrl}" class="mat-mock-img"><strong style="font-size:14px;">${d.fileName}</strong>`;
-            } else if (d.category === '音效') {
-                c.innerHTML = `<div style="width:60px;height:60px;border-radius:50%;background:${d.btnStyle||'#ff1744'};margin:0 auto 10px;box-shadow:0 4px 10px rgba(0,0,0,0.5);"></div><strong style="font-size:14px;">${d.fileName}</strong>`;
-            } else if (d.category === '音樂' || d.albumName) {
-                let img = d.coverUrl || 'https://via.placeholder.com/150/333/fff?text=Album';
-                c.innerHTML = `<img src="${img}" class="mat-mock-img"><strong style="font-size:14px;">${d.albumName || d.fileName}</strong>`;
-            }
-            container.appendChild(c);
-        });
+    }
+    window.closeCamera = function() {
+        if(window.cameraStream) {
+            window.cameraStream.getTracks().forEach(track => track.stop());
+            window.cameraStream = null;
+        }
+        closeWindow('camera');
     }
 
-    // 開機預設執行
+    // 開機自動顯示桌面與大廳
     window.onload = () => {
-        setTimeout(() => { openWindow('blog'); }, 400);
+        setTimeout(() => { openWindow('blog'); }, 500);
     }
   </script>
 </body>
