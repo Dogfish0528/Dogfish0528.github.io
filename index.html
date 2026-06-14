@@ -51,6 +51,16 @@
     ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
 
     /* =========================================================
+       免責聲明遮罩
+    ========================================================= */
+    #disclaimer-overlay { 
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+        background: rgba(0,0,0,0.9); z-index: 9999999; 
+        display: flex; align-items: center; justify-content: center; 
+        backdrop-filter: blur(10px); 
+    }
+
+    /* =========================================================
        共用 UI 元件
     ========================================================= */
     .solid-panel { background: rgba(20, 20, 20, 0.6); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
@@ -98,37 +108,170 @@
     .os-toggle-btn { background: linear-gradient(135deg, #00d4ff, #1db954); color: #000; font-weight: 900; box-shadow: 0 0 15px rgba(0,212,255,0.4); border: none; padding: 6px 16px; border-radius: 20px; transition: 0.3s; text-decoration: none; display: inline-block; } 
     .os-toggle-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(0,212,255,0.6); color:#000; }
     
-    /* 駭客開機畫面與急救區 */
-    #boot-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 9999999; display: flex; flex-direction: column; padding: 40px; font-family: 'Consolas', monospace; color: #0f0; transition: opacity 0.5s ease; pointer-events: none; }
+    /* =========================================================
+       駭客開機畫面與急救區
+    ========================================================= */
+    #boot-screen { 
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+        background: #050505; z-index: 9999999; display: flex; flex-direction: column; 
+        padding: 40px; font-family: 'Consolas', monospace; color: #0f0; 
+        transition: opacity 0.5s ease; pointer-events: none; 
+    }
     .boot-text { margin: 5px 0; font-size: 1.2em; opacity: 0; animation: typeIn 0.1s forwards; text-shadow: 0 0 5px #0f0; }
     @keyframes typeIn { to { opacity: 1; } }
-    .terminal-box { background: #000; border: 1px solid #333; border-left: 4px solid var(--accent); border-radius: 8px; padding: 20px; font-family: 'Consolas', monospace; color: #0f0; height: 250px; overflow-y: auto; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,255,0,0.1); }
+    
+    .terminal-box { 
+        background: #000; border: 1px solid #333; border-left: 4px solid var(--accent); 
+        border-radius: 8px; padding: 20px; font-family: 'Consolas', monospace; 
+        color: #0f0; height: 250px; overflow-y: auto; margin-bottom: 20px; 
+        box-shadow: inset 0 0 20px rgba(0,255,0,0.1); 
+    }
     .log-line { margin: 5px 0; font-size: 0.9em; }
 
-    /* 共用 Modal 與其他佈局 */
-    .spotify-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 2.5vh 2.5vw; } .modal-content { background: rgba(20,20,20,0.95); border-radius: 16px; width: 100%; max-width: 1600px; height: 100%; max-height: 95vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.8); border: 1px solid #333; overflow: hidden; } .modal-header { padding: 20px 30px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(15,15,15,0.95); flex-shrink: 0; z-index: 10; } .modal-header h2, .modal-header h1 { margin: 0; color: var(--primary); } .modal-close-btn { font-size: 2.5em; color: #b3b3b3; cursor: pointer; transition: 0.2s; line-height: 0.8; } .modal-close-btn:hover { color: white; transform: rotate(90deg); } .modal-body { flex: 1; overflow-y: auto; padding: 30px; scroll-behavior: smooth; } .modal-footer { padding: 20px 30px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15,15,15,0.95); flex-shrink: 0; z-index: 10; display: flex; justify-content: center; }
-    .rich-editor-toolbar { display: flex; gap: 8px; flex-wrap: wrap; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px 8px 0 0; border: 1px solid #333; border-bottom: none; align-items: center; position: sticky; top: -30px; z-index: 5; } .rich-editor-btn { background: #333; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9em; transition: 0.2s; display: flex; align-items: center; gap: 5px; } .rich-editor-btn:hover { background: var(--primary); color: black; } .color-picker-wrap { display: flex; align-items: center; background: #333; padding: 2px 8px; border-radius: 6px; gap: 5px; font-weight: bold; font-size: 0.9em; border: 1px solid #444; } .color-picker-wrap input { width: 25px; height: 25px; padding: 0; border: none; background: transparent; cursor: pointer; } .size-picker { padding: 4px 8px; height: 32px; font-size: 0.85em; border-radius: 6px; } .rich-editor-content { background: rgba(0,0,0,0.3); min-height: 40vh; border: 1px solid #333; border-radius: 0 0 8px 8px; padding: 20px; color: white; line-height: 1.8; outline: none; } .rich-editor-content img, .rich-editor-content iframe, .rich-editor-content video { max-width: 100%; border-radius: 8px; margin: 15px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; transition: outline 0.2s; } .rich-editor-content[contenteditable="true"]:empty:before { content: attr(placeholder); color: #888; cursor: text; } .rich-editor-content a { color: #0088ff; text-decoration: underline; font-weight: bold; }
-    .controls-wrapper { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; flex-wrap: wrap; gap: 15px; } .category-tabs { display: flex; flex-wrap: wrap; gap: 10px; } .tab-btn { background: rgba(0,0,0,0.5); color: #b3b3b3; border: 1px solid transparent; padding: 8px 18px; font-weight: 700; border-radius: 20px; transition: 0.2s; } .tab-btn.active { background: white; color: #000; box-shadow: 0 0 15px rgba(255,255,255,0.3); } .search-bar-container { position: relative; } .search-input { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 10px 20px 10px 40px; border-radius: 20px; outline: none; width: 220px; transition: 0.3s; } .search-input:focus { border-color: var(--primary); width: 260px; } .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.9em; }
-    .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; } .material-item { background: rgba(20,20,20,0.5); border: 1px solid var(--border-color); padding: 16px; border-radius: 12px; transition: 0.3s; display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; backdrop-filter: blur(5px); } .material-item:hover { background: rgba(30,30,30,0.8); box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: translateY(-3px); border-color: #444; } .folder-header { grid-column: 1 / -1; font-size: 1.4em; font-weight: 900; color: white; margin-top: 15px; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 8px; text-align: left; } .album-art-wrapper { width: 100%; aspect-ratio: 1/1; border-radius: 8px; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.4); } .album-art-img { width: 100%; height: 100%; object-fit: cover; } .mat-type-tag { font-size: 0.7em; padding: 4px 10px; border-radius: 4px; background: rgba(0,0,0,0.8); color: white; font-weight: 800; position: absolute; top: 10px; left: 10px; z-index: 10; backdrop-filter: blur(4px); } .sfx-push-btn { width: 110px; height: 120px; border-radius: 50%; background-size: cover; background-position: center; border: 4px solid #fff; margin: 0 auto 15px; display: block; transition: 0.1s; box-shadow: 0 8px 0 #111, 0 15px 20px rgba(0,0,0,0.5); } .sfx-push-btn:active { transform: translateY(8px); box-shadow: 0 0px 0 #111, 0 5px 10px rgba(0,0,0,0.5); }
-    .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; } .article-card { background: rgba(20,20,20,0.5); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid var(--border-color); text-align: left; backdrop-filter: blur(5px); position: relative; } .article-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(29, 185, 84, 0.2); } .article-info { padding: 20px; } .article-title { font-size: 1.5em; font-weight: 900; margin: 0 0 10px; color: white; }
+    /* =========================================================
+       卡片與網格系統 (Grid & Cards)
+    ========================================================= */
+    .controls-wrapper { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; flex-wrap: wrap; gap: 15px; } 
+    .category-tabs { display: flex; flex-wrap: wrap; gap: 10px; } 
+    .tab-btn { background: rgba(0,0,0,0.5); color: #b3b3b3; border: 1px solid transparent; padding: 8px 18px; font-weight: 700; border-radius: 20px; transition: 0.2s; } 
+    .tab-btn.active { background: white; color: #000; box-shadow: 0 0 15px rgba(255,255,255,0.3); } 
     
+    .search-bar-container { position: relative; } 
+    .search-input { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 10px 20px 10px 40px; border-radius: 20px; outline: none; width: 220px; transition: 0.3s; } 
+    .search-input:focus { border-color: var(--primary); width: 260px; } 
+    .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.9em; }
+    
+    /* 素材庫樣式 */
+    .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; } 
+    .material-item { background: rgba(20,20,20,0.5); border: 1px solid var(--border-color); padding: 16px; border-radius: 12px; transition: 0.3s; display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; backdrop-filter: blur(5px); } 
+    .material-item:hover { background: rgba(30,30,30,0.8); box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: translateY(-3px); border-color: #444; } 
+    .folder-header { grid-column: 1 / -1; font-size: 1.4em; font-weight: 900; color: white; margin-top: 15px; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 8px; text-align: left; } 
+    .album-art-wrapper { width: 100%; aspect-ratio: 1/1; border-radius: 8px; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.4); } 
+    .album-art-img { width: 100%; height: 100%; object-fit: cover; } 
+    .mat-type-tag { font-size: 0.7em; padding: 4px 10px; border-radius: 4px; background: rgba(0,0,0,0.8); color: white; font-weight: 800; position: absolute; top: 10px; left: 10px; z-index: 10; backdrop-filter: blur(4px); } 
+    .sfx-push-btn { width: 110px; height: 120px; border-radius: 50%; background-size: cover; background-position: center; border: 4px solid #fff; margin: 0 auto 15px; display: block; transition: 0.1s; box-shadow: 0 8px 0 #111, 0 15px 20px rgba(0,0,0,0.5); } 
+    .sfx-push-btn:active { transform: translateY(8px); box-shadow: 0 0px 0 #111, 0 5px 10px rgba(0,0,0,0.5); }
+    
+    /* 文章與軟體卡片樣式 */
+    .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; } 
+    .article-card { background: rgba(20,20,20,0.5); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid var(--border-color); text-align: left; backdrop-filter: blur(5px); position: relative; } 
+    .article-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(29, 185, 84, 0.2); } 
+    .article-info { padding: 20px; } 
+    .article-title { font-size: 1.5em; font-weight: 900; margin: 0 0 10px; color: white; }
+
     /* 🌟 Win11 美化專屬卡片樣式 🌟 */
     .beautify-card { background: rgba(255,0,255,0.05); border: 1px solid rgba(255,0,255,0.2); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; text-align: left; position: relative; }
     .beautify-card:hover { border-color: var(--beautify); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255,0,255,0.3); background: rgba(255,0,255,0.1); }
     .beautify-card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .beautify-info { padding: 20px; }
-    .beautify-badge { position: absolute; top: 15px; right: 15px; background: var(--beautify); color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold; box-shadow: 0 2px 10px rgba(255,0,255,0.5); }
+    .beautify-badge { position: absolute; top: 15px; right: 15px; background: var(--beautify); color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold; box-shadow: 0 2px 10px rgba(255,0,255,0.5); z-index: 5; }
 
-    body.god-mode { border: 2px solid var(--accent); } body.god-mode .admin-overlay { display: flex !important; } .admin-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 20; flex-direction: column; justify-content: center; align-items: center; gap: 15px; backdrop-filter: blur(4px); border-radius: inherit; animation: fadeInOverlay 0.2s; } @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
-    .chat-app { display: flex; height: 75vh; background: rgba(30,30,30,0.7); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; backdrop-filter: blur(10px); } .chat-sidebar { width: 280px; background: rgba(20,20,20,0.8); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; text-align: left; flex-grow: 1; min-width: 250px; } .chat-sidebar-header { padding: 15px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; } .chat-list { flex: 1; overflow-y: auto; max-height: 40vh; } .chat-list-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; transition: 0.2s; cursor: pointer; } .chat-list-item:hover, .chat-list-item.active { background: rgba(29, 185, 84, 0.2); border-left: 4px solid var(--primary); } .chat-list-avatar { width: 40px; height: 40px; border-radius: 50%; background: #555; object-fit: cover; } .chat-list-name { font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; color: white; } .chat-main { flex: 2; display: flex; flex-direction: column; background: rgba(116, 155, 182, 0.2); min-width: 300px; position: relative; } .chat-main-header { padding: 15px; background: rgba(255,255,255,0.9); color: #000; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 10; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; backdrop-filter: blur(10px); } .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; } .chat-row { display: flex; gap: 10px; max-width: 85%; text-align: left; } .chat-row.me { align-self: flex-end; flex-direction: row-reverse; } .chat-row.other { align-self: flex-start; } .chat-bubble-wrap { display: flex; flex-direction: column; gap: 4px; } .chat-row.me .chat-bubble-wrap { align-items: flex-end; } .chat-name { font-size: 0.8em; color: #b3b3b3; font-weight: 700; margin: 0 4px; } .chat-bubble { padding: 10px 14px; border-radius: 16px; font-size: 0.95em; line-height: 1.4; word-break: break-word; box-shadow: 0 2px 5px rgba(0,0,0,0.2); } .chat-row.me .chat-bubble { background: #85e04f; color: #000; border-top-right-radius: 4px; } .chat-row.other .chat-bubble { background: rgba(255,255,255,0.9); color: #000; border-top-left-radius: 4px; } .chat-time { font-size: 0.7em; color: #888; margin: 0 4px; align-self: flex-end; } .chat-input-area { background: rgba(0,0,0,0.5); padding: 15px; display: flex; gap: 10px; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); } .chat-input { flex: 1; padding: 12px 15px; border: none; border-radius: 20px; outline: none; font-size: 1em; background: rgba(255,255,255,0.9); color: #000; } .invite-box { background: rgba(0,0,0,0.5); padding: 10px; margin: 10px; border-radius: 8px; font-size: 0.9em; text-align: left; border: 1px solid #444; }
+    /* =========================================================
+       聊天系統 (Messenger)
+    ========================================================= */
+    .chat-app { display: flex; height: 75vh; background: rgba(30,30,30,0.7); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; backdrop-filter: blur(10px); } 
+    .chat-sidebar { width: 280px; background: rgba(20,20,20,0.8); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; text-align: left; flex-grow: 1; min-width: 250px; } 
+    .chat-sidebar-header { padding: 15px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; } 
+    .chat-list { flex: 1; overflow-y: auto; max-height: 40vh; } 
+    .chat-list-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; transition: 0.2s; cursor: pointer; } 
+    .chat-list-item:hover, .chat-list-item.active { background: rgba(29, 185, 84, 0.2); border-left: 4px solid var(--primary); } 
+    .chat-list-avatar { width: 40px; height: 40px; border-radius: 50%; background: #555; object-fit: cover; } 
+    .chat-list-name { font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; color: white; } 
+    .chat-main { flex: 2; display: flex; flex-direction: column; background: rgba(116, 155, 182, 0.2); min-width: 300px; position: relative; } 
+    .chat-main-header { padding: 15px; background: rgba(255,255,255,0.9); color: #000; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 10; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; backdrop-filter: blur(10px); } 
+    .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; } 
+    .chat-row { display: flex; gap: 10px; max-width: 85%; text-align: left; } 
+    .chat-row.me { align-self: flex-end; flex-direction: row-reverse; } 
+    .chat-row.other { align-self: flex-start; } 
+    .chat-bubble-wrap { display: flex; flex-direction: column; gap: 4px; } 
+    .chat-row.me .chat-bubble-wrap { align-items: flex-end; } 
+    .chat-name { font-size: 0.8em; color: #b3b3b3; font-weight: 700; margin: 0 4px; } 
+    .chat-bubble { padding: 10px 14px; border-radius: 16px; font-size: 0.95em; line-height: 1.4; word-break: break-word; box-shadow: 0 2px 5px rgba(0,0,0,0.2); } 
+    .chat-row.me .chat-bubble { background: #85e04f; color: #000; border-top-right-radius: 4px; } 
+    .chat-row.other .chat-bubble { background: rgba(255,255,255,0.9); color: #000; border-top-left-radius: 4px; } 
+    .chat-time { font-size: 0.7em; color: #888; margin: 0 4px; align-self: flex-end; } 
+    .chat-input-area { background: rgba(0,0,0,0.5); padding: 15px; display: flex; gap: 10px; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); } 
+    .chat-input { flex: 1; padding: 12px 15px; border: none; border-radius: 20px; outline: none; font-size: 1em; background: rgba(255,255,255,0.9); color: #000; } 
+    .invite-box { background: rgba(0,0,0,0.5); padding: 10px; margin: 10px; border-radius: 8px; font-size: 0.9em; text-align: left; border: 1px solid #444; }
+
+    /* =========================================================
+       各式彈跳視窗 (Modals)
+    ========================================================= */
+    .spotify-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 2.5vh 2.5vw; } 
+    .modal-content { background: rgba(20,20,20,0.95); border-radius: 16px; width: 100%; max-width: 1600px; height: 100%; max-height: 95vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.8); border: 1px solid #333; overflow: hidden; } 
+    .modal-header { padding: 20px 30px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(15,15,15,0.95); flex-shrink: 0; z-index: 10; } 
+    .modal-header h2, .modal-header h1 { margin: 0; color: var(--primary); } 
+    .modal-close-btn { font-size: 2.5em; color: #b3b3b3; cursor: pointer; transition: 0.2s; line-height: 0.8; } 
+    .modal-close-btn:hover { color: white; transform: rotate(90deg); } 
+    .modal-body { flex: 1; overflow-y: auto; padding: 30px; scroll-behavior: smooth; } 
+    .modal-footer { padding: 20px 30px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15,15,15,0.95); flex-shrink: 0; z-index: 10; display: flex; justify-content: center; }
+
+    /* 富文本編輯器 */
+    .rich-editor-toolbar { display: flex; gap: 8px; flex-wrap: wrap; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px 8px 0 0; border: 1px solid #333; border-bottom: none; align-items: center; position: sticky; top: -30px; z-index: 5; } 
+    .rich-editor-btn { background: #333; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9em; transition: 0.2s; display: flex; align-items: center; gap: 5px; } 
+    .rich-editor-btn:hover { background: var(--primary); color: black; } 
+    .color-picker-wrap { display: flex; align-items: center; background: #333; padding: 2px 8px; border-radius: 6px; gap: 5px; font-weight: bold; font-size: 0.9em; border: 1px solid #444; } 
+    .color-picker-wrap input { width: 25px; height: 25px; padding: 0; border: none; background: transparent; cursor: pointer; } 
+    .size-picker { padding: 4px 8px; height: 32px; font-size: 0.85em; border-radius: 6px; } 
+    .rich-editor-content { background: rgba(0,0,0,0.3); min-height: 40vh; border: 1px solid #333; border-radius: 0 0 8px 8px; padding: 20px; color: white; line-height: 1.8; outline: none; } 
+    .rich-editor-content img, .rich-editor-content iframe, .rich-editor-content video { max-width: 100%; border-radius: 8px; margin: 15px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; transition: outline 0.2s; } 
+    .rich-editor-content[contenteditable="true"]:empty:before { content: attr(placeholder); color: #888; cursor: text; } 
+    .rich-editor-content a { color: #0088ff; text-decoration: underline; font-weight: bold; }
+
+    /* 文章顯示器 */
+    .blog-meta { color: #888; font-size: 1em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; } 
+    .blog-divider { border: 0; border-top: 1px solid #333; margin-bottom: 25px; } 
+    .blog-content { font-size: 1.2em; line-height: 1.8; color: #ddd; background: transparent; border: none; padding: 0; overflow-y: visible; max-height: none; } 
+    .blog-download-box { background: #222; border: 1px dashed #444; border-left: 4px solid #0088ff; border-radius: 8px; padding: 25px; margin-top: 50px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); } 
+    .dl-info { display: flex; align-items: center; gap: 15px; }
+
+    /* =========================================================
+       音樂播放器 (Global Player)
+    ========================================================= */
+    #global-player { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--player-height); background: rgba(15,15,15,0.95); border-top: 1px solid rgba(255,255,255,0.1); justify-content: space-between; align-items: center; padding: 0 20px; z-index: 3000; flex-wrap: wrap; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 -5px 20px rgba(0,0,0,0.5); } 
+    .gp-left { display: flex; align-items: center; gap: 15px; width: 280px; text-align: left; } 
+    #gp-cover { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); } 
+    .gp-info { display: flex; flex-direction: column; } 
+    #gp-title { color: white; font-weight: 700; font-size: 0.95em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; } 
+    #gp-artist { color: #b3b3b3; font-size: 0.8em; } 
+    .gp-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 15px; } 
+    .gp-control-btn { background: transparent; border: none; color: #b3b3b3; font-size: 1.5em; } 
+    .gp-control-btn:hover { color: white; transform: scale(1.1); } 
+    #gp-audio { width: 100%; max-width: 400px; height: 40px; outline: none; } 
+    .gp-right { display: flex; align-items: center; gap: 15px; justify-content: flex-end; min-width: 200px; } 
     
-    /* 播放器與雜項 */
-    .spotify-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 2.5vh 2.5vw; } .modal-content { background: rgba(20,20,20,0.95); border-radius: 16px; width: 100%; max-width: 1600px; height: 100%; max-height: 95vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.8); border: 1px solid #333; overflow: hidden; } .modal-header { padding: 20px 30px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(15,15,15,0.95); flex-shrink: 0; z-index: 10; } .modal-header h2, .modal-header h1 { margin: 0; color: var(--primary); } .modal-close-btn { font-size: 2.5em; color: #b3b3b3; cursor: pointer; transition: 0.2s; line-height: 0.8; } .modal-close-btn:hover { color: white; transform: rotate(90deg); } .modal-body { flex: 1; overflow-y: auto; padding: 30px; scroll-behavior: smooth; } .modal-footer { padding: 20px 30px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15,15,15,0.95); flex-shrink: 0; z-index: 10; display: flex; justify-content: center; }
-    .blog-meta { color: #888; font-size: 1em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; } .blog-divider { border: 0; border-top: 1px solid #333; margin-bottom: 25px; } .blog-content { font-size: 1.2em; line-height: 1.8; color: #ddd; background: transparent; border: none; padding: 0; overflow-y: visible; max-height: none; } .blog-download-box { background: #222; border: 1px dashed #444; border-left: 4px solid #0088ff; border-radius: 8px; padding: 25px; margin-top: 50px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); } .dl-info { display: flex; align-items: center; gap: 15px; }
-    #global-player { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--player-height); background: rgba(15,15,15,0.95); border-top: 1px solid rgba(255,255,255,0.1); justify-content: space-between; align-items: center; padding: 0 20px; z-index: 3000; flex-wrap: wrap; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 -5px 20px rgba(0,0,0,0.5); } .gp-left { display: flex; align-items: center; gap: 15px; width: 280px; text-align: left; } #gp-cover { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); } .gp-info { display: flex; flex-direction: column; } #gp-title { color: white; font-weight: 700; font-size: 0.95em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; } #gp-artist { color: #b3b3b3; font-size: 0.8em; } .gp-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 15px; } .gp-control-btn { background: transparent; border: none; color: #b3b3b3; font-size: 1.5em; } .gp-control-btn:hover { color: white; transform: scale(1.1); } #gp-audio { width: 100%; max-width: 400px; height: 40px; outline: none; } .gp-right { display: flex; align-items: center; gap: 15px; justify-content: flex-end; min-width: 200px; } .visualizer { display: flex; align-items: flex-end; gap: 4px; height: 30px; } .bar { width: 6px; background: var(--primary); border-radius: 3px; animation: bounce 0.5s infinite alternate; box-shadow: 0 0 8px var(--primary); } .bar:nth-child(1) { height: 100%; animation-delay: 0.1s; } .bar:nth-child(2) { height: 60%; animation-delay: 0.3s; } .bar:nth-child(3) { height: 80%; animation-delay: 0.0s; } .bar:nth-child(4) { height: 40%; animation-delay: 0.4s; } .bar:nth-child(5) { height: 90%; animation-delay: 0.2s; } @keyframes bounce { 0% { transform: scaleY(0.3); } 100% { transform: scaleY(1); } } .visualizer.paused .bar { animation-play-state: paused; transform: scaleY(0.2); }
-    #mini-player-toggle { display: none; position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: #000; font-size: 1.8em; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 3100; align-items: center; justify-content: center; transition: 0.2s; } #mini-player-toggle:hover { transform: scale(1.1); }
-    #toast-container { position: fixed; top: 80px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; } .toast { background: rgba(30,30,30,0.9); color: white; padding: 15px 25px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-weight: 700; font-size: 1.1em; backdrop-filter: blur(10px); animation: slideIn 0.3s forwards, fadeOut 0.3s forwards 4.7s; } .toast.error { border-left-color: var(--accent); } @keyframes slideIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } } @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } } 
-    .route-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; background: rgba(0,0,0,0.3); border-radius: 8px; margin-bottom: 8px; } .route-item:hover { background: rgba(29, 185, 84, 0.1); border-left: 4px solid var(--primary); } .route-code-badge { background: var(--primary); color: black; font-weight: 900; padding: 3px 8px; border-radius: 6px; font-size: 0.9em; margin-right: 10px; }
+    .visualizer { display: flex; align-items: flex-end; gap: 4px; height: 30px; } 
+    .bar { width: 6px; background: var(--primary); border-radius: 3px; animation: bounce 0.5s infinite alternate; box-shadow: 0 0 8px var(--primary); } 
+    .bar:nth-child(1) { height: 100%; animation-delay: 0.1s; } 
+    .bar:nth-child(2) { height: 60%; animation-delay: 0.3s; } 
+    .bar:nth-child(3) { height: 80%; animation-delay: 0.0s; } 
+    .bar:nth-child(4) { height: 40%; animation-delay: 0.4s; } 
+    .bar:nth-child(5) { height: 90%; animation-delay: 0.2s; } 
+    @keyframes bounce { 0% { transform: scaleY(0.3); } 100% { transform: scaleY(1); } } 
+    .visualizer.paused .bar { animation-play-state: paused; transform: scaleY(0.2); } 
+    
+    #mini-player-toggle { display: none; position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: #000; font-size: 1.8em; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 3100; align-items: center; justify-content: center; transition: 0.2s; } 
+    #mini-player-toggle:hover { transform: scale(1.1); }
+
+    /* =========================================================
+       系統提示 (Toast) 與其他工具
+    ========================================================= */
+    #toast-container { position: fixed; top: 80px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; } 
+    .toast { background: rgba(30,30,30,0.9); color: white; padding: 15px 25px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-weight: 700; font-size: 1.1em; backdrop-filter: blur(10px); animation: slideIn 0.3s forwards, fadeOut 0.3s forwards 4.7s; } 
+    .toast.error { border-left-color: var(--accent); } 
+    @keyframes slideIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } } 
+    @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } } 
+    
+    .route-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; background: rgba(0,0,0,0.3); border-radius: 8px; margin-bottom: 8px; } 
+    .route-item:hover { background: rgba(29, 185, 84, 0.1); border-left: 4px solid var(--primary); } 
+    .route-code-badge { background: var(--primary); color: black; font-weight: 900; padding: 3px 8px; border-radius: 6px; font-size: 0.9em; margin-right: 10px; }
+
+    /* 上帝模式邊框 */
+    body.god-mode { border: 2px solid var(--accent); } 
+    body.god-mode .admin-overlay { display: flex !important; } 
+    .admin-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 20; flex-direction: column; justify-content: center; align-items: center; gap: 15px; backdrop-filter: blur(4px); border-radius: inherit; animation: fadeInOverlay 0.2s; } 
+    @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+
   </style>
 </head>
 <body>
@@ -151,7 +294,7 @@
     <div class="modal-content" style="max-width: 500px; height: auto; max-height: 90vh;">
       <div class="modal-header">
         <h2>🔒 系統登入</h2>
-        <span class="modal-close-btn" onclick="document.getElementById('login-modal').style.display='none'">&times;</span>
+        <span class="modal-close-btn" id="login-close-btn">&times;</span>
       </div>
       <div class="modal-body" style="text-align: center;">
         <h3 style="color: white; margin-bottom: 20px;">一般會員與創世神登入</h3>
@@ -173,7 +316,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>➕ 發布新素材/文章/工具</h2>
-        <span class="modal-close-btn" onclick="document.getElementById('upload-modal').style.display='none'">&times;</span>
+        <span class="modal-close-btn" id="upload-close-btn">&times;</span>
       </div>
       <div class="modal-body">
         <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 15px;">
@@ -289,7 +432,7 @@
   </div>
 
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v18.7 淨空版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v18.8 滿血修復版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="switchPage('materials')">素材</button>
@@ -307,7 +450,7 @@
       <button class="btn-nav" onclick="switchPage('recovery')" style="color: #ffb300; border: 1px solid #ffb300; margin-right: 5px;">🛠️ 急救重灌</button>
       
       <a href="os.html" class="os-toggle-btn">🖥️ 進入 OS</a>
-      <button id="login-btn-modal" class="btn-login" onclick="document.getElementById('login-modal').style.display='flex'">登入</button>
+      <button id="login-btn-modal" class="btn-login">登入</button>
       
       <div id="top-right-profile">
         <span id="tr-name" style="font-weight: bold;">...</span>
@@ -530,7 +673,9 @@
     window.isEditMode = false; 
     let initialRouteChecked = false;
 
-    // 工具函數
+    // ==========================================
+    // 基礎工具與功能 (Utils)
+    // ==========================================
     window.copyFullUrl = function(routeParams) { 
         let currentUrl = window.location.href.split('?')[0]; 
         let fullUrl = currentUrl + routeParams; 
@@ -689,7 +834,151 @@
         return id ? `https://docs.google.com/uc?export=download&id=${id}` : url; 
     }
 
-    // 🌟 上傳表單動態欄位 🌟
+    // ==========================================
+    // 事件綁定 (Event Listeners) - 🌟 完整修復區 🌟
+    // ==========================================
+
+    // 免責聲明事件
+    if (localStorage.getItem('dogfish_disclaimer_agreed') === 'true') { 
+        document.getElementById('disclaimer-overlay').style.display = 'none'; 
+    } 
+    document.getElementById('agree-disclaimer-btn').addEventListener('click', () => { 
+        localStorage.setItem('dogfish_disclaimer_agreed', 'true'); 
+        document.getElementById('disclaimer-overlay').style.display = 'none'; 
+        showToast("歡迎進入！"); 
+    });
+
+    // Modal 開關事件
+    document.getElementById('login-btn-modal').addEventListener('click', () => {
+        document.getElementById('login-modal').style.display = 'flex';
+    });
+    document.getElementById('login-close-btn').addEventListener('click', () => {
+        document.getElementById('login-modal').style.display = 'none';
+    });
+    document.getElementById('upload-close-btn').addEventListener('click', () => {
+        document.getElementById('upload-modal').style.display = 'none';
+    });
+    document.getElementById('close-edit-btn').addEventListener('click', () => { 
+        document.getElementById('edit-modal').style.display = 'none'; 
+    });
+    document.getElementById('modal-close-btn').addEventListener('click', () => { 
+        document.getElementById('album-modal').style.display = 'none'; 
+    });
+
+    // 搜尋框事件
+    document.getElementById('search-input').addEventListener('keyup', renderMaterialsByFilter);
+
+    // 登入相關事件
+    document.getElementById('google-login-btn').addEventListener('click', () => { 
+        signInWithPopup(auth, provider).then(() => { 
+            document.getElementById('login-modal').style.display='none'; 
+            switchPage('blog'); 
+        }); 
+    });
+    
+    document.getElementById('secret-login-btn').addEventListener('click', () => { 
+        let u = document.getElementById('secret-login-username').value.trim(); 
+        let p = document.getElementById('secret-login-password').value; 
+        if(!u || !p) { showToast("⚠️ 請輸入帳號與密碼", "error"); return; } 
+        let fakeEmail = `${u}@dogfish.secret`; 
+        signInWithEmailAndPassword(auth, fakeEmail, p).then(() => { 
+            document.getElementById('login-modal').style.display='none'; 
+            showToast("✅ 秘密帳號登入成功！"); 
+            switchPage('blog'); 
+        }).catch((err) => { 
+            if(err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') { showToast("❌ 沒有此帳號或密碼錯誤", "error"); } 
+            else if (err.code === 'auth/operation-not-allowed') { showToast("⚠️ 系統阻擋：請站長先到 Firebase 後台開啟「電子郵件/密碼」登入！", "error"); } 
+            else { showToast("❌ 無法登入", "error"); } 
+        }); 
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', () => { 
+        signOut(auth).then(() => switchPage('blog')); 
+    });
+
+    document.getElementById('change-pwd-btn').addEventListener('click', async () => { 
+        if(!auth.currentUser) return; 
+        let newPwd = prompt("🔑 請輸入您要更改的新密碼 (至少6個字元)："); 
+        if(!newPwd) return; 
+        if(newPwd.length < 6) { showToast("❌ 密碼太短，至少需要6個字元！", "error"); return; } 
+        try { 
+            await updatePassword(auth.currentUser, newPwd); 
+            showToast("✅ 密碼修改成功！下次登入請使用新密碼。"); 
+        } catch(e) { 
+            if(e.code === 'auth/requires-recent-login') { showToast("⚠️ 安全考量：請您先登出再重新登入一次，然後才能修改密碼！", "error"); } 
+            else { showToast("❌ 修改失敗，請稍後再試", "error"); } 
+        } 
+    });
+
+    // 創世神後台事件
+    document.getElementById('create-secret-btn').addEventListener('click', async () => { 
+        if(auth.currentUser.uid !== CREATOR_UID) { showToast("⚠️ 只有創世神可以配發帳號！", "error"); return; } 
+        let u = document.getElementById('secret-create-username').value.trim(); 
+        let p = document.getElementById('secret-create-password').value; 
+        let role = document.getElementById('secret-create-role').value; 
+        if(!u || p.length < 6) { showToast("⚠️ 帳號不得為空，密碼需至少6碼", "error"); return; } 
+        let fakeEmail = `${u}@dogfish.secret`; 
+        try { 
+            await createUserWithEmailAndPassword(secondaryAuth, fakeEmail, p); 
+            await setDoc(doc(db, "permissions", fakeEmail), { role: role, updatedBy: 'Admin (Secret API)', timestamp: new Date() }); 
+            showToast(`✅ 建立成功！秘密帳號 [${u}] 已發行！`); 
+            document.getElementById('secret-create-username').value = ""; 
+            document.getElementById('secret-create-password').value = ""; 
+            secondaryAuth.signOut(); 
+            loadAdminUserList(); 
+        } catch(err) { 
+            if(err.code === 'auth/operation-not-allowed') { showToast("⚠️ Firebase 阻擋：請先到 Firebase 後台開啟「電子郵件/密碼」登入！", "error"); } 
+            else if(err.code === 'auth/email-already-in-use') { showToast("❌ 此帳號在 Firebase 仍存在！請到 Firebase 後台刪除，或直接用上方「動態指派權限」重新指派", "error"); } 
+            else { showToast("❌ 無法建立，請檢查網路連線", "error"); } 
+        } 
+    });
+
+    document.getElementById('save-role-btn').addEventListener('click', async () => { 
+        const em = document.getElementById('target-email').value.trim().toLowerCase(); 
+        const role = document.getElementById('target-role').value; 
+        const s = document.getElementById('admin-action-status'); 
+        if (!em) return; 
+        if (auth.currentUser.uid !== CREATOR_UID) { showToast("⚠️ 權限拒絕：只有創世神可指派權限！", "error"); return; } 
+        s.innerText = "⏳ 儲存中..."; 
+        try { 
+            await setDoc(doc(db, "permissions", em), { role: role, updatedBy: auth.currentUser.email || 'Admin', timestamp: new Date() }); 
+            s.innerText = `✅ 成功將 ${em} 設定為 [${role}]`; 
+            showToast(`✅ 權限已即時生效！`); 
+            document.getElementById('target-email').value = ""; 
+            loadAdminUserList(); 
+        } catch (e) { s.innerText = "❌ 寫入遭拒"; } 
+    });
+
+    // 播放器專輯彈窗事件
+    document.getElementById('btn-play-album').addEventListener('click', () => { 
+        if (currentModalAlbum && currentModalAlbum.tracks.length > 0) loadAndPlayPlaylist(currentModalAlbum.tracks, 0); 
+    }); 
+    
+    document.getElementById('btn-shuffle-album').addEventListener('click', () => { 
+        if (currentModalAlbum && currentModalAlbum.tracks.length > 0) { 
+            let shuffled = [...currentModalAlbum.tracks].sort(() => Math.random() - 0.5); 
+            loadAndPlayPlaylist(shuffled, 0); showToast("🔀 已開啟隨機播放！"); 
+        } 
+    }); 
+
+    // 發布與編輯事件
+    document.getElementById('save-edit-btn').addEventListener('click', async () => { 
+        const id = document.getElementById('edit-id').value; 
+        const name = document.getElementById('edit-name').value.trim(); 
+        const url = document.getElementById('edit-url').value.trim(); 
+        const ex = getUploadData('edit'); 
+        try { 
+            await updateDoc(doc(db, "categorized_materials", id), { fileName: name, fileUrl: url, ...ex }); 
+            showToast("✅ 資料已即時更新覆蓋！"); 
+            document.getElementById('edit-modal').style.display = 'none'; 
+        } catch(e) {
+            showToast("❌ 更新失敗", "error");
+        } 
+    });
+
+    // ==========================================
+    // 上傳表單動態欄位 
+    // ==========================================
     function renderUploadFields(type, prefix) { 
         const df = document.getElementById(`${prefix}-dynamic-fields`); 
         const urlInput = document.getElementById(prefix === 'mat' ? 'mat-url' : 'edit-url'); 
@@ -707,7 +996,6 @@
             df.innerHTML = `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 資料夾" style="width:120px;">`; 
             urlInput.placeholder = "GIF 圖片網址"; 
         } else if (type === "軟體" || type === "指令" || type === "Win11美化") { 
-            // 🌟 加入 Win11美化 選項的對應欄位 🌟
             df.innerHTML = `<input type="text" id="${prefix}-route-code" class="input-box" placeholder="🔢 專屬直連代碼 (例: tool1)" style="width: 160px;"><input type="text" id="${prefix}-btn-text" class="input-box" placeholder="🔘 按鈕文字 (例: 前往下載)" style="width: 180px;"><input type="url" id="${prefix}-cover" class="input-box" placeholder="🖼️ 卡片大圖網址" style="width: 150px;">`; 
             urlInput.placeholder = "主要下載跳轉網址 (選填)"; 
             if (richContainer) { 
@@ -722,7 +1010,55 @@
     document.getElementById('mat-type-select').addEventListener('change', (e) => renderUploadFields(e.target.value, 'mat')); 
     renderUploadFields("音樂", 'mat');
 
+    // 發布邏輯
+    function getUploadData(prefix) { 
+        const type = document.getElementById(`${prefix}-type-select`)?.value || document.getElementById('edit-category').value; 
+        let editor = document.getElementById(prefix === 'mat' ? 'mat-rich-editor' : 'edit-rich-editor'); 
+        if(editor) { editor.querySelectorAll('img, video, iframe').forEach(el => el.style.outline = 'none'); } 
+        
+        let d = { trackOrder: 2, folderName: "根目錄", btnStyle: "", albumName: "", coverUrl: "", descriptionHTML: "", routeCode: "", btnText: "" }; 
+        
+        if (["音樂", "背景音樂", "人聲"].includes(type)) { 
+            d.albumName = document.getElementById(`${prefix}-album`)?.value.trim(); 
+            d.coverUrl = document.getElementById(`${prefix}-cover`)?.value.trim(); 
+            let o = parseInt(document.getElementById(`${prefix}-order`)?.value); 
+            if (!isNaN(o)) d.trackOrder = o; 
+        } else if (type === "音效" || type === "GIF") { 
+            d.folderName = document.getElementById(`${prefix}-folder`)?.value.trim() || "根目錄"; 
+            if (type === "音效") d.btnStyle = document.getElementById(`${prefix}-style`)?.value.trim() || document.getElementById(`${prefix}-color`)?.value; 
+        } else if (type === "軟體" || type === "指令" || type === "Win11美化") { 
+            d.coverUrl = document.getElementById(`${prefix}-cover`)?.value.trim() || ''; 
+            d.routeCode = document.getElementById(`${prefix}-route-code`)?.value.trim() || ''; 
+            d.btnText = document.getElementById(`${prefix}-btn-text`)?.value.trim() || '🔗 前往外部連結'; 
+            d.descriptionHTML = editor ? editor.innerHTML : ''; 
+        } 
+        return d; 
+    }
+
+    document.getElementById('add-mat-btn').addEventListener('click', async () => { 
+        const name = document.getElementById('mat-name').value.trim(); 
+        const type = document.getElementById('mat-type-select').value; 
+        const rawUrl = document.getElementById('mat-url').value.trim(); 
+        if (!name) { showToast("⚠️ 請輸入標題名稱！", "error"); return; } 
+        let safeUploaderName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; 
+        const ex = getUploadData('mat'); 
+        try { 
+            const col = (userRole === "admin") ? "categorized_materials" : "pending_materials"; 
+            await addDoc(collection(db, col), { fileName: name, category: type, fileUrl: rawUrl, ...ex, uploaderName: safeUploaderName, timestamp: serverTimestamp() }); 
+            showToast("✅ 即時發布成功！已自動更新"); 
+            document.getElementById('upload-modal').style.display='none'; 
+            document.getElementById('mat-name').value = ""; 
+            document.getElementById('mat-url').value = ""; 
+            let re = document.getElementById('mat-rich-editor'); 
+            if(re) re.innerHTML = ""; 
+        } catch (error) { 
+            showToast("❌ 儲存發生錯誤", "error"); 
+        } 
+    });
+
+    // ==========================================
     // 資料抓取與渲染
+    // ==========================================
     function listenToMaterialsRealtime() { 
         if(materialsUnsub) materialsUnsub(); 
         const q = query(collection(db, "categorized_materials"), orderBy("timestamp", "desc")); 
@@ -738,6 +1074,50 @@
     function getAdminOverlay(id) { 
         return `<div class="admin-overlay"><button onclick="event.stopPropagation(); openEditModal('${id}')" class="btn-action" style="width:70%; font-size:1.1em;">⚙️ 編輯內容</button><button onclick="event.stopPropagation(); deleteMaterial('${id}')" class="btn-del" style="width:70%; font-size:1.1em;">🗑️ 徹底刪除</button></div>`; 
     }
+
+    window.openEditModal = function(id) { 
+        const i = fetchedMaterialsList.find(x => x.id === id); 
+        if(!i) return; 
+        document.getElementById('edit-id').value = id; 
+        document.getElementById('edit-category').value = i.category; 
+        document.getElementById('edit-name').value = i.fileName; 
+        document.getElementById('edit-url').value = i.fileUrl || ""; 
+        renderUploadFields(i.category, 'edit'); 
+        
+        setTimeout(() => { 
+            if(["音樂", "背景音樂", "人聲"].includes(i.category)) { 
+                document.getElementById('edit-album').value = i.albumName || ''; 
+                document.getElementById('edit-cover').value = i.coverUrl || ''; 
+                document.getElementById('edit-order').value = i.trackOrder || 2; 
+            } else if (i.category === '音效' || i.category === 'GIF') { 
+                document.getElementById('edit-folder').value = i.folderName || '根目錄'; 
+                if (i.category === '音效') { 
+                    if (i.btnStyle && i.btnStyle.startsWith('http')) { document.getElementById('edit-style').value = i.btnStyle; } 
+                    else if (i.btnStyle && i.btnStyle.startsWith('#')) { document.getElementById('edit-color').value = i.btnStyle; } 
+                } 
+            } else if (i.category === '軟體' || i.category === '指令' || i.category === 'Win11美化') { 
+                document.getElementById('edit-cover').value = i.coverUrl || ''; 
+                document.getElementById('edit-route-code').value = i.routeCode || ''; 
+                document.getElementById('edit-btn-text').value = i.btnText || '🔗 前往外部連結'; 
+                document.getElementById('edit-rich-editor').innerHTML = i.descriptionHTML || ''; 
+            } 
+        }, 100); 
+        
+        document.getElementById('edit-modal').style.display = 'flex'; 
+        if(window.isEditMode) toggleEditMode(); 
+    };
+
+    window.deleteMaterial = async function(id) { 
+        if (!confirm("確定永久刪除？")) return; 
+        try { 
+            await deleteDoc(doc(db, "categorized_materials", id)); 
+            document.getElementById('article-modal').style.display='none'; 
+            document.getElementById('album-modal').style.display='none'; 
+            showToast("🗑️ 已徹底移除"); 
+        } catch(e) {
+            showToast("❌ 刪除失敗", "error");
+        } 
+    };
 
     function renderMaterialsByFilter() {
       const container = document.getElementById('material-container'); container.innerHTML = ''; 
@@ -842,52 +1222,6 @@
       if (currentActiveTab === "全部" || currentActiveTab === "GIF") renderGrouped(fetchedMaterialsList.filter(i => i.category === "GIF" && (!search || i.fileName.toLowerCase().includes(search))), rGIF);
     }
 
-    // 發布與編輯邏輯
-    function getUploadData(prefix) { 
-        const type = document.getElementById(`${prefix}-type-select`)?.value || document.getElementById('edit-category').value; 
-        let editor = document.getElementById(prefix === 'mat' ? 'mat-rich-editor' : 'edit-rich-editor'); 
-        if(editor) { editor.querySelectorAll('img, video, iframe').forEach(el => el.style.outline = 'none'); } 
-        
-        let d = { trackOrder: 2, folderName: "根目錄", btnStyle: "", albumName: "", coverUrl: "", descriptionHTML: "", routeCode: "", btnText: "" }; 
-        
-        if (["音樂", "背景音樂", "人聲"].includes(type)) { 
-            d.albumName = document.getElementById(`${prefix}-album`)?.value.trim(); 
-            d.coverUrl = document.getElementById(`${prefix}-cover`)?.value.trim(); 
-            let o = parseInt(document.getElementById(`${prefix}-order`)?.value); 
-            if (!isNaN(o)) d.trackOrder = o; 
-        } else if (type === "音效" || type === "GIF") { 
-            d.folderName = document.getElementById(`${prefix}-folder`)?.value.trim() || "根目錄"; 
-            if (type === "音效") d.btnStyle = document.getElementById(`${prefix}-style`)?.value.trim() || document.getElementById(`${prefix}-color`)?.value; 
-        } else if (type === "軟體" || type === "指令" || type === "Win11美化") { 
-            d.coverUrl = document.getElementById(`${prefix}-cover`)?.value.trim() || ''; 
-            d.routeCode = document.getElementById(`${prefix}-route-code`)?.value.trim() || ''; 
-            d.btnText = document.getElementById(`${prefix}-btn-text`)?.value.trim() || '🔗 前往外部連結'; 
-            d.descriptionHTML = editor ? editor.innerHTML : ''; 
-        } 
-        return d; 
-    }
-
-    document.getElementById('add-mat-btn').addEventListener('click', async () => { 
-        const name = document.getElementById('mat-name').value.trim(); 
-        const type = document.getElementById('mat-type-select').value; 
-        const rawUrl = document.getElementById('mat-url').value.trim(); 
-        if (!name) { showToast("⚠️ 請輸入標題名稱！", "error"); return; } 
-        let safeUploaderName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; 
-        const ex = getUploadData('mat'); 
-        try { 
-            const col = (userRole === "admin") ? "categorized_materials" : "pending_materials"; 
-            await addDoc(collection(db, col), { fileName: name, category: type, fileUrl: rawUrl, ...ex, uploaderName: safeUploaderName, timestamp: serverTimestamp() }); 
-            showToast("✅ 即時發布成功！已自動更新"); 
-            document.getElementById('upload-modal').style.display='none'; 
-            document.getElementById('mat-name').value = ""; 
-            document.getElementById('mat-url').value = ""; 
-            let re = document.getElementById('mat-rich-editor'); 
-            if(re) re.innerHTML = ""; 
-        } catch (error) { 
-            showToast("❌ 儲存發生錯誤", "error"); 
-        } 
-    });
-
     // Modal 顯示邏輯
     window.openArticleModal = function(data) { 
         const modal = document.getElementById('article-modal'); 
@@ -925,35 +1259,14 @@
         }, 300); 
     };
 
-    document.getElementById('close-article-btn').addEventListener('click', () => { 
-        document.getElementById('article-modal').style.display = 'none'; 
-        document.getElementById('article-desc').innerHTML=''; 
-    });
-
-    window.openAlbumModal = function(album) { 
-        currentModalAlbum = album; 
-        const m = document.getElementById('album-modal'); 
-        document.getElementById('modal-album-title').innerText = album.name; 
-        let img = getOptimalImageUrl(album.coverUrl); 
-        document.getElementById('modal-album-cover-space').innerHTML = img ? `<img src="${img}" style="width:140px;height:140px;object-fit:cover;border-radius:8px;">` : `<div class="default-vinyl" style="width:100px;height:100px;"></div>`; 
-        const lc = document.getElementById('modal-track-list'); 
-        lc.innerHTML = ''; 
-        
-        album.tracks.forEach((t, idx) => { 
-            const row = document.createElement('div'); row.className = 'track-row'; 
-            let typeBadge = ''; 
-            if(t.category === '背景音樂') typeBadge = '<span style="background:rgba(29,185,84,0.2);color:#1db954;font-size:0.6em;padding:2px 6px;border-radius:10px;margin-left:8px;vertical-align:middle;">BGM</span>'; 
-            if(t.category === '人聲') typeBadge = '<span style="background:rgba(0,212,255,0.2);color:#00d4ff;font-size:0.6em;padding:2px 6px;border-radius:10px;margin-left:8px;vertical-align:middle;">人聲</span>'; 
-            let aBtn = (userRole === "admin") ? `<button onclick="openEditModal('${t.id}')" class="btn-edit" style="padding:6px 12px; font-size:0.85em;">⚙️</button><button onclick="deleteMaterial('${t.id}')" class="btn-del" style="padding:6px 12px; font-size:0.85em;">🗑️</button>` : ''; 
-            row.innerHTML = `<div style="flex:1;display:flex;align-items:center;gap:15px;min-width:200px;"><span class="track-num">${idx + 1}</span><strong style="color:white;font-size:1.05em;display:flex;align-items:center;">${t.fileName}${typeBadge}</strong></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button class="btn-action" style="padding:6px 12px; font-size:0.85em;" onclick="playTrackFromModal(${idx})">▶ 播放</button><a href="${getOptimalAudioUrl(t.fileUrl)}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; font-size:0.85em; box-shadow:none;">📥 下載</a><button class="btn-copy" style="padding:6px 12px; font-size:0.85em;" onclick="copyToClipboard('${t.fileUrl}')">📋 複製</button><div class="track-admin-btns" style="display:flex; gap:5px;">${aBtn}</div></div>`; 
-            lc.appendChild(row); 
+    document.querySelectorAll('.tab-btn').forEach(button => { 
+        button.addEventListener('click', () => { 
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); 
+            button.classList.add('active'); 
+            currentActiveTab = button.getAttribute('data-target'); 
+            renderMaterialsByFilter(); 
         }); 
-        m.style.display = 'flex'; 
-    }
-
-    document.getElementById('btn-play-album').addEventListener('click', () => { if (currentModalAlbum && currentModalAlbum.tracks.length > 0) loadAndPlayPlaylist(currentModalAlbum.tracks, 0); }); 
-    document.getElementById('btn-shuffle-album').addEventListener('click', () => { if (currentModalAlbum && currentModalAlbum.tracks.length > 0) { let shuffled = [...currentModalAlbum.tracks].sort(() => Math.random() - 0.5); loadAndPlayPlaylist(shuffled, 0); showToast("🔀 已開啟隨機播放！"); } }); 
-    document.getElementById('modal-close-btn').addEventListener('click', () => { document.getElementById('album-modal').style.display = 'none'; });
+    });
 
     // 路由與頁面切換
     function renderDynamicRoutes() { 
@@ -997,16 +1310,9 @@
         if (pageId === 'admin' && userRole === 'admin') loadAdminUserList(); 
     }
 
-    document.querySelectorAll('.tab-btn').forEach(button => { 
-        button.addEventListener('click', () => { 
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); 
-            button.classList.add('active'); 
-            currentActiveTab = button.getAttribute('data-target'); 
-            renderMaterialsByFilter(); 
-        }); 
-    });
-
+    // ==========================================
     // Auth 狀態與通訊系統初始化
+    // ==========================================
     onAuthStateChanged(auth, async (user) => { 
         if (user) { 
             document.getElementById('login-btn-modal').style.display = 'none'; 
@@ -1066,7 +1372,37 @@
         document.getElementById('tr-name').innerHTML = `${roleTag} ${safeName}`; 
     }
 
+    window.loadAdminUserList = async function() { 
+        if(userRole !== 'admin') return; 
+        const listDiv = document.getElementById('admin-user-list'); listDiv.innerHTML = '<div style="color:#888;">正在讀取名冊資料...</div>'; 
+        try { 
+            const uSnap = await getDocs(query(collection(db, "users"))); 
+            const pSnap = await getDocs(collection(db, "permissions")); 
+            let pMap = {}; pSnap.forEach(d => pMap[d.id] = d.data().role); listDiv.innerHTML = ''; 
+            uSnap.forEach(docSnap => { 
+                let d = docSnap.data(); let email = d.email; let role = pMap[email] || 'user'; let isSecret = email.endsWith('@dogfish.secret'); 
+                let roleBadge = role === 'admin' ? '👑 管理員' : (role === 'reviewer' ? '🛡️ 審核員' : (role === 'contributor' ? '✍️ 貢獻者' : '👤 一般會員')); 
+                let typeBadge = isSecret ? '<span style="background:var(--accent); color:white; padding:2px 6px; border-radius:4px; font-size:0.7em; margin-left:8px;">秘密帳號</span>' : '<span style="background:#0088ff; color:white; padding:2px 6px; border-radius:4px; font-size:0.7em; margin-left:8px;">Google</span>'; 
+                let delBtn = isSecret ? `<button onclick="deleteSecretUser('${docSnap.id}', '${email}')" class="btn-del" style="padding:6px 12px; font-size:0.85em;">🗑️ 註銷刪除</button>` : ''; 
+                listDiv.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); padding:12px 15px; border-radius:8px; border:1px solid #333; transition: 0.2s;"><div style="display:flex; align-items:center; gap:12px;"><img src="${d.photo || 'https://via.placeholder.com/40'}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:1px solid #555;"><div><strong style="color:white; font-size:1.05em;">${d.name}</strong> ${typeBadge}<div style="color:#888; font-size:0.85em; margin-top:2px;">${roleBadge} | ${email.replace('@dogfish.secret', '')}</div></div></div><div>${delBtn}</div></div>`; 
+            }); 
+        } catch(e) { listDiv.innerHTML = '<div style="color:var(--accent);">載入名冊失敗</div>'; } 
+    };
+
+    window.deleteSecretUser = async function(docId, email) { 
+        let shortName = email.replace('@dogfish.secret', ''); 
+        if(!confirm(`🚨 確定要刪除秘密帳號 [${shortName}] 嗎？\n⚠️ 注意：這只會移除他的網站權限！\n若要『徹底釋放這個帳號名稱』以便日後重新建立，請務必到 Firebase 後台的 Authentication 刪除該帳號！`)) return; 
+        try { 
+            await deleteDoc(doc(db, "users", docId)); 
+            await deleteDoc(doc(db, "permissions", email)); 
+            showToast(`✅ 已註銷 [${shortName}] 的網站權限與資料！`); 
+            loadAdminUserList(); 
+        } catch(e) { showToast("❌ 刪除失敗", "error"); } 
+    };
+
+    // ==========================================
     // 聊天室功能
+    // ==========================================
     function initChatSystem(user) { 
         const invitesQ = query(collection(db, "invites"), where("toEmail", "==", user.email.toLowerCase()), where("status", "==", "pending")); 
         invitesUnsub = onSnapshot(invitesQ, (snapshot) => { 
@@ -1098,7 +1434,9 @@
     document.getElementById('chat-send-btn').addEventListener('click', sendChatMessage); document.getElementById('chat-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(); });
     async function sendChatMessage() { const inp = document.getElementById('chat-input'); const txt = inp.value.trim(); if (!txt || !currentChatId) return; inp.value = ''; try { let safeName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; await addDoc(collection(db, `chats/${currentChatId}/messages`), { uid: auth.currentUser.uid, displayName: safeName, photoURL: auth.currentUser.photoURL || '', text: txt, timestamp: serverTimestamp() }); } catch (e) {} }
 
+    // ==========================================
     // 🌟 駭客開機畫面 (Hacker Boot Sequence)
+    // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
         const bootScreen = document.getElementById('boot-screen');
         const logBox = document.getElementById('boot-log');
@@ -1109,7 +1447,7 @@
             "> MOUNTING VIRTUAL DOM... [OK]",
             "> BYPASSING MAINFRAME ENCRYPTION...",
             "> ACCESS GRANTED.",
-            "> WELCOME TO DOGFISH STUDIO V18.7"
+            "> WELCOME TO DOGFISH STUDIO V18.8"
         ];
         
         let i = 0;
@@ -1130,12 +1468,15 @@
         }
         showLog();
         
+        // 處理 URL Tab 跳轉
         const urlParams = new URLSearchParams(window.location.search); 
         const targetTab = urlParams.get('tab'); 
         if (targetTab) { switchPage(targetTab); }
     });
 
-    // 🌟 急救診斷系統 (Diagnostics)
+    // ==========================================
+    // 🌟 急救診斷與系統重灌
+    // ==========================================
     window.runDiagnostics = function() {
         const log = document.getElementById('diagnostic-log');
         log.innerHTML = '';
@@ -1175,7 +1516,6 @@
         }, 500);
     };
 
-    // 🌟 深度重灌系統 (Factory Reset)
     window.clearLocalCache = function() {
         localStorage.removeItem('dogfish_wallpaper');
         localStorage.removeItem('dogfish_notepad');
@@ -1187,13 +1527,18 @@
 
     window.hardFactoryReset = function() {
         if(!confirm("⚠️ 警告：這將會註銷您的 PWA 應用程式快取、登出帳號並強制重新載入網站。確定要執行嗎？")) return;
+        
         localStorage.clear();
         signOut(auth).catch(()=>{});
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) { registration.unregister(); }
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
             });
         }
+        
         alert("☢️ 重灌程序已就緒，即將重新啟動系統...");
         window.location.reload(true);
     };
