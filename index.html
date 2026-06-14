@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish Studio | v16.0 完美防呆版</title>
+  <title>Dogfish Studio</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -150,7 +150,7 @@
     #mini-player-toggle { display: none; position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: #000; font-size: 1.8em; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 3100; align-items: center; justify-content: center; transition: 0.2s; }
     #mini-player-toggle:hover { transform: scale(1.1); }
 
-    /* 🌟 v16.0 修復：加入 Toast 提示框樣式與實體盒子 */
+    /* Toast 提示框 */
     #toast-container { position: fixed; top: 80px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
     .toast { background: rgba(30,30,30,0.9); color: white; padding: 15px 25px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-weight: 700; font-size: 1.1em; backdrop-filter: blur(10px); animation: slideIn 0.3s forwards, fadeOut 0.3s forwards 4.7s; }
     .toast.error { border-left-color: var(--accent); }
@@ -321,7 +321,7 @@
   </div>
 
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v16.0 防呆與密碼升級版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v16.1 防呆極致版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="switchPage('materials')">素材</button>
@@ -335,7 +335,6 @@
       <button id="nav-review-btn" class="btn-nav" onclick="switchPage('review')" style="display: none; color: #ffb300;">審核</button>
       <button id="nav-admin-btn" class="btn-nav" onclick="switchPage('admin')" style="display: none; color: var(--accent);">設定</button>
       <button id="login-btn-modal" class="btn-login" onclick="document.getElementById('login-modal').style.display='flex'">登入</button>
-      
       <div id="top-right-profile">
         <span id="tr-name" style="font-weight: bold;">...</span>
         <img id="tr-img" src="" alt="Avatar">
@@ -411,9 +410,9 @@
       </div>
 
       <div class="solid-panel" style="padding: 25px; border-left: 5px solid var(--accent); text-align: left; margin-bottom: 20px;">
-        <p style="color: var(--accent); font-weight: 700; margin-top:0; font-size:1.2em;">🎯 動態指派權限（針對已登入的 Google Email）：</p>
+        <p style="color: var(--accent); font-weight: 700; margin-top:0; font-size:1.2em;">🎯 動態指派權限（不論對方是否登入過皆可設定）：</p>
         <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
-          <input type="email" id="target-email" class="input-box" placeholder="目標 Email" style="width: 280px; padding:12px;">
+          <input type="email" id="target-email" class="input-box" placeholder="目標完整信箱 (例: editor1@dogfish.secret)" style="width: 320px; padding:12px;">
           <select id="target-role" class="input-box" style="background:rgba(0,0,0,0.8); padding:12px;"><option value="user">👤 一般會員</option><option value="contributor">✍️ 貢獻者</option><option value="reviewer">🛡️ 審核員</option><option value="admin">👑 管理員</option></select>
           <button id="save-role-btn" class="btn-action" style="background: var(--accent); color: white; padding:12px 25px;">即時儲存設定</button>
         </div>
@@ -422,7 +421,7 @@
 
       <div class="solid-panel" style="padding: 25px; border-left: 5px solid #00d4ff; text-align: left;">
         <p style="color: #00d4ff; font-weight: 700; margin-top:0; font-size:1.2em;">🔑 建立秘密通行證帳號（不需 Google）：</p>
-        <p style="color: #888; font-size: 0.9em; margin-bottom: 15px;">您可以在此發行專屬帳號密碼給團隊成員，登入時選「秘密通行證登入」即可擁有權限，且不會將您登出。</p>
+        <p style="color: #888; font-size: 0.9em; margin-bottom: 15px;">您可以在此發行專屬帳號密碼給團隊成員。若顯示已存在，請直接用上方「動態指派權限」重新指派，或至 Firebase Authentication 將其連根拔起。</p>
         <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
           <input type="text" id="secret-create-username" class="input-box" placeholder="設定帳號 (例: editor1)" style="width: 200px; padding:12px;">
           <input type="text" id="secret-create-password" class="input-box" placeholder="設定密碼 (至少6碼)" style="width: 200px; padding:12px;">
@@ -579,7 +578,6 @@
 
     document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth).then(() => switchPage('blog')); });
 
-    // 🌟 秘密帳號更改密碼 🌟
     document.getElementById('change-pwd-btn').addEventListener('click', async () => {
         if(!auth.currentUser) return;
         let newPwd = prompt("🔑 請輸入您要更改的新密碼 (至少6個字元)：");
@@ -617,7 +615,7 @@
             if(err.code === 'auth/operation-not-allowed') {
                 showToast("⚠️ Firebase 阻擋：請先到 Firebase 後台開啟「電子郵件/密碼」登入！", "error");
             } else if(err.code === 'auth/email-already-in-use') {
-                showToast("❌ 無法建立：此秘密帳號已經存在", "error");
+                showToast("❌ 此帳號在 Firebase 仍存在！請到 Firebase 後台刪除，或直接用上方「動態指派權限」重新指派", "error");
             } else {
                 showToast("❌ 無法建立，請檢查網路連線", "error");
             }
@@ -662,7 +660,7 @@
 
     window.deleteSecretUser = async function(docId, email) {
         let shortName = email.replace('@dogfish.secret', '');
-        if(!confirm(`🚨 確定要刪除秘密帳號 [${shortName}] 嗎？\n這將會移除其在網站上的所有資料與權限。\n(若要徹底註銷其後台登入資格，請至 Firebase Authentication 刪除)`)) return;
+        if(!confirm(`🚨 確定要刪除秘密帳號 [${shortName}] 嗎？\n⚠️ 注意：這只會移除他的網站權限！\n若要『徹底釋放這個帳號名稱』以便日後重新建立，請務必到 Firebase 後台的 Authentication 刪除該帳號！`)) return;
         try {
             await deleteDoc(doc(db, "users", docId));
             await deleteDoc(doc(db, "permissions", email));
@@ -684,12 +682,8 @@
         
         document.getElementById('tr-img').src = user.photoURL || 'https://via.placeholder.com/40'; 
         
-        // 只有秘密帳號才顯示改密碼按鈕
-        if(isSecret) {
-            document.getElementById('change-pwd-btn').style.display = 'inline-block';
-        } else {
-            document.getElementById('change-pwd-btn').style.display = 'none';
-        }
+        if(isSecret) { document.getElementById('change-pwd-btn').style.display = 'inline-block'; } 
+        else { document.getElementById('change-pwd-btn').style.display = 'none'; }
 
         document.getElementById('chat-app-container').style.display = 'flex'; document.getElementById('chat-login-prompt').style.display = 'none';
         
@@ -729,7 +723,6 @@
       renderMaterialsByFilter();
     }
 
-    // 聊天室
     function initChatSystem(user) {
       const invitesQ = query(collection(db, "invites"), where("toEmail", "==", user.email.toLowerCase()), where("status", "==", "pending"));
       invitesUnsub = onSnapshot(invitesQ, (snapshot) => {
@@ -1052,7 +1045,9 @@
         const activeNavBtn = Array.from(document.querySelectorAll('.btn-nav')).find(b => b.getAttribute('onclick')?.includes(pageId)); 
         if (activeNavBtn) activeNavBtn.classList.add('active'); 
         
-        if (pageId === 'admin' && userRole === 'admin') { loadAdminUserList(); }
+        if (pageId === 'admin' && userRole === 'admin') {
+            loadAdminUserList();
+        }
     }
     document.querySelectorAll('.tab-btn').forEach(button => { button.addEventListener('click', () => { document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); currentActiveTab = button.getAttribute('data-target'); renderMaterialsByFilter(); }); });
   </script>
