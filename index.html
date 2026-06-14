@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish Studio</title>
+  <title>Dogfish Studio | v16.3 影音全開版</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -148,12 +148,12 @@
     #mini-player-toggle { display: none; position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: #000; font-size: 1.8em; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 3100; align-items: center; justify-content: center; transition: 0.2s; }
     #mini-player-toggle:hover { transform: scale(1.1); }
 
+    /* Toast 提示框 */
     #toast-container { position: fixed; top: 80px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
     .toast { background: rgba(30,30,30,0.9); color: white; padding: 15px 25px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-weight: 700; font-size: 1.1em; backdrop-filter: blur(10px); animation: slideIn 0.3s forwards, fadeOut 0.3s forwards 4.7s; }
     .toast.error { border-left-color: var(--accent); }
     @keyframes slideIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } } @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
 
-    /* 🌟 路由總覽清單樣式 */
     .route-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; background: rgba(0,0,0,0.3); border-radius: 8px; margin-bottom: 8px; }
     .route-item:hover { background: rgba(29, 185, 84, 0.1); border-left: 4px solid var(--primary); }
     .route-code-badge { background: var(--primary); color: black; font-weight: 900; padding: 3px 8px; border-radius: 6px; font-size: 0.9em; margin-right: 10px; }
@@ -163,6 +163,7 @@
 
   <div id="toast-container"></div>
 
+  <!-- 免責聲明 -->
   <div id="disclaimer-overlay">
     <div class="disclaimer-box solid-panel" style="padding: 40px; margin: 20px; text-align: center;">
       <h2 style="color:var(--accent); margin-top:0;">⚠️ 智慧財產權與免責聲明</h2>
@@ -171,6 +172,7 @@
     </div>
   </div>
 
+  <!-- 登入選擇 Modal -->
   <div id="login-modal" class="spotify-modal">
     <div class="modal-content" style="max-width: 500px; height: auto; max-height: 90vh;">
       <div class="modal-header">
@@ -182,9 +184,7 @@
         <button id="google-login-btn" class="btn-action" style="width: 100%; padding: 15px; font-size: 1.1em; background: white; color: black; margin-bottom: 30px;">
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width: 20px; vertical-align: middle; margin-right: 10px;"> 使用 Google 帳號登入
         </button>
-        
         <hr style="border-color: #333; margin-bottom: 30px;">
-        
         <h3 style="color: var(--primary); margin-bottom: 20px;">🔑 秘密通行證登入</h3>
         <p style="color: #888; font-size: 0.9em; margin-bottom: 15px;">請輸入管理員配發給您的專屬帳號密碼</p>
         <div style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
@@ -196,6 +196,7 @@
     </div>
   </div>
 
+  <!-- 全域發布中心 Modal -->
   <div id="upload-modal" class="spotify-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -206,8 +207,14 @@
         <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 15px;">
           <input type="text" id="mat-name" class="input-box" placeholder="名稱 / 標題" style="flex:1; min-width: 140px;">
           <select id="mat-type-select" class="input-box" style="font-weight: bold; width:auto;">
-            <option value="音樂">🎵 音樂專輯</option><option value="音效">🔊 小音效</option><option value="GIF">🖼️ 圖片/GIF</option>
-            <option value="軟體" style="color: var(--secondary);">🧰 軟體推薦</option><option value="指令" style="color: var(--secondary);">💻 實用指令</option>
+            <!-- 🌟 v16.3 升級：音樂拆分，選項全開 -->
+            <option value="音樂">🎵 完整音樂</option>
+            <option value="背景音樂">🎼 背景音樂 (BGM)</option>
+            <option value="人聲">🎤 純人聲 (Acapella)</option>
+            <option value="音效">🔊 小音效</option>
+            <option value="GIF">🖼️ 圖片/GIF</option>
+            <option value="軟體" style="color: var(--secondary);">🧰 軟體推薦</option>
+            <option value="指令" style="color: var(--secondary);">💻 實用指令</option>
           </select>
         </div>
         <div id="mat-dynamic-fields" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;"></div>
@@ -236,6 +243,7 @@
     </div>
   </div>
 
+  <!-- 專業滿版部落格排版：文章閱讀視窗 -->
   <div id="article-modal" class="spotify-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -246,7 +254,6 @@
         <div id="article-meta" class="blog-meta">分類：軟體 | 發布者：站長 | 日期：2026/06/13</div>
         <hr class="blog-divider">
         <div id="article-desc" class="rich-editor-content blog-content" style="border:none; background:transparent;"></div>
-        
         <div id="article-download-box" class="blog-download-box" style="display:none;">
           <div class="dl-info">
             <span style="font-size: 2em;">📦</span>
@@ -261,6 +268,7 @@
     </div>
   </div>
 
+  <!-- 素材修改編輯 Modal -->
   <div id="edit-modal" class="spotify-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -299,6 +307,7 @@
     </div>
   </div>
 
+  <!-- 專輯曲目 -->
   <div id="album-modal" class="spotify-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -322,8 +331,9 @@
     </div>
   </div>
 
+  <!-- 導覽列 -->
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v16.2 路由總覽版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v16.3 影音全開版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="switchPage('materials')">素材</button>
@@ -391,13 +401,12 @@
           </div>
 
           <h3 style="color: white; border-bottom: 1px solid #444; padding-bottom: 10px;">📌 專屬文章直連 (自動偵測)</h3>
-          <div id="dynamic-routes-list">
-              <p style="color:#888;">正在載入已設定代碼的文章...</p>
-          </div>
+          <div id="dynamic-routes-list"><p style="color:#888;">正在載入已設定代碼的文章...</p></div>
       </div>
     </div>
 
-    <div id="page-materials" class="page-panel"><h2 class="page-title">共享素材庫</h2><div class="controls-wrapper"><div class="category-tabs"><button class="tab-btn active" data-target="全部">所有</button><button class="tab-btn" data-target="音樂">音樂</button><button class="tab-btn" data-target="音效">小音效</button><button class="tab-btn" data-target="GIF">GIF</button></div><div class="search-bar-container"><span class="search-icon">🔍</span><input type="text" id="search-input" class="search-input" placeholder="尋找..."></div></div><div id="material-container" class="material-list"></div></div>
+    <!-- 🌟 v16.3 升級：分類標籤新增「音樂/BGM/人聲」提示 -->
+    <div id="page-materials" class="page-panel"><h2 class="page-title">共享素材庫</h2><div class="controls-wrapper"><div class="category-tabs"><button class="tab-btn active" data-target="全部">所有</button><button class="tab-btn" data-target="音樂">🎵 音樂/BGM/人聲</button><button class="tab-btn" data-target="音效">🔊 小音效</button><button class="tab-btn" data-target="GIF">🖼️ 圖片/GIF</button></div><div class="search-bar-container"><span class="search-icon">🔍</span><input type="text" id="search-input" class="search-input" placeholder="尋找..."></div></div><div id="material-container" class="material-list"></div></div>
     <div id="page-software" class="page-panel"><h2 class="page-title">🧰 軟體推薦大廳</h2><div id="software-container" class="article-grid"></div></div>
     <div id="page-commands" class="page-panel"><h2 class="page-title">💻 實用指令知識庫</h2><div id="commands-container" class="article-grid"></div></div>
 
@@ -434,8 +443,7 @@
       <div class="solid-panel" style="padding: 25px; border-left: 5px solid #ffb300; text-align: left; margin-bottom: 20px;">
         <p style="color: #ffb300; font-weight: 700; margin-top:0; font-size:1.2em;">👥 全站會員與秘密帳號名冊 (僅您可見)：</p>
         <p style="color: #888; font-size: 0.9em; margin-bottom: 10px;">系統將列出所有曾登入本站的帳號。點擊秘密帳號旁的刪除，可徹底撤銷其所有權限與資料。</p>
-        <div id="admin-user-list" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-top: 15px; padding-right: 10px;">
-            </div>
+        <div id="admin-user-list" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-top: 15px; padding-right: 10px;"></div>
       </div>
 
       <div class="solid-panel" style="padding: 25px; border-left: 5px solid var(--accent); text-align: left; margin-bottom: 20px;">
@@ -504,15 +512,10 @@
     window.isEditMode = false;
     let initialRouteChecked = false;
 
-    // 🌟 生成完整網址複製功能 🌟
     window.copyFullUrl = function(routeParams) {
-        let currentUrl = window.location.href.split('?')[0]; // 取得不含參數的乾淨網址
+        let currentUrl = window.location.href.split('?')[0]; 
         let fullUrl = currentUrl + routeParams;
-        navigator.clipboard.writeText(fullUrl).then(() => {
-            showToast('🔗 完整跳轉網址已複製！');
-        }).catch(() => {
-            showToast('❌ 複製失敗', 'error');
-        });
+        navigator.clipboard.writeText(fullUrl).then(() => { showToast('🔗 完整跳轉網址已複製！'); }).catch(() => { showToast('❌ 複製失敗', 'error'); });
     };
 
     window.lastSelectedMedia = null;
@@ -556,7 +559,6 @@
       let typeName = type === 'img' ? '圖片' : (type === 'yt' ? 'YouTube' : '影片 (MP4/WebM)');
       let url = prompt(`請輸入 ${typeName} 網址:`); if (!url) return;
       document.getElementById(editorId).focus();
-      
       if (type === 'img') { document.execCommand('insertImage', false, url); } 
       else if (type === 'video') { let width = prompt("請輸入影片顯示寬度 (預設為 100%):", "100%"); if (width === null) return; if (width.trim() === "") width = "100%"; document.execCommand('insertHTML', false, `<video src="${url}" style="width:${width}; max-width: 100%; border-radius:8px; margin:15px 0; background:#000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer;" controls muted playsinline></video><br>`); } 
       else { let ytId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/); if (ytId && ytId[1]) { document.execCommand('insertHTML', false, `<iframe src="https://www.youtube.com/embed/${ytId[1]}" frameborder="0" allowfullscreen contenteditable="false" style="width:100%; aspect-ratio: 16/9; border-radius:8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer;"></iframe><br>`); } else { showToast("❌ 無效的 YouTube 網址", "error"); } }
@@ -570,11 +572,12 @@
         document.execCommand('insertHTML', false, html);
     };
 
+    // 🌟 v16.3 升級：擴充上傳欄位判定 (包含背景音樂與人聲)
     function renderUploadFields(type, prefix) {
       const df = document.getElementById(`${prefix}-dynamic-fields`); const urlInput = document.getElementById(prefix === 'mat' ? 'mat-url' : 'edit-url');
       const richContainer = document.getElementById(`${prefix}-rich-text-container`);
       if (richContainer) richContainer.style.display = 'none';
-      if (type === "音樂") { df.innerHTML = `<input type="number" id="${prefix}-order" class="input-box" placeholder="順序" value="2" style="width: 60px;"><input type="text" id="${prefix}-album" class="input-box" placeholder="專輯名稱" style="width:130px;"><input type="url" id="${prefix}-cover" class="input-box" placeholder="封面網址" style="width:130px;">`; urlInput.placeholder = "MP3 串流直連網址"; } 
+      if (["音樂", "背景音樂", "人聲"].includes(type)) { df.innerHTML = `<input type="number" id="${prefix}-order" class="input-box" placeholder="順序" value="2" style="width: 60px;"><input type="text" id="${prefix}-album" class="input-box" placeholder="專輯名稱" style="width:130px;"><input type="url" id="${prefix}-cover" class="input-box" placeholder="封面網址" style="width:130px;">`; urlInput.placeholder = "MP3 串流直連網址"; } 
       else if (type === "音效") { df.innerHTML = `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 資料夾" style="width:100px;"><div style="display:flex;align-items:center;background:rgba(0,0,0,0.5); border:1px solid #444; border-radius:6px;padding:0 8px;">🎨 <input type="color" id="${prefix}-color" class="input-box" value="#ff1744" style="width:30px;padding:0;border:none;background:transparent;"><input type="text" id="${prefix}-style" class="input-box" placeholder="或圖片網址" style="width:100px;border:none;background:transparent;"></div>`; urlInput.placeholder = "小音效 MP3 直連"; } 
       else if (type === "GIF") { df.innerHTML = `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 資料夾" style="width:120px;">`; urlInput.placeholder = "GIF 圖片網址"; } 
       else if (type === "軟體" || type === "指令") { df.innerHTML = `<input type="text" id="${prefix}-route-code" class="input-box" placeholder="🔢 專屬直連代碼 (例: 1)" style="width: 160px;"><input type="text" id="${prefix}-btn-text" class="input-box" placeholder="🔘 按鈕文字 (例: 前往下載)" style="width: 180px;"><input type="url" id="${prefix}-cover" class="input-box" placeholder="🖼️ 卡片大圖網址" style="width: 150px;">`; urlInput.placeholder = "主要下載跳轉網址 (選填)"; if (richContainer) { richContainer.style.display = 'block'; if(prefix === 'mat') document.getElementById('mat-rich-editor').innerHTML = ''; } } 
@@ -855,6 +858,7 @@
       try { let safeName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; await addDoc(collection(db, `chats/${currentChatId}/messages`), { uid: auth.currentUser.uid, displayName: safeName, photoURL: auth.currentUser.photoURL || '', text: txt, timestamp: serverTimestamp() }); } catch (e) {}
     }
 
+    // 🌟 v16.3 擴充上傳提取邏輯 (包含 BGM 與人聲)
     function getUploadData(prefix) {
       const type = document.getElementById(`${prefix}-type-select`)?.value || document.getElementById('edit-category').value;
       let editor = document.getElementById(prefix === 'mat' ? 'mat-rich-editor' : 'edit-rich-editor');
@@ -862,7 +866,7 @@
       if(editor) { editor.querySelectorAll('img, video, iframe').forEach(el => el.style.outline = 'none'); }
       
       let d = { trackOrder: 2, folderName: "根目錄", btnStyle: "", albumName: "", coverUrl: "", descriptionHTML: "", routeCode: "", btnText: "" };
-      if (type === "音樂") { d.albumName = document.getElementById(`${prefix}-album`)?.value.trim(); d.coverUrl = document.getElementById(`${prefix}-cover`)?.value.trim(); let o = parseInt(document.getElementById(`${prefix}-order`)?.value); if (!isNaN(o)) d.trackOrder = o; } 
+      if (["音樂", "背景音樂", "人聲"].includes(type)) { d.albumName = document.getElementById(`${prefix}-album`)?.value.trim(); d.coverUrl = document.getElementById(`${prefix}-cover`)?.value.trim(); let o = parseInt(document.getElementById(`${prefix}-order`)?.value); if (!isNaN(o)) d.trackOrder = o; } 
       else if (type === "音效" || type === "GIF") { d.folderName = document.getElementById(`${prefix}-folder`)?.value.trim() || "根目錄"; if (type === "音效") d.btnStyle = document.getElementById(`${prefix}-style`)?.value.trim() || document.getElementById(`${prefix}-color`)?.value; } 
       else if (type === "軟體" || type === "指令") { 
         d.coverUrl = document.getElementById(`${prefix}-cover`)?.value.trim() || ''; 
@@ -899,7 +903,7 @@
       document.getElementById('edit-name').value = i.fileName; document.getElementById('edit-url').value = i.fileUrl || "";
       renderUploadFields(i.category, 'edit');
       setTimeout(() => {
-        if(i.category === '音樂') { document.getElementById('edit-album').value = i.albumName || ''; document.getElementById('edit-cover').value = i.coverUrl || ''; document.getElementById('edit-order').value = i.trackOrder || 2; } 
+        if(["音樂", "背景音樂", "人聲"].includes(i.category)) { document.getElementById('edit-album').value = i.albumName || ''; document.getElementById('edit-cover').value = i.coverUrl || ''; document.getElementById('edit-order').value = i.trackOrder || 2; } 
         else if (i.category === '音效' || i.category === 'GIF') { document.getElementById('edit-folder').value = i.folderName || '根目錄'; if (i.category === '音效') { if (i.btnStyle && i.btnStyle.startsWith('http')) { document.getElementById('edit-style').value = i.btnStyle; } else if (i.btnStyle && i.btnStyle.startsWith('#')) { document.getElementById('edit-color').value = i.btnStyle; } } }
         else if (i.category === '軟體' || i.category === '指令') { 
             document.getElementById('edit-cover').value = i.coverUrl || ''; 
@@ -934,7 +938,6 @@
     window.rejectMaterial = async function(id) { if (!confirm("確定要退回此提案嗎？")) return; try { await deleteDoc(doc(db, "pending_materials", id)); showToast("❌ 提案已刪除。"); } catch(e){} };
     window.deleteMaterial = async function(id) { if (!confirm("確定永久刪除？")) return; try { await deleteDoc(doc(db, "categorized_materials", id)); document.getElementById('article-modal').style.display='none'; document.getElementById('album-modal').style.display='none'; showToast("🗑️ 已徹底移除"); } catch(e) {} };
 
-    // 🌟 全域資料庫監聽與路由整理引擎 🌟
     function listenToMaterialsRealtime() {
         if(materialsUnsub) materialsUnsub();
         const q = query(collection(db, "categorized_materials"), orderBy("timestamp", "desc"));
@@ -942,12 +945,11 @@
             fetchedMaterialsList = [];
             snap.forEach((d) => { let data = d.data(); data.id = d.id; fetchedMaterialsList.push(data); });
             renderMaterialsByFilter();
-            renderDynamicRoutes(); // 更新首頁的路由總覽
+            renderDynamicRoutes();
             checkUrlRouteAndRedirect();
         });
     }
 
-    // 🌟 生成專屬文章路由清單 🌟
     function renderDynamicRoutes() {
         const routeList = document.getElementById('dynamic-routes-list');
         if (!routeList) return;
@@ -970,11 +972,8 @@
             }
         });
         
-        if (routesHTML === '') {
-            routeList.innerHTML = '<p style="color:#888;">目前尚未為任何軟體或指令設定直連代碼。</p>';
-        } else {
-            routeList.innerHTML = routesHTML;
-        }
+        if (routesHTML === '') { routeList.innerHTML = '<p style="color:#888;">目前尚未為任何軟體或指令設定直連代碼。</p>'; } 
+        else { routeList.innerHTML = routesHTML; }
     }
 
     function checkUrlRouteAndRedirect() {
@@ -1023,9 +1022,23 @@
 
       const renderGrouped = (items, renderer) => { const grps = {}; items.forEach(d => { let f = `📁 資料夾：${d.folderName || '未分類'}`; if (!grps[f]) grps[f] = []; grps[f].push(d); }); Object.keys(grps).sort().forEach(folder => { const h = document.createElement('div'); h.className = 'folder-header'; h.innerHTML = folder; container.appendChild(h); grps[folder].forEach(d => renderer(d, container)); }); };
 
+      // 🌟 v16.3 升級：音樂類別全面收錄
       if (currentActiveTab === "全部" || currentActiveTab === "音樂") {
-        const albums = {}; fetchedMaterialsList.forEach(item => { if (item.category !== "音樂") return; let albName = item.albumName || "獨立單曲"; if (search && !albName.toLowerCase().includes(search) && !item.fileName.toLowerCase().includes(search)) return; if (!albums[albName]) albums[albName] = { name: albName, coverUrl: item.coverUrl || "", tracks: [] }; if (!albums[albName].coverUrl && item.coverUrl) albums[albName].coverUrl = item.coverUrl; albums[albName].tracks.push(item); });
-        Object.values(albums).forEach(album => { album.tracks.sort((a, b) => (a.trackOrder ?? 99) - (b.trackOrder ?? 99)); const c = document.createElement('div'); c.className = 'material-item'; let img = getOptimalImageUrl(album.coverUrl); let coverHTML = img ? `<img class="album-art-img" src="${img}">` : `<div class="default-vinyl"></div>`; c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div>${coverHTML}</div><div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 內含 ${album.tracks.length} 首曲目</span></div>`; c.addEventListener('click', () => openAlbumModal(album)); container.appendChild(c); });
+        const albums = {}; fetchedMaterialsList.forEach(item => { 
+            if (!["音樂", "背景音樂", "人聲"].includes(item.category)) return; 
+            let albName = item.albumName || "獨立單曲"; 
+            if (search && !albName.toLowerCase().includes(search) && !item.fileName.toLowerCase().includes(search)) return; 
+            if (!albums[albName]) albums[albName] = { name: albName, coverUrl: item.coverUrl || "", tracks: [] }; 
+            if (!albums[albName].coverUrl && item.coverUrl) albums[albName].coverUrl = item.coverUrl; 
+            albums[albName].tracks.push(item); 
+        });
+        Object.values(albums).forEach(album => { 
+            album.tracks.sort((a, b) => (a.trackOrder ?? 99) - (b.trackOrder ?? 99)); 
+            const c = document.createElement('div'); c.className = 'material-item'; 
+            let img = getOptimalImageUrl(album.coverUrl); let coverHTML = img ? `<img class="album-art-img" src="${img}">` : `<div class="default-vinyl"></div>`; 
+            c.innerHTML = `<div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div>${coverHTML}</div><div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 內含 ${album.tracks.length} 首曲目</span></div>`; 
+            c.addEventListener('click', () => openAlbumModal(album)); container.appendChild(c); 
+        });
       }
       
       const rSFX = (d, p) => { const c = document.createElement('div'); c.className = 'material-item'; c.style.alignItems='center'; c.style.padding='25px 15px'; let s = `background-color:#ff1744;box-shadow:0 12px 0 #8e001c,0 15px 20px rgba(0,0,0,0.5);`; if(d.btnStyle){ if(d.btnStyle.startsWith('http')){ s=`background-image:url('${getOptimalImageUrl(d.btnStyle)}');box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);border:none;`; }else{ s=`background-color:${d.btnStyle};box-shadow:0 12px 0 #111,0 15px 20px rgba(0,0,0,0.5);`; } } let adminBtn = (userRole === "admin") ? `<div style="display:flex;gap:5px;width:100%;margin-top:10px;"><button onclick="openEditModal('${d.id}')" class="btn-edit" style="flex:1;">⚙️ 編輯</button><button onclick="deleteMaterial('${d.id}')" class="btn-del">🗑️</button></div>` : ''; c.innerHTML = `<button class="sfx-push-btn" style="${s}" onclick="playSFX('${d.fileName}', '${d.fileUrl}')"></button><strong style="font-size:1.2em; display:block;">${d.fileName}</strong><div style="display:flex; gap:5px; margin-top:5px; width:100%;"><a href="${getOptimalAudioUrl(d.fileUrl)}" target="_blank" class="btn-blue-dl" style="flex:1;text-align:center; padding:10px; font-size:0.9em; box-shadow:none;">📥 下載</a><button onclick="copyToClipboard('${d.fileUrl}')" class="btn-copy" style="padding:10px; font-size:0.9em;">📋</button></div>${adminBtn}`; p.appendChild(c); };
@@ -1077,14 +1090,21 @@
     };
     document.getElementById('close-article-btn').addEventListener('click', () => { document.getElementById('article-modal').style.display = 'none'; document.getElementById('article-desc').innerHTML=''; });
 
+    // 🌟 v16.3 升級：專輯內曲目新增背景音樂/人聲彩色小標籤
     window.openAlbumModal = function(album) {
       currentModalAlbum = album; const m = document.getElementById('album-modal'); document.getElementById('modal-album-title').innerText = album.name;
       let img = getOptimalImageUrl(album.coverUrl); document.getElementById('modal-album-cover-space').innerHTML = img ? `<img src="${img}" style="width:140px;height:140px;object-fit:cover;border-radius:8px;">` : `<div class="default-vinyl" style="width:100px;height:100px;"></div>`;
       const lc = document.getElementById('modal-track-list'); lc.innerHTML = '';
       album.tracks.forEach((t, idx) => {
         const row = document.createElement('div'); row.className = 'track-row';
+        
+        // 加入 BGM / 人聲 視覺標籤
+        let typeBadge = '';
+        if(t.category === '背景音樂') typeBadge = '<span style="background:rgba(29,185,84,0.2);color:#1db954;font-size:0.6em;padding:2px 6px;border-radius:10px;margin-left:8px;vertical-align:middle;">BGM</span>';
+        if(t.category === '人聲') typeBadge = '<span style="background:rgba(0,212,255,0.2);color:#00d4ff;font-size:0.6em;padding:2px 6px;border-radius:10px;margin-left:8px;vertical-align:middle;">人聲</span>';
+
         let aBtn = (userRole === "admin") ? `<button onclick="openEditModal('${t.id}')" class="btn-edit" style="padding:6px 12px; font-size:0.85em;">⚙️</button><button onclick="deleteMaterial('${t.id}')" class="btn-del" style="padding:6px 12px; font-size:0.85em;">🗑️</button>` : '';
-        row.innerHTML = `<div style="flex:1;display:flex;align-items:center;gap:15px;min-width:200px;"><span class="track-num">${idx + 1}</span><strong style="color:white;font-size:1.05em;">${t.fileName}</strong></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button class="btn-action" style="padding:6px 12px; font-size:0.85em;" onclick="playTrackFromModal(${idx})">▶ 播放</button><a href="${getOptimalAudioUrl(t.fileUrl)}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; font-size:0.85em; box-shadow:none;">📥 下載</a><button class="btn-copy" style="padding:6px 12px; font-size:0.85em;" onclick="copyToClipboard('${t.fileUrl}')">📋 複製</button><div class="track-admin-btns" style="display:flex; gap:5px;">${aBtn}</div></div>`;
+        row.innerHTML = `<div style="flex:1;display:flex;align-items:center;gap:15px;min-width:200px;"><span class="track-num">${idx + 1}</span><strong style="color:white;font-size:1.05em;display:flex;align-items:center;">${t.fileName}${typeBadge}</strong></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button class="btn-action" style="padding:6px 12px; font-size:0.85em;" onclick="playTrackFromModal(${idx})">▶ 播放</button><a href="${getOptimalAudioUrl(t.fileUrl)}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; font-size:0.85em; box-shadow:none;">📥 下載</a><button class="btn-copy" style="padding:6px 12px; font-size:0.85em;" onclick="copyToClipboard('${t.fileUrl}')">📋 複製</button><div class="track-admin-btns" style="display:flex; gap:5px;">${aBtn}</div></div>`;
         lc.appendChild(row);
       });
       m.style.display = 'flex';
