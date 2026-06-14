@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish Studio | v15.4 動態視覺升級版</title>
+  <title>Dogfish Studio | v15.5 編輯無死角版</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -61,7 +61,7 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     .page-title { font-size: 2.2em; font-weight: 900; margin-top: 0; margin-bottom: 25px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
 
-    /* 🌟 富文本編輯器 (加入文字大小選擇器) */
+    /* 富文本編輯器 */
     .rich-editor-toolbar { display: flex; gap: 8px; flex-wrap: wrap; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px 8px 0 0; border: 1px solid #333; border-bottom: none; align-items: center; }
     .rich-editor-btn { background: #333; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9em; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
     .rich-editor-btn:hover { background: var(--primary); color: black; }
@@ -69,7 +69,7 @@
     .color-picker-wrap input { width: 25px; height: 25px; padding: 0; border: none; background: transparent; cursor: pointer; }
     .size-picker { padding: 4px 8px; height: 32px; font-size: 0.85em; border-radius: 6px; }
     .rich-editor-content { background: rgba(0,0,0,0.3); min-height: 150px; border: 1px solid #333; border-radius: 0 0 8px 8px; padding: 15px; color: white; line-height: 1.6; outline: none; overflow-y: auto; max-height: 400px; text-align: left; }
-    .rich-editor-content img, .rich-editor-content iframe, .rich-editor-content video { max-width: 100%; border-radius: 8px; margin: 10px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+    .rich-editor-content img, .rich-editor-content iframe, .rich-editor-content video { max-width: 100%; border-radius: 8px; margin: 10px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; transition: outline 0.2s; }
     .rich-editor-content[contenteditable="true"]:empty:before { content: attr(placeholder); color: #888; cursor: text; }
     .rich-editor-content a { color: #0088ff; text-decoration: underline; font-weight: bold; }
 
@@ -195,10 +195,9 @@
       <input type="url" id="mat-url" class="input-box" placeholder="主要直連 / 跳轉下載連結" style="width: 95%; margin-bottom: 15px;">
       
       <div id="mat-rich-text-container" style="display: none; margin-bottom: 15px;">
-        <label style="color:#888; font-size:0.8em; margin-bottom:5px; display:block;">📝 內文排版 (支援自訂按鈕、字體大小與連結)</label>
+        <label style="color:#888; font-size:0.8em; margin-bottom:5px; display:block;">📝 內文排版 (點擊影片/圖片可選取修改)</label>
         <div class="rich-editor-toolbar">
           <button class="rich-editor-btn" onclick="document.execCommand('bold')">B 粗體</button>
-          <!-- 🌟 新增：文字大小選擇器 -->
           <select onchange="document.execCommand('fontSize', false, this.value); this.selectedIndex=0;" class="input-box size-picker" style="border-color:#555;">
             <option value="">字體大小</option><option value="2">小字</option><option value="3">標準</option><option value="5">大字</option><option value="7">特大</option>
           </select>
@@ -207,6 +206,8 @@
           <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'yt')">🔴 YouTube</button>
           <button class="rich-editor-btn" onclick="insertEditorContent('mat-rich-editor', 'video')">🎬 直連影片</button>
           <button class="rich-editor-btn" onclick="insertLink('mat-rich-editor')" style="background: rgba(0, 136, 255, 0.2); color: #0088ff; border: 1px solid #0088ff;">🔗 插入連結</button>
+          <!-- 🌟 新增：針對已插入圖片/影片重新改大小的按鈕 🌟 -->
+          <button class="rich-editor-btn" onclick="resizeSelectedMedia('mat-rich-editor')" style="color: #ffb300; border: 1px solid #ffb300; background: rgba(255, 179, 0, 0.1);">📐 改大小</button>
         </div>
         <div id="mat-rich-editor" class="rich-editor-content" contenteditable="true" placeholder="自由撰寫介紹、排版或插入多媒體影片..."></div>
       </div>
@@ -252,7 +253,7 @@
       </div>
       <div id="edit-dynamic-fields" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0;"></div>
       <div id="edit-rich-text-container" style="display: none; margin-bottom: 15px; text-align:left;">
-        <label style="color:#888; font-size:0.8em;">富文本內容 (自訂排版)</label>
+        <label style="color:#888; font-size:0.8em; margin-bottom:5px; display:block;">📝 內文排版 (點擊影片/圖片可選取修改)</label>
         <div class="rich-editor-toolbar">
           <button class="rich-editor-btn" onclick="document.execCommand('bold')">B 粗體</button>
           <select onchange="document.execCommand('fontSize', false, this.value); this.selectedIndex=0;" class="input-box size-picker" style="border-color:#555;">
@@ -263,6 +264,8 @@
           <button class="rich-editor-btn" onclick="insertEditorContent('edit-rich-editor', 'yt')">🔴 YouTube</button>
           <button class="rich-editor-btn" onclick="insertEditorContent('edit-rich-editor', 'video')">🎬 影片(MP4)</button>
           <button class="rich-editor-btn" onclick="insertLink('edit-rich-editor')" style="background: rgba(0, 136, 255, 0.2); color: #0088ff; border: 1px solid #0088ff;">🔗 插入連結</button>
+          <!-- 🌟 新增：針對已插入圖片/影片重新改大小的按鈕 🌟 -->
+          <button class="rich-editor-btn" onclick="resizeSelectedMedia('edit-rich-editor')" style="color: #ffb300; border: 1px solid #ffb300; background: rgba(255, 179, 0, 0.1);">📐 改大小</button>
         </div>
         <div id="edit-rich-editor" class="rich-editor-content" contenteditable="true"></div>
       </div>
@@ -291,7 +294,7 @@
 
   <!-- 導覽列 -->
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v15.4 動態視覺版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v15.5 編輯無死角版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="switchPage('materials')">素材</button>
@@ -313,12 +316,12 @@
     <div id="page-blog" class="page-panel active">
       <h2 class="page-title">歡迎來到滿版沉浸式大廳</h2>
       <div class="solid-panel" style="padding: 25px; border-left: 5px solid #00d4ff; text-align: left;">
-        <h3 style="margin-top:0; font-size: 1.5em; color: #00d4ff;">✨ v15.4 動態視覺與自訂排版升級</h3>
+        <h3 style="margin-top:0; font-size: 1.5em; color: #00d4ff;">✨ v15.5 編輯引擎與動態視覺升級</h3>
         <p style="color: #ccc; line-height: 1.8; font-size: 1.05em;">
-          1. <b>📐 自由調整影片大小</b>：插入影片時可自訂寬度比例（例如 50%），版面不再被強制佔滿！<br>
+          1. <b>📐 媒體「二次改大小」引擎</b>：在編輯器中點擊已放好的影片/圖片，會出現黃色選取框，接著點擊工具列的「📐 改大小」即可隨時重新調整比例！<br>
           2. <b>👀 滾動自動播放 (Autoplay)</b>：文章內的影片滑到畫面中會<b>自動靜音播放</b>，滑過自動暫停，極致流暢！<br>
-          3. <b>📏 自訂文字大小</b>：工具列新增字體大小選單，大字小字隨心所欲。<br>
-          4. <b>🎵 播放器智慧隱藏</b>：沒聽音樂時畫面乾乾淨淨，隨時可以點擊左下角「🎵」召喚回來。
+          3. <b>🎵 播放器智慧隱藏</b>：沒聽音樂時畫面乾乾淨淨，隨時可以點擊左下角「🎵」召喚回來。<br>
+          4. <b>🖥️ 滿版全螢幕延伸</b>：文章閱讀區已升級為超寬版（95vw），享受最大氣的排版！
         </p>
       </div>
     </div>
@@ -405,6 +408,37 @@
     window.isEditMode = false;
     let initialRouteChecked = false;
 
+    // 🌟 全域媒體選取器 (用於重新調整大小) 🌟
+    window.lastSelectedMedia = null;
+    document.addEventListener('click', (e) => {
+        // 如果點擊的是富文本內的圖片或影片
+        if(e.target.closest('.rich-editor-content') && ['IMG', 'VIDEO', 'IFRAME'].includes(e.target.tagName)) {
+            window.lastSelectedMedia = e.target;
+            // 清除其他媒體的發光外框，並將目前點擊的加上黃色外框
+            document.querySelectorAll('.rich-editor-content *:is(img,video,iframe)').forEach(el => el.style.outline = 'none');
+            e.target.style.outline = '3px solid #ffb300';
+        } else if (e.target.closest('.rich-editor-content')) {
+            // 如果點到編輯器空白處，取消選取
+            document.querySelectorAll('.rich-editor-content *:is(img,video,iframe)').forEach(el => el.style.outline = 'none');
+            window.lastSelectedMedia = null;
+        }
+    });
+
+    window.resizeSelectedMedia = function(editorId) {
+        if(!window.lastSelectedMedia || !document.getElementById(editorId).contains(window.lastSelectedMedia)) {
+            showToast("⚠️ 請先在編輯器內點擊選取要修改的圖片或影片！", "error");
+            return;
+        }
+        let currentWidth = window.lastSelectedMedia.style.width || "100%";
+        let newWidth = prompt("📐 請輸入新的顯示寬度 (例如: 100%, 80%, 50%):", currentWidth);
+        if(newWidth) {
+            window.lastSelectedMedia.style.width = newWidth;
+            window.lastSelectedMedia.style.outline = 'none'; // 修改完自動隱藏外框
+            window.lastSelectedMedia = null;
+            showToast("✅ 大小修改成功！");
+        }
+    };
+
     // 播放器顯示隱藏
     window.hidePlayer = function() { document.getElementById('global-player').style.display = 'none'; document.getElementById('mini-player-toggle').style.display = 'flex'; document.body.style.paddingBottom = '0px'; };
     window.showPlayer = function() { document.getElementById('global-player').style.display = 'flex'; document.getElementById('mini-player-toggle').style.display = 'none'; document.body.style.paddingBottom = '90px'; };
@@ -424,7 +458,6 @@
         } else { document.body.classList.remove('god-mode'); btn.classList.remove('active'); btn.innerHTML = "🖌️ 編輯模式"; showToast("✅ 已關閉編輯模式"); }
     };
 
-    // 🌟 升級版：插入影片時自訂寬度 🌟
     window.insertEditorContent = function(editorId, type) {
       let typeName = type === 'img' ? '圖片' : (type === 'yt' ? 'YouTube' : '影片 (MP4/WebM)');
       let url = prompt(`請輸入 ${typeName} 網址:`); if (!url) return;
@@ -433,15 +466,12 @@
       if (type === 'img') { 
           document.execCommand('insertImage', false, url); 
       } else if (type === 'video') { 
-          // 詢問使用者影片寬度
           let width = prompt("請輸入影片顯示寬度 (例如: 100%, 80%, 50%，預設為 100%):", "100%");
-          if (width === null) return; // 按下取消
-          if (width.trim() === "") width = "100%";
-          // ⚠️ 自動播放必須加上 muted (靜音) 與 playsinline，否則瀏覽器會阻擋
-          document.execCommand('insertHTML', false, `<video src="${url}" style="width:${width}; max-width: 100%; border-radius:8px; margin:10px 0; background:#000; box-shadow: 0 4px 15px rgba(0,0,0,0.5);" controls muted playsinline></video><br>`); 
+          if (width === null) return; if (width.trim() === "") width = "100%";
+          document.execCommand('insertHTML', false, `<video src="${url}" style="width:${width}; max-width: 100%; border-radius:8px; margin:10px 0; background:#000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer;" controls muted playsinline></video><br>`); 
       } else { 
           let ytId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/); 
-          if (ytId && ytId[1]) { document.execCommand('insertHTML', false, `<iframe src="https://www.youtube.com/embed/${ytId[1]}" frameborder="0" allowfullscreen contenteditable="false" style="width:100%; aspect-ratio: 16/9; border-radius:8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);"></iframe><br>`); } 
+          if (ytId && ytId[1]) { document.execCommand('insertHTML', false, `<iframe src="https://www.youtube.com/embed/${ytId[1]}" frameborder="0" allowfullscreen contenteditable="false" style="width:100%; aspect-ratio: 16/9; border-radius:8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer;"></iframe><br>`); } 
           else { showToast("❌ 無效的 YouTube 網址", "error"); } 
       }
     };
@@ -620,9 +650,14 @@
       try { let safeName = auth.currentUser.displayName || "匿名"; await addDoc(collection(db, `chats/${currentChatId}/messages`), { uid: auth.currentUser.uid, displayName: safeName, photoURL: auth.currentUser.photoURL || '', text: txt, timestamp: serverTimestamp() }); } catch (e) {}
     }
 
-    // 發布與編輯提取
+    // 🌟 確保儲存前清掉黃色選取外框 🌟
     function getUploadData(prefix) {
       const type = document.getElementById(`${prefix}-type-select`)?.value || document.getElementById('edit-category').value;
+      let editor = document.getElementById(prefix === 'mat' ? 'mat-rich-editor' : 'edit-rich-editor');
+      
+      // 儲存前強制清除所有發光外框，避免污染文章版面
+      editor.querySelectorAll('img, video, iframe').forEach(el => el.style.outline = 'none');
+      
       let d = { trackOrder: 2, folderName: "根目錄", btnStyle: "", albumName: "", coverUrl: "", descriptionHTML: "", routeCode: "", btnText: "" };
       if (type === "音樂") { d.albumName = document.getElementById(`${prefix}-album`)?.value.trim(); d.coverUrl = document.getElementById(`${prefix}-cover`)?.value.trim(); let o = parseInt(document.getElementById(`${prefix}-order`)?.value); if (!isNaN(o)) d.trackOrder = o; } 
       else if (type === "音效" || type === "GIF") { d.folderName = document.getElementById(`${prefix}-folder`)?.value.trim() || "根目錄"; if (type === "音效") d.btnStyle = document.getElementById(`${prefix}-style`)?.value.trim() || document.getElementById(`${prefix}-color`)?.value; } 
@@ -630,7 +665,7 @@
         d.coverUrl = document.getElementById(`${prefix}-cover`)?.value.trim() || ''; 
         d.routeCode = document.getElementById(`${prefix}-route-code`)?.value.trim() || '';
         d.btnText = document.getElementById(`${prefix}-btn-text`)?.value.trim() || '🔗 前往外部連結';
-        d.descriptionHTML = document.getElementById(prefix === 'mat' ? 'mat-rich-editor' : 'edit-rich-editor').innerHTML; 
+        d.descriptionHTML = editor.innerHTML; 
       }
       return d;
     }
@@ -680,7 +715,6 @@
         try { await updateDoc(doc(db, "categorized_materials", id), { fileName: name, fileUrl: url, ...ex }); showToast("✅ 資料已即時更新覆蓋！"); document.getElementById('edit-modal').style.display = 'none'; } catch(e) {} 
     });
 
-    // 監聽器與刪除
     function listenToPendingRealtime() {
         const q = query(collection(db, "pending_materials"), orderBy("timestamp", "desc"));
         pendingUnsub = onSnapshot(q, (snap) => { pendingMaterialsList = []; snap.forEach((doc) => { let d = doc.data(); d.id = doc.id; pendingMaterialsList.push(d); }); renderPendingList(); });
@@ -766,7 +800,6 @@
       if (currentActiveTab === "全部" || currentActiveTab === "GIF") renderGrouped(fetchedMaterialsList.filter(i => i.category === "GIF" && (!search || i.fileName.toLowerCase().includes(search))), rGIF);
     }
 
-    // 🌟 部落格文章排版 & 智慧滾動影片播放 🌟
     window.openArticleModal = function(data) {
       const modal = document.getElementById('article-modal');
       
@@ -791,21 +824,19 @@
       
       modal.style.display = 'flex';
 
-      // 影片滾動自動播放引擎 (Intersection Observer)
+      // 🌟 啟動影片智慧滾動引擎 (Intersection Observer)
       setTimeout(() => {
           const videos = document.querySelectorAll('#article-desc video');
           if (videos.length > 0) {
               const observer = new IntersectionObserver((entries) => {
                   entries.forEach(entry => {
                       if (entry.isIntersecting) {
-                          // 進入畫面 30% 自動播放 (必須靜音才能過瀏覽器規則)
                           entry.target.play().catch(e => console.log('Autoplay blocked', e));
                       } else {
-                          // 離開畫面自動暫停
                           entry.target.pause();
                       }
                   });
-              }, { threshold: 0.3 }); // 30% 出現就觸發
+              }, { threshold: 0.3 }); // 進入畫面 30% 觸發
               videos.forEach(v => observer.observe(v));
           }
       }, 300);
@@ -836,7 +867,7 @@
       if (globalPlaylist.length === 0) return; let t = globalPlaylist[globalTrackIndex]; gpAudio.src = getOptimalAudioUrl(t.fileUrl);
       document.getElementById('gp-title').innerText = t.fileName; document.getElementById('gp-artist').innerText = t.albumName || "Dogfish Studio";
       let c = getOptimalImageUrl(t.coverUrl); document.getElementById('gp-cover').src = c ? c : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
-      showPlayer(); // 播放時自動展開
+      showPlayer();
       gpAudio.play().catch(e => { showToast("⚠️ 背景播放器攔截，改為另開網頁下載", "error"); window.open(t.fileUrl, '_blank'); });
     };
     window.playNextTrack = function() { if (globalPlaylist.length === 0) return; globalTrackIndex = (globalTrackIndex + 1) % globalPlaylist.length; playCurrentGlobalTrack(); };
