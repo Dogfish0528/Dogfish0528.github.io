@@ -1,0 +1,21 @@
+{
+  "name": "Dogfish Studio",
+  "short_name": "Dogfish",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#1db954",
+  "description": "全域資源庫與智能團隊通訊",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192/1db954/fff?text=D",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512/1db954/fff?text=D",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
