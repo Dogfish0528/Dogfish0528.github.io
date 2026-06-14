@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1db954">
-  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish Studio | v16.3 影音全開版</title>
+  <title>Dogfish Studio | v16.4 App升級版</title>
+  
+  <!-- 🌟 新增：PWA App 專屬設定 -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1db954">
+  <link rel="apple-touch-icon" href="https://via.placeholder.com/192/1db954/fff?text=D">
+  
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -126,6 +129,7 @@
     .chat-input-area { background: rgba(0,0,0,0.5); padding: 15px; display: flex; gap: 10px; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
     .chat-input { flex: 1; padding: 12px 15px; border: none; border-radius: 20px; outline: none; font-size: 1em; background: rgba(255,255,255,0.9); color: #000; }
     .invite-box { background: rgba(0,0,0,0.5); padding: 10px; margin: 10px; border-radius: 8px; font-size: 0.9em; text-align: left; border: 1px solid #444; }
+
     .track-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 15px; border-radius: 6px; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); } 
     .track-row:hover { background: rgba(255,255,255,0.05); }
     .track-num { color: #b3b3b3; font-weight: 700; width: 30px; text-align: center; font-size: 1.1em; }
@@ -210,7 +214,6 @@
         <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 15px;">
           <input type="text" id="mat-name" class="input-box" placeholder="名稱 / 標題" style="flex:1; min-width: 140px;">
           <select id="mat-type-select" class="input-box" style="font-weight: bold; width:auto;">
-            <!-- 🌟 v16.3 升級：音樂拆分，選項全開 -->
             <option value="音樂">🎵 完整音樂</option>
             <option value="背景音樂">🎼 背景音樂 (BGM)</option>
             <option value="人聲">🎤 純人聲 (Acapella)</option>
@@ -257,6 +260,7 @@
         <div id="article-meta" class="blog-meta">分類：軟體 | 發布者：站長 | 日期：2026/06/13</div>
         <hr class="blog-divider">
         <div id="article-desc" class="rich-editor-content blog-content" style="border:none; background:transparent;"></div>
+        
         <div id="article-download-box" class="blog-download-box" style="display:none;">
           <div class="dl-info">
             <span style="font-size: 2em;">📦</span>
@@ -336,7 +340,7 @@
 
   <!-- 導覽列 -->
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v16.3 影音全開版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v16.4 App升級版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="switchPage('materials')">素材</button>
@@ -408,7 +412,6 @@
       </div>
     </div>
 
-    <!-- 🌟 v16.3 升級：分類標籤新增「音樂/BGM/人聲」提示 -->
     <div id="page-materials" class="page-panel"><h2 class="page-title">共享素材庫</h2><div class="controls-wrapper"><div class="category-tabs"><button class="tab-btn active" data-target="全部">所有</button><button class="tab-btn" data-target="音樂">🎵 音樂/BGM/人聲</button><button class="tab-btn" data-target="音效">🔊 小音效</button><button class="tab-btn" data-target="GIF">🖼️ 圖片/GIF</button></div><div class="search-bar-container"><span class="search-icon">🔍</span><input type="text" id="search-input" class="search-input" placeholder="尋找..."></div></div><div id="material-container" class="material-list"></div></div>
     <div id="page-software" class="page-panel"><h2 class="page-title">🧰 軟體推薦大廳</h2><div id="software-container" class="article-grid"></div></div>
     <div id="page-commands" class="page-panel"><h2 class="page-title">💻 實用指令知識庫</h2><div id="commands-container" class="article-grid"></div></div>
@@ -575,7 +578,6 @@
         document.execCommand('insertHTML', false, html);
     };
 
-    // 🌟 v16.3 升級：擴充上傳欄位判定 (包含背景音樂與人聲)
     function renderUploadFields(type, prefix) {
       const df = document.getElementById(`${prefix}-dynamic-fields`); const urlInput = document.getElementById(prefix === 'mat' ? 'mat-url' : 'edit-url');
       const richContainer = document.getElementById(`${prefix}-rich-text-container`);
@@ -612,13 +614,9 @@
             switchPage('blog'); 
         })
         .catch((err) => { 
-            if(err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-                showToast("❌ 沒有此帳號或密碼錯誤", "error");
-            } else if (err.code === 'auth/operation-not-allowed') {
-                showToast("⚠️ 系統阻擋：請站長先到 Firebase 後台開啟「電子郵件/密碼」登入！", "error");
-            } else {
-                showToast("❌ 無法登入", "error"); 
-            }
+            if(err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') { showToast("❌ 沒有此帳號或密碼錯誤", "error"); } 
+            else if (err.code === 'auth/operation-not-allowed') { showToast("⚠️ 系統阻擋：請站長先到 Firebase 後台開啟「電子郵件/密碼」登入！", "error"); } 
+            else { showToast("❌ 無法登入", "error"); }
         });
     });
 
@@ -633,11 +631,8 @@
             await updatePassword(auth.currentUser, newPwd);
             showToast("✅ 密碼修改成功！下次登入請使用新密碼。");
         } catch(e) {
-            if(e.code === 'auth/requires-recent-login') {
-                showToast("⚠️ 安全考量：請您先登出再重新登入一次，然後才能修改密碼！", "error");
-            } else {
-                showToast("❌ 修改失敗，請稍後再試", "error");
-            }
+            if(e.code === 'auth/requires-recent-login') { showToast("⚠️ 安全考量：請您先登出再重新登入一次，然後才能修改密碼！", "error"); } 
+            else { showToast("❌ 修改失敗，請稍後再試", "error"); }
         }
     });
 
@@ -658,13 +653,9 @@
             secondaryAuth.signOut();
             loadAdminUserList();
         } catch(err) {
-            if(err.code === 'auth/operation-not-allowed') {
-                showToast("⚠️ Firebase 阻擋：請先到 Firebase 後台開啟「電子郵件/密碼」登入！", "error");
-            } else if(err.code === 'auth/email-already-in-use') {
-                showToast("❌ 此帳號在 Firebase 仍存在！請到 Firebase 後台刪除，或直接用上方「動態指派權限」重新指派", "error");
-            } else {
-                showToast("❌ 無法建立，請檢查網路連線", "error");
-            }
+            if(err.code === 'auth/operation-not-allowed') { showToast("⚠️ Firebase 阻擋：請先到 Firebase 後台開啟「電子郵件/密碼」登入！", "error"); } 
+            else if(err.code === 'auth/email-already-in-use') { showToast("❌ 此帳號在 Firebase 仍存在！請到 Firebase 後台刪除，或直接用上方「動態指派權限」重新指派", "error"); } 
+            else { showToast("❌ 無法建立，請檢查網路連線", "error"); }
         }
     });
 
@@ -707,14 +698,8 @@
     window.deleteSecretUser = async function(docId, email) {
         let shortName = email.replace('@dogfish.secret', '');
         if(!confirm(`🚨 確定要刪除秘密帳號 [${shortName}] 嗎？\n⚠️ 注意：這只會移除他的網站權限！\n若要『徹底釋放這個帳號名稱』以便日後重新建立，請務必到 Firebase 後台的 Authentication 刪除該帳號！`)) return;
-        try {
-            await deleteDoc(doc(db, "users", docId));
-            await deleteDoc(doc(db, "permissions", email));
-            showToast(`✅ 已註銷 [${shortName}] 的網站權限與資料！`);
-            loadAdminUserList(); 
-        } catch(e) {
-            showToast("❌ 刪除失敗", "error");
-        }
+        try { await deleteDoc(doc(db, "users", docId)); await deleteDoc(doc(db, "permissions", email)); showToast(`✅ 已註銷 [${shortName}] 的網站權限與資料！`); loadAdminUserList(); } 
+        catch(e) { showToast("❌ 刪除失敗", "error"); }
     };
 
     onAuthStateChanged(auth, async (user) => {
@@ -861,7 +846,6 @@
       try { let safeName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; await addDoc(collection(db, `chats/${currentChatId}/messages`), { uid: auth.currentUser.uid, displayName: safeName, photoURL: auth.currentUser.photoURL || '', text: txt, timestamp: serverTimestamp() }); } catch (e) {}
     }
 
-    // 🌟 v16.3 擴充上傳提取邏輯 (包含 BGM 與人聲)
     function getUploadData(prefix) {
       const type = document.getElementById(`${prefix}-type-select`)?.value || document.getElementById('edit-category').value;
       let editor = document.getElementById(prefix === 'mat' ? 'mat-rich-editor' : 'edit-rich-editor');
@@ -1025,7 +1009,6 @@
 
       const renderGrouped = (items, renderer) => { const grps = {}; items.forEach(d => { let f = `📁 資料夾：${d.folderName || '未分類'}`; if (!grps[f]) grps[f] = []; grps[f].push(d); }); Object.keys(grps).sort().forEach(folder => { const h = document.createElement('div'); h.className = 'folder-header'; h.innerHTML = folder; container.appendChild(h); grps[folder].forEach(d => renderer(d, container)); }); };
 
-      // 🌟 v16.3 升級：音樂類別全面收錄
       if (currentActiveTab === "全部" || currentActiveTab === "音樂") {
         const albums = {}; fetchedMaterialsList.forEach(item => { 
             if (!["音樂", "背景音樂", "人聲"].includes(item.category)) return; 
@@ -1093,7 +1076,6 @@
     };
     document.getElementById('close-article-btn').addEventListener('click', () => { document.getElementById('article-modal').style.display = 'none'; document.getElementById('article-desc').innerHTML=''; });
 
-    // 🌟 v16.3 升級：專輯內曲目新增背景音樂/人聲彩色小標籤
     window.openAlbumModal = function(album) {
       currentModalAlbum = album; const m = document.getElementById('album-modal'); document.getElementById('modal-album-title').innerText = album.name;
       let img = getOptimalImageUrl(album.coverUrl); document.getElementById('modal-album-cover-space').innerHTML = img ? `<img src="${img}" style="width:140px;height:140px;object-fit:cover;border-radius:8px;">` : `<div class="default-vinyl" style="width:100px;height:100px;"></div>`;
@@ -1101,7 +1083,6 @@
       album.tracks.forEach((t, idx) => {
         const row = document.createElement('div'); row.className = 'track-row';
         
-        // 加入 BGM / 人聲 視覺標籤
         let typeBadge = '';
         if(t.category === '背景音樂') typeBadge = '<span style="background:rgba(29,185,84,0.2);color:#1db954;font-size:0.6em;padding:2px 6px;border-radius:10px;margin-left:8px;vertical-align:middle;">BGM</span>';
         if(t.category === '人聲') typeBadge = '<span style="background:rgba(0,212,255,0.2);color:#00d4ff;font-size:0.6em;padding:2px 6px;border-radius:10px;margin-left:8px;vertical-align:middle;">人聲</span>';
@@ -1145,6 +1126,16 @@
         }
     }
     document.querySelectorAll('.tab-btn').forEach(button => { button.addEventListener('click', () => { document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); currentActiveTab = button.getAttribute('data-target'); renderMaterialsByFilter(); }); });
+
+    // 🌟 PWA 啟動引擎 🌟
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('App 引擎啟動成功！', reg.scope))
+          .catch(err => console.log('App 引擎啟動失敗：', err));
+      });
+    }
+
   </script>
 </body>
 </html>
