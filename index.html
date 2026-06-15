@@ -111,7 +111,7 @@
   </style>
   
   <script>
-    // 🌟 1. 滿血回歸的防彈基礎工具 🌟
+    // 基礎防彈工具
     window.simpleToast = function(msg, type = 'success') {
         const c = document.getElementById('toast-container'); if(!c) return;
         const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg; 
@@ -119,8 +119,9 @@
     }
     window.showModal = function(id) { document.getElementById(id).style.display = 'flex'; }
     window.hideModal = function(id) { document.getElementById(id).style.display = 'none'; }
-    
-    // 🌟 救命恩人：免責聲明關閉函數回來了！ 🌟
+    window.showToast = simpleToast;
+
+    // 🌟 救命恩人：免責聲明關閉函數 🌟
     window.closeDisclaimer = function() {
         localStorage.setItem('dogfish_disclaimer_agreed', 'true');
         document.getElementById('disclaimer-overlay').style.display = 'none';
@@ -128,7 +129,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // 檢查是否已同意免責聲明，解除封印
         if (localStorage.getItem('dogfish_disclaimer_agreed') === 'true') {
             document.getElementById('disclaimer-overlay').style.display = 'none';
         }
@@ -187,6 +187,16 @@
         document.execCommand('insertHTML', false, `<a href="${url}" target="_blank" style="color: #0088ff; text-decoration: underline; font-weight: bold;">${text}</a>`);
     };
 
+    // 🌟 插入行內教學連結功能 🌟
+    window.insertTutorialLink = function(editorId) {
+        let text = prompt("顯示文字:", "點我進入教學區"); 
+        if (!text) return;
+        document.getElementById(editorId).focus();
+        // 插入一個可點擊的假連結，並綁定跳轉事件
+        document.execCommand('insertHTML', false, `<a href="javascript:void(0);" onclick="window.jumpToTutorial()" style="color: #00d4ff; text-decoration: underline; font-weight: bold; cursor: pointer;">${text}</a>`);
+        if(window.saveDraft) window.saveDraft();
+    };
+
     // 🌟 沉浸式專屬教學大編輯台引擎 🌟
     window.currentEditingTutorialTarget = ''; 
 
@@ -206,6 +216,7 @@
         
         const hiddenData = document.getElementById(`${targetPrefix}-tutorial-data`).innerHTML;
         document.getElementById('fs-rich-editor').innerHTML = hiddenData;
+        
         document.getElementById('fullscreen-tutorial-overlay').style.display = 'flex';
     };
 
@@ -226,7 +237,7 @@
             if(window.saveDraft) window.saveDraft();
         }
         document.getElementById('fullscreen-tutorial-overlay').style.display = 'none';
-        window.simpleToast('教學已成功暫存！請記得按下最下方的【發布/儲存】。');
+        window.simpleToast('教學已成功暫存！請記得按下最下方的【發布/儲存】上傳雲端。');
     };
 
     // 訪客跳轉引擎
@@ -273,6 +284,7 @@
     </div>
   </div>
 
+  <!-- 系統 Modal -->
   <div id="login-modal" class="spotify-modal">
     <div class="modal-content" style="max-width: 500px; height: auto;">
       <div class="modal-header"><h2>🔒 系統登入</h2><span class="modal-close-btn" onclick="window.hideModal('login-modal')">×</span></div>
@@ -290,6 +302,7 @@
     </div>
   </div>
 
+  <!-- 發布 Modal -->
   <div id="upload-modal" class="spotify-modal">
     <div class="modal-content">
       <div class="modal-header"><h2>➕ 發布新資源</h2><span class="modal-close-btn" onclick="window.hideModal('upload-modal')">×</span></div>
@@ -304,6 +317,7 @@
             <option value="GIF">🖼️ 圖片/GIF</option>
             <option value="MP4影片">🎬 影片 / MP4</option>
             <option value="軟體" style="color: var(--secondary);">🧰 軟體推薦</option>
+            <option value="指令" style="color: var(--secondary);">💻 實用指令</option>
             <option value="Win10美化" style="color: var(--beautify-10);">🟦 Win10 美化資源</option>
             <option value="Win11美化" style="color: var(--beautify-11);">🟪 Win11 美化資源</option>
             <option value="急救資源" style="color: #00d4ff;">🚑 急救指南/問題排解</option>
@@ -316,9 +330,8 @@
         <div id="mat-rich-text-container" style="display: none; margin-bottom: 15px;">
           <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 8px;">
               <label style="color:#888; font-size:0.8em; margin:0;">📝 簡介內文排版</label>
-              <button id="mat-tutorial-launch-btn" class="btn-action" style="font-size: 0.85em; padding: 5px 15px; background: #00d4ff; color: #000;" onclick="window.openFullscreenTutorialEditor('mat')">➕ 新增獨立專屬教學區</button>
+              <button id="mat-tutorial-launch-btn" class="btn-action" style="font-size: 0.85em; padding: 5px 15px; background: #00d4ff; color: #000; box-shadow: 0 0 10px rgba(0,212,255,0.4);" onclick="window.openFullscreenTutorialEditor('mat')">➕ 新增專屬教學區</button>
           </div>
-          
           <div class="rich-editor-toolbar" style="border-radius: 8px 8px 0 0;">
             <button class="rich-editor-btn" onclick="document.execCommand('bold')">B 粗體</button>
             <select onchange="document.execCommand('fontSize', false, this.value); this.selectedIndex=0;" class="size-picker"><option value="">字體大小</option><option value="2">小字</option><option value="3">標準</option><option value="5">大字</option><option value="7">特大</option></select>
@@ -327,10 +340,11 @@
             <button class="rich-editor-btn" onclick="window.insertEditorContent('mat-rich-editor', 'video')">🎬 影片</button>
             <button class="rich-editor-btn" onclick="window.insertEditorContent('mat-rich-editor', 'yt')">🔴 YT</button>
             <button class="rich-editor-btn" onclick="window.insertLink('mat-rich-editor')">🔗 連結</button>
+            <!-- 🌟 新增的行內教學連結按鈕 🌟 -->
+            <button class="rich-editor-btn" onclick="window.insertTutorialLink('mat-rich-editor')" style="color: #00d4ff; border: 1px solid #00d4ff; background: rgba(0, 212, 255, 0.1);">📖 教學連結</button>
             <button class="rich-editor-btn" onclick="window.resizeSelectedMedia('mat-rich-editor')" style="color: #ffb300; border: 1px solid #ffb300; background: rgba(255, 179, 0, 0.1);">📐 改大小</button>
           </div>
           <div id="mat-rich-editor" class="rich-editor-content" contenteditable="true" oninput="window.saveDraft()"></div>
-          
           <input type="hidden" id="mat-tutorial-btn-name">
           <div id="mat-tutorial-data" style="display:none;"></div>
         </div>
@@ -339,6 +353,7 @@
     </div>
   </div>
 
+  <!-- 編輯 Modal -->
   <div id="edit-modal" class="spotify-modal">
     <div class="modal-content">
       <div class="modal-header"><h2>⚙️ 編輯內容</h2><span class="modal-close-btn" onclick="window.hideModal('edit-modal')">×</span></div>
@@ -351,7 +366,7 @@
         <div id="edit-rich-text-container" style="display: none; margin-bottom: 15px;">
           <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 8px;">
               <label style="color:#888; font-size:0.8em; margin:0;">📝 簡介內文排版</label>
-              <button id="edit-tutorial-launch-btn" class="btn-action" style="font-size: 0.85em; padding: 5px 15px; background: #00d4ff; color: #000;" onclick="window.openFullscreenTutorialEditor('edit')">編輯專屬教學區</button>
+              <button id="edit-tutorial-launch-btn" class="btn-action" style="font-size: 0.85em; padding: 5px 15px; background: #00d4ff; color: #000; box-shadow: 0 0 10px rgba(0,212,255,0.4);" onclick="window.openFullscreenTutorialEditor('edit')">編輯專屬教學區</button>
           </div>
           <div class="rich-editor-toolbar" style="border-radius: 8px 8px 0 0;">
             <button class="rich-editor-btn" onclick="document.execCommand('bold')">B 粗體</button>
@@ -361,6 +376,8 @@
             <button class="rich-editor-btn" onclick="window.insertEditorContent('edit-rich-editor', 'video')">🎬 影片</button>
             <button class="rich-editor-btn" onclick="window.insertEditorContent('edit-rich-editor', 'yt')">🔴 YT</button>
             <button class="rich-editor-btn" onclick="window.insertLink('edit-rich-editor')">🔗 連結</button>
+            <!-- 🌟 新增的行內教學連結按鈕 🌟 -->
+            <button class="rich-editor-btn" onclick="window.insertTutorialLink('edit-rich-editor')" style="color: #00d4ff; border: 1px solid #00d4ff; background: rgba(0, 212, 255, 0.1);">📖 教學連結</button>
             <button class="rich-editor-btn" onclick="window.resizeSelectedMedia('edit-rich-editor')" style="color: #ffb300; border: 1px solid #ffb300; background: rgba(255, 179, 0, 0.1);">📐 改大小</button>
           </div>
           <div id="edit-rich-editor" class="rich-editor-content" contenteditable="true"></div>
@@ -373,6 +390,7 @@
     </div>
   </div>
 
+  <!-- 🌟 沉浸式專屬教學編輯大黑板 🌟 -->
   <div id="fullscreen-tutorial-overlay">
       <div class="fs-toolbar">
           <h2 id="fs-tutorial-title" style="color: white; margin: 0; text-shadow: 0 0 5px #00d4ff;">正在撰寫教學</h2>
@@ -387,12 +405,14 @@
             <button class="rich-editor-btn" onclick="window.insertEditorContent('fs-rich-editor', 'video')">🎬 影片/MP4</button>
             <button class="rich-editor-btn" onclick="window.insertEditorContent('fs-rich-editor', 'yt')">🔴 YouTube</button>
             <button class="rich-editor-btn" onclick="window.insertLink('fs-rich-editor')">🔗 連結</button>
+            <!-- 在教學區內不需要再加跳轉連結，所以這裡不放這顆按鈕 -->
             <button class="rich-editor-btn" onclick="window.resizeSelectedMedia('fs-rich-editor')" style="color: #ffb300; border: 1px solid #ffb300; background: rgba(255, 179, 0, 0.1);">📐 改大小</button>
           </div>
           <div id="fs-rich-editor" class="rich-editor-content" contenteditable="true" style="flex:1; border-radius: 0 0 8px 8px; font-size: 1.15em; background: #0b0b0b;"></div>
       </div>
   </div>
 
+  <!-- 前台閱讀文章 Modal -->
   <div id="article-modal" class="spotify-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -425,8 +445,13 @@
     </div>
   </div>
 
+  <div id="album-modal" class="spotify-modal">
+    <!-- 專輯彈窗保持不變 -->
+  </div>
+
+  <!-- 導覽列 -->
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v30.0 終極防彈版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v30.1 行內連結版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="window.switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="window.switchPage('materials')">素材庫</button>
@@ -448,6 +473,7 @@
     </div>
   </div>
 
+  <!-- 主要內容區域 -->
   <div class="main-container">
     <div id="page-blog" class="page-panel active">
       <div style="text-align: center; padding: 60px 20px; background: rgba(20,20,20,0.6); border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
@@ -538,9 +564,8 @@
     let sfxAudio = new Audio();
     window.playSFX = function(url) { let finalUrl = window.getOptimalAudioUrl(url); sfxAudio.src = finalUrl; sfxAudio.play().catch(() => window.simpleToast('自動播放被擋', 'error')); };
     
-    // 🌟 破圖修復：加上了 $ 符號 🌟
     window.extractGDriveId = function(url) { if (!url) return null; let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/) || url.match(/open\?id=([a-zA-Z0-9_-]+)/); return m ? m[1] : null; } 
-    window.getOptimalImageUrl = function(url) { if (!url) return ""; if(url.startsWith('data:image')) return url; const id = window.extractGDriveId(url); return id ? `https://lh3.googleusercontent.com/d/${id}` : url; }
+    window.getOptimalImageUrl = function(url) { if (!url) return ""; if(url.startsWith('data:image')) return url; const id = window.extractGDriveId(url); return id ? `https://drive.google.com/uc?export=view&id=${id}` : url; }
     window.getOptimalAudioUrl = function(url) { if (!url) return ""; if (url.includes("cdn.discordapp.com") || url.includes("attachments")) return url; const id = window.extractGDriveId(url); return id ? `https://docs.google.com/uc?export=download&id=${id}` : url; }
 
     window.updateImagePreview = function(url, previewId) {
@@ -664,7 +689,7 @@
             rtc.style.display = 'none'; 
         } 
         else if (type === "音效") { df.innerHTML = `<div style="display:flex;align-items:center;background:rgba(0,0,0,0.5); border:1px solid #444; border-radius:6px;padding:0 8px;">🎨 <input type="color" id="${prefix}-color" class="input-box" value="#ff1744" style="width:30px;padding:0;border:none;background:transparent;"></div>`; document.getElementById(previewId).style.display = 'none'; rtc.style.display = 'none'; } 
-        else if (["軟體", "Win10美化", "Win11美化", "急救資源"].includes(type)) { 
+        else if (["軟體", "指令", "Win10美化", "Win11美化", "急救資源"].includes(type)) { 
             let folderInput = (type === "軟體") ? `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 分類 (例: 影音)" style="width: 120px;" oninput="window.saveDraft()">` : '';
             df.innerHTML = `${folderInput}<input type="text" id="${prefix}-btn-text" class="input-box" placeholder="🔘 按鈕文字" style="width: 120px;" oninput="window.saveDraft()"><input type="text" id="${prefix}-route-code" class="input-box" placeholder="🔗 直連代碼(英文)" style="width: 130px;" oninput="window.saveDraft()"><div style="display:flex; gap:5px; width:100%; margin-top:5px;"><input type="url" id="${prefix}-cover" class="input-box" placeholder="🖼️ 卡片圖網址 或 按上傳" style="flex:1;" oninput="window.updateImagePreview(this.value, '${previewId}')"><button class="btn-action" style="padding: 8px 15px;" onclick="document.getElementById('${prefix}-file-input').click()">📤 本機</button></div><div style="display:flex; gap:5px; width:100%;"><select id="${prefix}-cover-fit" class="input-box" style="flex:1; padding: 8px;" onchange="window.updatePreviewFit('${previewId}', this.value)"><option value="cover">預覽: 填滿(Cover)</option><option value="contain">預覽: 完整保留(Contain)</option></select><select id="${prefix}-cover-pos" class="input-box" style="flex:1; padding: 8px;" onchange="window.updatePreviewPos('${previewId}', this.value)"><option value="center">對齊: 置中 (預設)</option><option value="top">對齊: 靠上</option><option value="bottom">對齊: 靠下</option><option value="left">對齊: 靠左</option><option value="right">對齊: 靠右</option></select></div><input type="file" id="${prefix}-file-input" style="display:none;" accept="image/*" onchange="window.handleLocalImageUpload(event, '${prefix}')">`; 
             rtc.style.display = 'block'; 
@@ -704,7 +729,6 @@
         } catch(e) { window.simpleToast("❌ 更新失敗", "error"); } 
     };
 
-    // 🌟 安全的節點創建引擎 (徹底杜絕引號衝突) 🌟
     window.renderMaterialsData = function() {
         const matContainer = document.getElementById('material-container'); const softContainer = document.getElementById('software-container'); const beautifyContainer = document.getElementById('beautify-container'); const recoveryContainer = document.getElementById('recovery-container'); const bookmarksContainer = document.getElementById('bookmarks-container');
         
@@ -778,8 +802,10 @@
 
     window.openArticleModal = function(data) {
         document.getElementById('article-title').innerText = data.fileName;
+        document.getElementById('article-meta').innerText = `分類：${data.category} | 發布者：${data.uploaderName || '站長'}`;
+        document.getElementById('article-desc').innerHTML = data.descriptionHTML || '<p style="color:#888;">無描述。</p>';
         
-        let jumpBtn = document.getElementById('btn-jump-tutorial');
+        const jumpBtn = document.getElementById('btn-jump-tutorial');
         if(data.tutorialHTML && data.tutorialHTML.trim() !== '' && data.tutorialHTML !== '<br>') {
             document.getElementById('article-tutorial-content').innerHTML = data.tutorialHTML;
             jumpBtn.innerText = `📖 ${data.tutorialBtnName || '進入專屬教學區'}`;
@@ -787,12 +813,15 @@
         } else {
             jumpBtn.style.display = 'none';
         }
-        
-        document.getElementById('article-desc').innerHTML = data.descriptionHTML || '<p style="color:#888;">無描述。</p>';
+
         const dlBtn = document.getElementById('article-dl-btn');
         if(data.fileUrl) { dlBtn.innerText = data.btnText || '🔗 前往下載'; dlBtn.href = data.fileUrl; dlBtn.style.display='inline-block'; } else { dlBtn.style.display='none'; }
-        document.getElementById('article-bookmark-btn').dataset.id = data.id; document.getElementById('article-bookmark-btn').innerHTML = window.myBookmarks.includes(data.id) ? "⭐ 已收藏" : "☆ 收藏";
-        window.backToIntro(); window.showModal('article-modal');
+        
+        document.getElementById('article-bookmark-btn').dataset.id = data.id;
+        document.getElementById('article-bookmark-btn').innerHTML = window.myBookmarks.includes(data.id) ? "⭐ 已收藏" : "☆ 收藏";
+        
+        window.backToIntro();
+        window.showModal('article-modal');
     };
 
     function initDataListener() { if(!db) return; onSnapshot(query(collection(db, "categorized_materials"), orderBy("timestamp", "desc")), (snap) => { fetchedMaterialsList = []; snap.forEach((d) => { let data = d.data(); data.id = d.id; fetchedMaterialsList.push(data); }); window.renderMaterialsData(); }); }
@@ -838,7 +867,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         const bootScreen = document.getElementById('boot-screen'); const logBox = document.getElementById('boot-log');
-        const logs = ["> INITIALIZING DOGFISH CORE...", "> SYSTEM DEPLOYED... [OK]", "> WELCOME TO DOGFISH STUDIO V30.0"];
+        const logs = ["> INITIALIZING DOGFISH CORE...", "> SYSTEM DEPLOYED... [OK]", "> WELCOME TO DOGFISH STUDIO V30.1"];
         let i = 0; function showLog() { if (i < logs.length) { let p = document.createElement('div'); p.className = 'boot-text'; p.innerText = logs[i]; logBox.appendChild(p); i++; setTimeout(showLog, 150 + Math.random() * 100); } else { setTimeout(() => { bootScreen.style.opacity = 0; setTimeout(() => bootScreen.style.display = 'none', 500); }, 400); } }
         showLog(); initDataListener();
     });
