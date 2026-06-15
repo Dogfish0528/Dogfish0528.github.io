@@ -7,21 +7,17 @@
   
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1db954">
-  <link rel="apple-touch-icon" href="icon.png">
   
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
   
   <style>
-    /* =========================================================
-       系統底層與全域變數
-    ========================================================= */
     :root { 
         --primary: #1db954; --secondary: #1ed760; --accent: #ff1744; 
         --beautify-11: #ff00ff; --beautify-10: #0078D7; --recovery: #00d4ff;
-        --border-color: rgba(255, 255, 255, 0.1); --font-main: 'Noto Sans TC', sans-serif; --player-height: 90px; 
+        --border-color: rgba(255, 255, 255, 0.1); --font-main: 'Noto Sans TC', sans-serif;
     }
     
-    body { background: linear-gradient(-45deg, #0a0a0a, #1a0b12, #0d141e, #0a110d); background-size: 400% 400%; animation: gradientBG 20s ease infinite; color: #ffffff; font-family: var(--font-main); margin: 0; padding: 0; overflow-x: hidden; transition: padding-bottom 0.3s ease; }
+    body { background: linear-gradient(-45deg, #0a0a0a, #1a0b12, #0d141e, #0a110d); background-size: 400% 400%; animation: gradientBG 20s ease infinite; color: #ffffff; font-family: var(--font-main); margin: 0; padding: 0; overflow-x: hidden; }
     @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     
     a, button, input, select, textarea { cursor: pointer; outline: none; }
@@ -32,12 +28,9 @@
     .btn-del { background: rgba(255, 23, 68, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 6px 14px; border-radius: 20px; font-weight: 800; transition: 0.2s; } .btn-del:hover { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(255, 23, 68, 0.4); }
     .btn-copy { background: transparent; color: #b3b3b3; border: 1px solid #555; padding: 6px 14px; border-radius: 20px; font-weight: 700; transition: 0.2s; text-decoration: none; display: inline-block; } .btn-copy:hover { color: white; border-color: white; }
     .btn-edit { background: rgba(29, 185, 84, 0.1); color: var(--primary); border: 1px solid var(--primary); padding: 6px 14px; border-radius: 20px; font-weight: 800; transition: 0.2s; } .btn-edit:hover { background: var(--primary); color: #000; }
-    .btn-blue-dl { background: #0088ff; color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 800; font-size: 1.05em; transition: 0.2s; display: inline-block; text-decoration: none; box-shadow: 0 4px 15px rgba(0,136,255,0.4); } .btn-blue-dl:hover { background: #00aaff; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,136,255,0.6); }
-    .input-box { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px 16px; font-size: 1em; border-radius: 6px; outline: none; transition: 0.2s; box-sizing: border-box; } .input-box:focus { border-color: var(--primary); background: rgba(0,0,0,0.8); box-shadow: 0 0 10px rgba(29, 185, 84, 0.2); }
+    .btn-blue-dl { background: #0088ff; color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 800; font-size: 1.05em; transition: 0.2s; display: inline-block; text-decoration: none; box-shadow: 0 4px 15px rgba(0,136,255,0.4); } .btn-blue-dl:hover { background: #00aaff; transform: translateY(-2px); }
+    .input-box { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px 16px; font-size: 1em; border-radius: 6px; outline: none; transition: 0.2s; box-sizing: border-box; } .input-box:focus { border-color: var(--primary); background: rgba(0,0,0,0.8); }
 
-    /* =========================================================
-       頂部導覽列 (Navbar)
-    ========================================================= */
     .navbar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: rgba(10, 10, 10, 0.7); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 1000; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
     .logo { font-size: 1.2em; font-weight: 800; display: flex; align-items: center; gap: 10px; } .logo-text { background: linear-gradient(90deg, #1db954, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .version-badge { background: linear-gradient(135deg, #1db954, #0088ff); color: #000; font-size: 0.5em; padding: 3px 8px; border-radius: 12px; font-weight: 900; }
@@ -47,19 +40,15 @@
     .btn-logout { background: transparent; color: #888; font-size: 0.8em; padding: 4px 12px; border-radius: 8px; border: 1px solid #444; transition: 0.2s; }
     #top-right-profile { display: none; align-items: center; gap: 10px; padding: 4px 12px; border-radius: 20px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); } #top-right-profile img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
 
-    /* =========================================================
-       主容器與分頁系統
-    ========================================================= */
     .main-container { width: 95%; max-width: 1920px; margin: 90px auto 50px; padding: 0; position: relative; min-height: 80vh; }
     .page-panel { display: none; padding: 30px; transition: 0.3s; } .page-panel.active { display: block; animation: fadeIn 0.4s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-    .page-title { font-size: 2.2em; font-weight: 900; margin-top: 0; margin-bottom: 25px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+    .page-title { font-size: 2.2em; font-weight: 900; margin-top: 0; margin-bottom: 25px; color: white; }
     .os-toggle-btn { background: linear-gradient(135deg, #00d4ff, #1db954); color: #000; font-weight: 900; box-shadow: 0 0 15px rgba(0,212,255,0.4); border: none; padding: 6px 16px; border-radius: 20px; transition: 0.3s; text-decoration: none; display: inline-block; } .os-toggle-btn:hover { transform: scale(1.05); color:#000; }
     
     #boot-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 9999999; display: flex; flex-direction: column; padding: 40px; font-family: 'Consolas', monospace; color: #0f0; transition: opacity 0.5s ease; pointer-events: none; }
     .boot-text { margin: 5px 0; font-size: 1.2em; opacity: 0; animation: typeIn 0.1s forwards; text-shadow: 0 0 5px #0f0; } @keyframes typeIn { to { opacity: 1; } }
 
-    /* Modals & UI */
     #disclaimer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9999999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
     .spotify-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 2.5vh 2.5vw; } 
     .modal-content { background: rgba(20,20,20,0.95); border-radius: 16px; width: 100%; max-width: 1600px; height: 100%; max-height: 95vh; display: flex; flex-direction: column; border: 1px solid #333; overflow: hidden; } 
@@ -77,20 +66,17 @@
     .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; } 
     .material-item { background: rgba(20,20,20,0.5); border: 1px solid var(--border-color); padding: 16px; border-radius: 12px; transition: 0.3s; display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; backdrop-filter: blur(5px); } 
     .material-item:hover { background: rgba(30,30,30,0.8); transform: translateY(-3px); border-color: #444; } 
-    .folder-header { grid-column: 1 / -1; font-size: 1.4em; font-weight: 900; color: white; margin-top: 15px; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 8px; text-align: left; } 
-    .album-art-wrapper { width: 100%; aspect-ratio: 1/1; border-radius: 8px; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.4); } 
+    .album-art-wrapper { width: 100%; aspect-ratio: 1/1; border-radius: 8px; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; } 
     .album-art-img { width: 100%; height: 100%; object-fit: cover; } 
     .mat-type-tag { font-size: 0.7em; padding: 4px 10px; border-radius: 4px; background: rgba(0,0,0,0.8); color: white; font-weight: 800; position: absolute; top: 10px; left: 10px; z-index: 10; backdrop-filter: blur(4px); } 
     .sfx-push-btn { width: 110px; height: 120px; border-radius: 50%; background-size: cover; background-position: center; border: 4px solid #fff; margin: 0 auto 15px; display: block; transition: 0.1s; box-shadow: 0 8px 0 #111, 0 15px 20px rgba(0,0,0,0.5); } 
     .sfx-push-btn:active { transform: translateY(8px); box-shadow: 0 0px 0 #111, 0 5px 10px rgba(0,0,0,0.5); }
     
-    /* 文章與軟體區網格 */
     .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; width: 100%; } 
     .article-card { background: rgba(20,20,20,0.5); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid var(--border-color); text-align: left; } 
     .article-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(29, 185, 84, 0.2); } 
     .article-info { padding: 20px; } .article-title { font-size: 1.5em; font-weight: 900; margin: 0 0 10px; color: white; }
 
-    /* 美化專屬卡片樣式 */
     .beautify-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; text-align: left; position: relative; }
     .beautify-card:hover { transform: translateY(-5px); }
     .beautify-card.win11:hover { border-color: var(--beautify-11); box-shadow: 0 10px 30px rgba(255,0,255,0.3); background: rgba(255,0,255,0.1); }
@@ -175,6 +161,7 @@
             <option value="音效">🔊 小音效</option>
             <option value="GIF">🖼️ 圖片/GIF</option>
             <option value="軟體" style="color: var(--secondary);">🧰 軟體推薦</option>
+            <option value="指令" style="color: var(--secondary);">💻 實用指令</option>
             <option value="Win10美化" style="color: var(--beautify-10);">🟦 Win10 美化資源</option>
             <option value="Win11美化" style="color: var(--beautify-11);">🟪 Win11 美化資源</option>
             <option value="急救資源" style="color: #00d4ff;">🚑 急救指南/問題排解</option>
@@ -230,16 +217,14 @@
 
   <div id="album-modal" class="spotify-modal">
     <div class="modal-content">
-      <div class="modal-header"><h2 style="margin: 0; color: var(--primary);">💿 播放專輯</h2><span class="modal-close-btn" onclick="window.hideModal('album-modal')">×</span></div>
+      <div class="modal-header"><h2 style="margin: 0; color: var(--primary);">💿 播放專輯</h2><span class="modal-close-btn" onclick="window.stopModalAudio(); window.hideModal('album-modal')">×</span></div>
       <div class="modal-body">
         <div style="display: flex; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 20px;">
           <div id="modal-album-cover-space"></div>
           <div style="text-align:left; flex: 1;">
             <h3 id="modal-album-title" style="margin: 0 0 15px; font-size: 2.5em; font-weight: 900;">專輯名稱</h3>
-            <div style="display: flex; gap: 10px;">
-              <button id="btn-play-album" class="btn-action" style="padding: 10px 25px; border-radius: 30px;">▶ 播放全輯</button>
-              <button id="btn-shuffle-album" class="btn-copy" style="padding: 10px 25px; border-radius: 30px; color: white;">🔀 隨機播放</button>
-            </div>
+            <audio id="modal-audio-player" controls style="width: 100%; outline: none; border-radius: 8px;"></audio>
+            <div id="modal-now-playing" style="color: #1db954; font-weight: bold; margin-top: 10px;"></div>
           </div>
         </div>
         <div id="modal-track-list"></div>
@@ -248,7 +233,7 @@
   </div>
 
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v20.0 終極重生版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v21.0 輕量純淨版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="window.switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="window.switchPage('materials')">素材庫</button>
@@ -342,13 +327,6 @@
 
   </div>
 
-  <button id="mini-player-toggle" onclick="window.showPlayer()" title="展開播放器">🎵</button>
-  <div id="global-player">
-      <div class="gp-left"><img id="gp-cover" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><div class="gp-info"><div id="gp-title" style="color: white; font-weight: 700;">等待播放...</div><div id="gp-artist" style="color: #b3b3b3; font-size: 0.8em;">Dogfish Studio</div></div></div>
-      <div class="gp-center" style="flex:1; display:flex; justify-content:center; gap:15px;"><button class="btn-copy" style="border:none; font-size:1.2em;" onclick="window.playPrevTrack()">⏮</button><audio id="gp-audio" controls style="width: 100%; max-width: 450px; height: 40px; outline: none; border-radius:20px; box-shadow:0 0 10px rgba(0,0,0,0.5);"></audio><button class="btn-copy" style="border:none; font-size:1.2em;" onclick="window.playNextTrack()">⏭</button></div>
-      <div class="gp-right"><button class="btn-copy" style="border:none; font-size:1.5em; padding:0; color:#888;" onclick="window.hidePlayer()">🔽</button></div>
-  </div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"; 
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"; 
@@ -368,7 +346,14 @@
     let userRole = "user";
     const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1";
 
-    // 🌟 解析 Google Drive 防破圖引擎 🌟
+    // 🌟 全域音效引擎 🌟
+    let sfxAudio = new Audio();
+    window.playSFX = function(url) {
+        let finalUrl = window.getOptimalAudioUrl(url);
+        sfxAudio.src = finalUrl;
+        sfxAudio.play().catch(() => window.simpleToast('瀏覽器阻擋自動播放', 'error'));
+    };
+
     window.extractGDriveId = function(url) { 
         if (!url) return null; 
         let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/) || url.match(/open\?id=([a-zA-Z0-9_-]+)/); 
@@ -411,7 +396,6 @@
         window.renderMaterialsData();
     }
 
-    // Modal 顯示邏輯
     window.openArticleModal = function(data) { 
         const modal = document.getElementById('article-modal'); 
         document.getElementById('article-title').innerHTML = data.fileName; 
@@ -441,7 +425,6 @@
         try { await deleteDoc(doc(db, "categorized_materials", id)); document.getElementById('article-modal').style.display='none'; window.simpleToast("🗑️ 已移除"); } catch(e) {} 
     };
 
-    // 🌟 軟體區加入分類輸入框 🌟
     window.renderUploadFields = function(type, prefix) { 
         const df = document.getElementById(`${prefix}-dynamic-fields`); 
         if (["音樂", "背景音樂", "人聲"].includes(type)) { df.innerHTML = `<input type="url" id="${prefix}-cover" class="input-box" placeholder="封面圖網址" style="width:100%;">`; } 
@@ -476,7 +459,7 @@
     }
 
     window.renderMaterialsData = function() {
-        const matContainer = document.getElementById('material-container'); const softContainer = document.getElementById('software-container'); const beautifyContainer = document.getElementById('beautify-container'); const recoveryContainer = document.getElementById('recovery-container'); 
+        const matContainer = document.getElementById('material-container'); const softContainer = document.getElementById('software-container'); const cmdContainer = document.getElementById('commands-container'); const beautifyContainer = document.getElementById('beautify-container'); const recoveryContainer = document.getElementById('recovery-container'); 
         
         // --- 軟體區渲染 (支援資料夾分類) ---
         if(softContainer) {
@@ -492,7 +475,7 @@
                     sGrps[folder].forEach(d => {
                         let img = window.getOptimalImageUrl(d.coverUrl) || 'https://via.placeholder.com/800x400/111/fff?text=No+Image'; 
                         let adminBtns = (userRole === "admin" || userRole === "contributor") ? `<div style="margin-top:10px; display:flex; gap:5px;"><button onclick="event.stopPropagation(); window.openEditModal('${d.id}')" class="btn-edit" style="font-size:0.7em;">⚙️</button><button onclick="event.stopPropagation(); window.deleteMaterial('${d.id}')" class="btn-del" style="font-size:0.7em;">🗑️</button></div>` : '';
-                        grid.innerHTML += `<div class="article-card" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; cursor: pointer; position: relative;" onclick="window.openArticleModal(${JSON.stringify(d).replace(/"/g, '&quot;')})"><img src="${img}" onerror="this.src='https://via.placeholder.com/800x400/222/fff?text=Image+Load+Error'" style="width:100%;height:180px;object-fit:cover;"><div class="article-info"><h3 class="article-title" style="margin:0 0 10px; font-size:1.4em;">${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊閱讀</p>${adminBtns}</div></div>`; 
+                        grid.innerHTML += `<div class="article-card" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; cursor: pointer; position: relative;" onclick="window.openArticleModal(${JSON.stringify(d).replace(/"/g, '"')})"><img src="${img}" onerror="this.src='https://via.placeholder.com/800x400/222/fff?text=Image+Load+Error'" style="width:100%;height:180px;object-fit:cover;"><div class="article-info"><h3 class="article-title" style="margin:0 0 10px; font-size:1.4em;">${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊閱讀</p>${adminBtns}</div></div>`; 
                     });
                     softContainer.appendChild(grid);
                 });
@@ -506,7 +489,7 @@
                 let img = window.getOptimalImageUrl(d.coverUrl) || 'https://via.placeholder.com/800x400/111/fff?text=No+Image'; 
                 let badge = badgeClass ? `<div class="beautify-badge ${badgeClass}">${categoryName}</div>` : '';
                 let adminBtns = (userRole === "admin" || userRole === "contributor") ? `<div style="margin-top:10px; display:flex; gap:5px;"><button onclick="event.stopPropagation(); window.openEditModal('${d.id}')" class="btn-edit" style="font-size:0.7em;">⚙️</button><button onclick="event.stopPropagation(); window.deleteMaterial('${d.id}')" class="btn-del" style="font-size:0.7em;">🗑️</button></div>` : '';
-                container.innerHTML += `<div class="article-card ${badgeClass || ''}" style="${badgeClass ? 'background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; cursor: pointer; position: relative;' : ''}" onclick="window.openArticleModal(${JSON.stringify(d).replace(/"/g, '&quot;')})">${badge}<img src="${img}" onerror="this.src='https://via.placeholder.com/800x400/222/fff?text=Image+Load+Error'" style="width:100%;height:180px;object-fit:cover;"><div class="article-info"><h3 class="article-title" style="${badgeClass ? 'margin:0 0 10px; font-size:1.4em;' : ''}">${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊閱讀</p>${adminBtns}</div></div>`; 
+                container.innerHTML += `<div class="article-card ${badgeClass || ''}" style="${badgeClass ? 'background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; cursor: pointer; position: relative;' : ''}" onclick="window.openArticleModal(${JSON.stringify(d).replace(/"/g, '"')})">${badge}<img src="${img}" onerror="this.src='https://via.placeholder.com/800x400/222/fff?text=Image+Load+Error'" style="width:100%;height:180px;object-fit:cover;"><div class="article-info"><h3 class="article-title" style="${badgeClass ? 'margin:0 0 10px; font-size:1.4em;' : ''}">${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊閱讀</p>${adminBtns}</div></div>`; 
             });
         };
 
@@ -533,18 +516,17 @@
                 Object.values(albums).forEach(album => { 
                     album.tracks.sort((a, b) => (a.trackOrder ?? 99) - (b.trackOrder ?? 99)); 
                     let coverImg = window.getOptimalImageUrl(album.coverUrl) || 'https://via.placeholder.com/150/111/fff?text=ALBUM';
-                    // 🌟 修復 Album Onclick (解決之前 escape quote 的問題) 🌟
-                    matContainer.innerHTML += `<div class="material-item" style="cursor:pointer;" onclick="window.openAlbumModal(${JSON.stringify(album).replace(/"/g, '&quot;')})"><div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div><img src="${coverImg}" onerror="this.src='https://via.placeholder.com/150/222/fff?text=No+Cover'" style="width:100%;height:100%;object-fit:cover;"></div><div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 內含 ${album.tracks.length} 首</span></div></div>`; 
+                    matContainer.innerHTML += `<div class="material-item" style="cursor:pointer;" onclick='window.openAlbumModal(${JSON.stringify(album).replace(/"/g, '"')})'><div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div><img src="${coverImg}" onerror="this.src='https://via.placeholder.com/150/222/fff?text=No+Cover'" style="width:100%;height:100%;object-fit:cover;"></div><div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 內含 ${album.tracks.length} 首</span></div></div>`; 
                 }); 
             }
             
-            // 音效類渲染
+            // 🌟 音效類渲染 (點擊直接播放，免全局播放器) 🌟
             if (currentActiveTab === "全部" || currentActiveTab === "音效") {
                 fetchedMaterialsList.filter(i => i.category === "音效").forEach(d => {
                     let adminBtns = (userRole === "admin" || userRole === "contributor") ? `<div style="margin-top:10px; display:flex; gap:5px; width:100%;"><button onclick="window.openEditModal('${d.id}')" class="btn-edit" style="flex:1;font-size:0.8em;">⚙️ 編輯</button><button onclick="window.deleteMaterial('${d.id}')" class="btn-del" style="font-size:0.8em;">🗑️</button></div>` : '';
                     let bgStyle = d.btnStyle || '#ff1744';
                     if(bgStyle.startsWith('http')) { bgStyle = `url('${window.getOptimalImageUrl(bgStyle)}') center/cover`; }
-                    matContainer.innerHTML += `<div class="material-item" style="align-items:center; padding:25px 15px;"><div style="width:80px;height:90px;border-radius:50%;background:${bgStyle};border:3px solid #fff;margin-bottom:10px;"></div><strong style="font-size:1.2em; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.fileName}</strong><a href="${d.fileUrl}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; margin-top:10px; font-size:0.9em; width:100%;">下載</a>${adminBtns}</div>`;
+                    matContainer.innerHTML += `<div class="material-item" style="align-items:center; padding:25px 15px;"><div style="width:80px;height:90px;border-radius:50%;background:${bgStyle};border:3px solid #fff;margin-bottom:10px;cursor:pointer;" onclick="window.playSFX('${d.fileUrl}')"></div><strong style="font-size:1.2em; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.fileName}</strong><a href="${window.getOptimalAudioUrl(d.fileUrl)}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; margin-top:10px; font-size:0.9em; width:100%;">下載</a>${adminBtns}</div>`;
                 });
             }
 
@@ -559,20 +541,32 @@
         }
     }
 
-    // 播放器專輯彈窗事件
+    // 🌟 彈出式專輯播放器 🌟
     window.openAlbumModal = function(album) { 
-        currentModalAlbum = album; const m = document.getElementById('album-modal'); document.getElementById('modal-album-title').innerText = album.name; 
+        const m = document.getElementById('album-modal'); document.getElementById('modal-album-title').innerText = album.name; 
         let coverImg = window.getOptimalImageUrl(album.coverUrl);
         document.getElementById('modal-album-cover-space').innerHTML = coverImg ? `<img src="${coverImg}" onerror="this.src='https://via.placeholder.com/150/222/fff?text=No+Cover'" style="width:140px;height:140px;object-fit:cover;border-radius:8px;">` : ``; 
+        
+        const audioPlayer = document.getElementById('modal-audio-player');
+        const nowPlaying = document.getElementById('modal-now-playing');
+        
         const lc = document.getElementById('modal-track-list'); lc.innerHTML = ''; 
         album.tracks.forEach((t, idx) => { 
             const row = document.createElement('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='15px'; row.style.borderBottom='1px solid rgba(255,255,255,0.05)';
             let aBtn = (userRole === "admin" || userRole === "contributor") ? `<button onclick="window.openEditModal('${t.id}')" class="btn-edit" style="padding:6px 12px; font-size:0.85em;">⚙️</button><button onclick="window.deleteMaterial('${t.id}')" class="btn-del" style="padding:6px 12px; font-size:0.85em;">🗑️</button>` : ''; 
-            row.innerHTML = `<div style="flex:1;"><span style="color:#888; font-weight:bold; margin-right:15px;">${idx + 1}</span><strong style="color:white;font-size:1.05em;">${t.fileName}</strong></div><div style="display:flex;gap:8px;"><button class="btn-action" style="padding:6px 12px; font-size:0.85em;" onclick="window.playTrackFromModal(${idx})">▶ 播放</button><a href="${window.getOptimalAudioUrl(t.fileUrl)}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; font-size:0.85em; box-shadow:none;">📥</a>${aBtn}</div>`; lc.appendChild(row); 
+            
+            // 獨立播放邏輯
+            let playFunc = `document.getElementById('modal-audio-player').src = '${window.getOptimalAudioUrl(t.fileUrl)}'; document.getElementById('modal-audio-player').play(); document.getElementById('modal-now-playing').innerText = '正在播放：${t.fileName}';`;
+            
+            row.innerHTML = `<div style="flex:1;"><span style="color:#888; font-weight:bold; margin-right:15px;">${idx + 1}</span><strong style="color:white;font-size:1.05em;">${t.fileName}</strong></div><div style="display:flex;gap:8px;"><button class="btn-action" style="padding:6px 12px; font-size:0.85em;" onclick="${playFunc}">▶ 播放</button><a href="${window.getOptimalAudioUrl(t.fileUrl)}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; font-size:0.85em; box-shadow:none;">📥</a>${aBtn}</div>`; lc.appendChild(row); 
         }); m.style.display = 'flex'; 
     }
-    document.getElementById('btn-play-album').addEventListener('click', () => { if (currentModalAlbum && currentModalAlbum.tracks.length > 0) window.loadAndPlayPlaylist(currentModalAlbum.tracks, 0); }); 
-    document.getElementById('btn-shuffle-album').addEventListener('click', () => { if (currentModalAlbum && currentModalAlbum.tracks.length > 0) { let shuffled = [...currentModalAlbum.tracks].sort(() => Math.random() - 0.5); window.loadAndPlayPlaylist(shuffled, 0); window.simpleToast("🔀 已開啟隨機播放！"); } }); 
+    
+    window.stopModalAudio = function() {
+        const audioPlayer = document.getElementById('modal-audio-player');
+        if(audioPlayer) { audioPlayer.pause(); audioPlayer.src = ''; }
+        document.getElementById('modal-now-playing').innerText = '';
+    }
 
     // 🌟 核彈級清空資料庫按鈕 🌟
     window.nukeAllMaterials = async function() {
