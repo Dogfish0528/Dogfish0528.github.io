@@ -29,8 +29,8 @@
     .btn-del { background: rgba(255, 23, 68, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 6px 14px; border-radius: 20px; font-weight: 800; transition: 0.2s; } .btn-del:hover { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(255, 23, 68, 0.4); }
     .btn-copy { background: transparent; color: #b3b3b3; border: 1px solid #555; padding: 6px 14px; border-radius: 20px; font-weight: 700; transition: 0.2s; text-decoration: none; display: inline-block; } .btn-copy:hover { color: white; border-color: white; }
     .btn-edit { background: rgba(29, 185, 84, 0.1); color: var(--primary); border: 1px solid var(--primary); padding: 6px 14px; border-radius: 20px; font-weight: 800; transition: 0.2s; } .btn-edit:hover { background: var(--primary); color: #000; }
-    .btn-blue-dl { background: #0088ff; color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 800; font-size: 1.05em; transition: 0.2s; display: inline-block; text-decoration: none; box-shadow: 0 4px 15px rgba(0,136,255,0.4); } .btn-blue-dl:hover { background: #00aaff; transform: translateY(-2px); }
-    .input-box { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px 16px; font-size: 1em; border-radius: 6px; outline: none; transition: 0.2s; box-sizing: border-box; } .input-box:focus { border-color: var(--primary); background: rgba(0,0,0,0.8); }
+    .btn-blue-dl { background: #0088ff; color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 800; font-size: 1.05em; transition: 0.2s; display: inline-block; text-decoration: none; box-shadow: 0 4px 15px rgba(0,136,255,0.4); } .btn-blue-dl:hover { background: #00aaff; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,136,255,0.6); }
+    .input-box { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px 16px; font-size: 1em; border-radius: 6px; outline: none; transition: 0.2s; box-sizing: border-box; } .input-box:focus { border-color: var(--primary); background: rgba(0,0,0,0.8); box-shadow: 0 0 10px rgba(29, 185, 84, 0.2); }
 
     .navbar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: rgba(10, 10, 10, 0.7); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 1000; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
     .logo { font-size: 1.2em; font-weight: 800; display: flex; align-items: center; gap: 10px; } .logo-text { background: linear-gradient(90deg, #1db954, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -67,9 +67,11 @@
     .material-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; } 
     .material-item { background: rgba(20,20,20,0.5); border: 1px solid var(--border-color); padding: 16px; border-radius: 12px; transition: 0.3s; display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; backdrop-filter: blur(5px); } 
     .material-item:hover { background: rgba(30,30,30,0.8); transform: translateY(-3px); border-color: #444; } 
-    .album-art-wrapper { width: 100%; aspect-ratio: 1/1; border-radius: 8px; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; } 
+    .album-art-wrapper { width: 100%; aspect-ratio: 1/1; border-radius: 8px; background: #111; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; } 
     .album-art-img { width: 100%; height: 100%; object-fit: cover; } 
     .mat-type-tag { font-size: 0.7em; padding: 4px 10px; border-radius: 4px; background: rgba(0,0,0,0.8); color: white; font-weight: 800; position: absolute; top: 10px; left: 10px; z-index: 10; backdrop-filter: blur(4px); } 
+    .sfx-push-btn { width: 110px; height: 120px; border-radius: 50%; background-size: cover; background-position: center; border: 4px solid #fff; margin: 0 auto 15px; display: block; transition: 0.1s; box-shadow: 0 8px 0 #111, 0 15px 20px rgba(0,0,0,0.5); } 
+    .sfx-push-btn:active { transform: translateY(8px); box-shadow: 0 0px 0 #111, 0 5px 10px rgba(0,0,0,0.5); }
     
     .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; } 
     .article-card { background: rgba(20,20,20,0.5); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid var(--border-color); text-align: left; } 
@@ -234,7 +236,7 @@
   </div>
 
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v19.5 終極修復版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v19.6 破圖修復版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="window.switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="window.switchPage('materials')">素材庫</button>
@@ -320,6 +322,19 @@
     let userRole = "user";
     const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1";
 
+    // 🌟 全新升級：防破圖解析引擎 🌟
+    window.extractGDriveId = function(url) { 
+        if (!url) return null; 
+        let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/); 
+        return m ? m[1] : null; 
+    } 
+    window.getOptimalImageUrl = function(url) { 
+        if (!url) return ""; 
+        const id = window.extractGDriveId(url); 
+        // 更改為 Google Drive 目前最穩定的預覽連結，避免被 403 阻擋
+        return id ? `https://drive.google.com/uc?export=view&id=${id}` : url; 
+    }
+
     window.switchPage = function(pageId) { 
         document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active')); 
         document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active')); 
@@ -329,7 +344,6 @@
         if (activeNavBtn) activeNavBtn.classList.add('active'); 
     }
 
-    // 🌟 音樂區分類嚴格過濾邏輯 🌟
     window.filterMaterials = function(btn, category) {
         document.querySelectorAll('#page-materials .tab-btn').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
@@ -384,7 +398,7 @@
         const name = document.getElementById('mat-name').value.trim(); const type = document.getElementById('mat-type-select').value; const rawUrl = document.getElementById('mat-url').value.trim(); 
         if (!name) { window.simpleToast("⚠️ 請輸入標題！", "error"); return; } 
         let editor = document.getElementById('mat-rich-editor'); let cover = document.getElementById('mat-cover') ? document.getElementById('mat-cover').value : ''; let btnColor = document.getElementById('mat-color') ? document.getElementById('mat-color').value : ''; let btnText = document.getElementById('mat-btn-text') ? document.getElementById('mat-btn-text').value : '🔗 前往連結';
-        let safeUploaderName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; 
+        let safeUploaderName = auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email.split('@')[0]) : '匿名'; 
         try { await addDoc(collection(db, "categorized_materials"), { fileName: name, category: type, fileUrl: rawUrl, coverUrl: cover, btnStyle: btnColor, btnText: btnText, descriptionHTML: editor ? editor.innerHTML : '', uploaderName: safeUploaderName, timestamp: serverTimestamp() }); window.simpleToast("✅ 發布成功！"); window.hideModal('upload-modal'); } catch (error) { window.simpleToast("❌ 錯誤", "error"); } 
     });
 
@@ -409,26 +423,28 @@
             if(!container) return; container.innerHTML = ''; let items = fetchedMaterialsList.filter(i => i.category === categoryName); 
             if(items.length === 0) { container.innerHTML = `<p style="color:#888;">${emptyMsg}</p>`; return; }
             items.forEach(d => { 
-                let img = d.coverUrl || 'https://via.placeholder.com/800x400/111/fff?text=App'; let badge = badgeClass ? `<div class="beautify-badge ${badgeClass}">${categoryName}</div>` : '';
+                let img = window.getOptimalImageUrl(d.coverUrl) || 'https://via.placeholder.com/800x400/111/fff?text=No+Image'; 
+                let badge = badgeClass ? `<div class="beautify-badge ${badgeClass}">${categoryName}</div>` : '';
                 let adminBtns = (userRole === "admin" || userRole === "contributor") ? `<div style="margin-top:10px; display:flex; gap:5px;"><button onclick="event.stopPropagation(); window.openEditModal('${d.id}')" class="btn-edit" style="font-size:0.7em;">⚙️</button><button onclick="event.stopPropagation(); window.deleteMaterial('${d.id}')" class="btn-del" style="font-size:0.7em;">🗑️</button></div>` : '';
-                container.innerHTML += `<div class="article-card ${badgeClass || ''}" style="${badgeClass ? 'background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; cursor: pointer; position: relative;' : ''}" onclick="window.openArticleModal(${JSON.stringify(d).replace(/"/g, '&quot;')})">${badge}<img src="${img}" style="width:100%;height:180px;object-fit:cover;"><div class="article-info"><h3 class="article-title" style="${badgeClass ? 'margin:0 0 10px; font-size:1.4em;' : ''}">${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊閱讀</p>${adminBtns}</div></div>`; 
+                
+                // 🌟 新增防破圖：onerror 自動載入備用圖片 🌟
+                container.innerHTML += `<div class="article-card ${badgeClass || ''}" style="${badgeClass ? 'background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; cursor: pointer; position: relative;' : ''}" onclick="window.openArticleModal(${JSON.stringify(d).replace(/"/g, '&quot;')})">${badge}<img src="${img}" onerror="this.src='https://via.placeholder.com/800x400/222/fff?text=Image+Load+Error'" style="width:100%;height:180px;object-fit:cover;"><div class="article-info"><h3 class="article-title" style="${badgeClass ? 'margin:0 0 10px; font-size:1.4em;' : ''}">${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊閱讀</p>${adminBtns}</div></div>`; 
             });
         };
 
-        renderCards(softContainer, "軟體", "目前尚無推薦軟體。"); renderCards(cmdContainer, "指令", "目前無指令資料。"); renderCards(recoveryContainer, "急救資源", "目前急救與重灌中心尚無資源。請點擊右上角「➕ 發布」來新增！", "recovery");
+        renderCards(softContainer, "軟體", "目前尚無推薦軟體。"); renderCards(cmdContainer, "指令", "目前無指令資料。"); renderCards(recoveryContainer, "急救資源", "目前急救指南尚無資源。請點擊右上角「➕ 發布」來新增！", "recovery");
 
         if(beautifyContainer && currentBeautifyTab !== "") {
             let badgeCls = currentBeautifyTab === 'Win10美化' ? 'win10' : 'win11'; renderCards(beautifyContainer, currentBeautifyTab, `目前 ${currentBeautifyTab === 'Win10美化' ? 'Windows 10' : 'Windows 11'} 專區尚無資源。`, badgeCls);
         }
 
-        // --- 音樂與素材嚴格分類渲染 ---
         if(matContainer) {
             matContainer.innerHTML = '';
             
+            // 音樂類渲染
             if (["全部", "音樂", "背景音樂", "人聲"].includes(currentActiveTab)) { 
                 const albums = {}; 
                 fetchedMaterialsList.forEach(item => { 
-                    // 🌟 音樂分類修復：過濾條件改為 "音樂" 🌟
                     if (currentActiveTab === "全部" && !["音樂", "背景音樂", "人聲"].includes(item.category)) return;
                     if (currentActiveTab !== "全部" && item.category !== currentActiveTab) return;
                     
@@ -439,21 +455,26 @@
                 }); 
                 Object.values(albums).forEach(album => { 
                     album.tracks.sort((a, b) => (a.trackOrder ?? 99) - (b.trackOrder ?? 99)); 
-                    matContainer.innerHTML += `<div class="material-item" style="cursor:pointer;" onclick='window.openAlbumModal(${JSON.stringify(album).replace(/"/g, '&quot;')})'><div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div><img src="${album.coverUrl || 'https://via.placeholder.com/150'}" style="width:100%;height:100%;object-fit:cover;"></div><div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 內含 ${album.tracks.length} 首</span></div></div>`; 
+                    let coverImg = window.getOptimalImageUrl(album.coverUrl) || 'https://via.placeholder.com/150/111/fff?text=ALBUM';
+                    // 🌟 音樂封面防破圖 🌟
+                    matContainer.innerHTML += `<div class="material-item" style="cursor:pointer;" onclick='window.openAlbumModal(${JSON.stringify(album).replace(/"/g, '&quot;')})'><div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div><img src="${coverImg}" onerror="this.src='https://via.placeholder.com/150/222/fff?text=No+Cover'" style="width:100%;height:100%;object-fit:cover;"></div><div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 內含 ${album.tracks.length} 首</span></div></div>`; 
                 }); 
             }
             
+            // 音效類渲染
             if (currentActiveTab === "全部" || currentActiveTab === "音效") {
                 fetchedMaterialsList.filter(i => i.category === "音效").forEach(d => {
-                    let adminBtns = (userRole === "admin" || userRole === "contributor") ? `<div style="margin-top:10px; display:flex; gap:5px; width:100%;"><button onclick="window.openEditModal('${d.id}')" class="btn-edit" style="flex:1;font-size:0.8em;">⚙️ 編輯</button><button onclick="window.deleteMaterial('${d.id}')" class="btn-del" style="font-size:0.8em;">🗑️</button></div>` : '';
-                    matContainer.innerHTML += `<div class="material-item" style="align-items:center; padding:25px 15px;"><div style="width:80px;height:90px;border-radius:50%;background:${d.btnStyle||'#ff1744'};border:3px solid #fff;margin-bottom:10px;"></div><strong style="font-size:1.2em; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.fileName}</strong><a href="${d.fileUrl}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; margin-top:10px; font-size:0.9em; width:100%;">下載</a>${adminBtns}</div>`;
+                    let adminBtns = (userRole === "admin" || userRole === "contributor") ? `<div style="margin-top:10px; display:flex; gap:5px; width:100%;"><button onclick="window.openEditModal('${d.id}')" class="btn-edit" style="flex:1;font-size:0.8em;">⚙️</button><button onclick="window.deleteMaterial('${d.id}')" class="btn-del" style="font-size:0.8em;">🗑️</button></div>` : '';
+                    matContainer.innerHTML += `<div class="material-item" style="align-items:center; padding:25px 15px;"><div style="width:80px;height:90px;border-radius:50%;background:${d.btnStyle||'#ff1744'};border:3px solid #fff;margin-bottom:10px;"></div><strong style="font-size:1.2em; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.fileName}</strong><a href="${window.getOptimalAudioUrl(d.fileUrl)}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; margin-top:10px; font-size:0.9em; width:100%;">下載</a>${adminBtns}</div>`;
                 });
             }
 
+            // GIF圖片類渲染
             if (currentActiveTab === "全部" || currentActiveTab === "GIF") {
                 fetchedMaterialsList.filter(i => i.category === "GIF").forEach(d => {
                     let adminBtns = (userRole === "admin" || userRole === "contributor") ? `<div style="margin-top:10px; display:flex; gap:5px; width:100%;"><button onclick="window.openEditModal('${d.id}')" class="btn-edit" style="flex:1;font-size:0.8em;">⚙️</button><button onclick="window.deleteMaterial('${d.id}')" class="btn-del" style="font-size:0.8em;">🗑️</button></div>` : '';
-                    matContainer.innerHTML += `<div class="material-item"><img src="${d.fileUrl}" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; margin-bottom:10px;"><strong style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.fileName}</strong><a href="${d.fileUrl}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; margin-top:10px; font-size:0.9em;">下載</a>${adminBtns}</div>`;
+                    let gifImg = window.getOptimalImageUrl(d.fileUrl);
+                    matContainer.innerHTML += `<div class="material-item"><img src="${gifImg}" onerror="this.src='https://via.placeholder.com/300/222/fff?text=Error'" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; margin-bottom:10px;"><strong style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.fileName}</strong><a href="${d.fileUrl}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; margin-top:10px; font-size:0.9em;">下載</a>${adminBtns}</div>`;
                 });
             }
         }
@@ -462,12 +483,13 @@
     // 播放器專輯彈窗事件
     window.openAlbumModal = function(album) { 
         currentModalAlbum = album; const m = document.getElementById('album-modal'); document.getElementById('modal-album-title').innerText = album.name; 
-        document.getElementById('modal-album-cover-space').innerHTML = album.coverUrl ? `<img src="${album.coverUrl}" style="width:140px;height:140px;object-fit:cover;border-radius:8px;">` : ``; 
+        let coverImg = window.getOptimalImageUrl(album.coverUrl);
+        document.getElementById('modal-album-cover-space').innerHTML = coverImg ? `<img src="${coverImg}" onerror="this.src='https://via.placeholder.com/150/222/fff?text=No+Cover'" style="width:140px;height:140px;object-fit:cover;border-radius:8px;">` : ``; 
         const lc = document.getElementById('modal-track-list'); lc.innerHTML = ''; 
         album.tracks.forEach((t, idx) => { 
             const row = document.createElement('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='15px'; row.style.borderBottom='1px solid rgba(255,255,255,0.05)';
             let aBtn = (userRole === "admin" || userRole === "contributor") ? `<button onclick="window.openEditModal('${t.id}')" class="btn-edit" style="padding:6px 12px; font-size:0.85em;">⚙️</button><button onclick="window.deleteMaterial('${t.id}')" class="btn-del" style="padding:6px 12px; font-size:0.85em;">🗑️</button>` : ''; 
-            row.innerHTML = `<div style="flex:1;"><span style="color:#888; font-weight:bold; margin-right:15px;">${idx + 1}</span><strong style="color:white;font-size:1.05em;">${t.fileName}</strong></div><div style="display:flex;gap:8px;"><button class="btn-action" style="padding:6px 12px; font-size:0.85em;" onclick="window.playTrackFromModal(${idx})">▶ 播放</button><a href="${t.fileUrl}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; font-size:0.85em; box-shadow:none;">📥</a>${aBtn}</div>`; lc.appendChild(row); 
+            row.innerHTML = `<div style="flex:1;"><span style="color:#888; font-weight:bold; margin-right:15px;">${idx + 1}</span><strong style="color:white;font-size:1.05em;">${t.fileName}</strong></div><div style="display:flex;gap:8px;"><button class="btn-action" style="padding:6px 12px; font-size:0.85em;" onclick="window.playTrackFromModal(${idx})">▶ 播放</button><a href="${window.getOptimalAudioUrl(t.fileUrl)}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; font-size:0.85em; box-shadow:none;">📥</a>${aBtn}</div>`; lc.appendChild(row); 
         }); m.style.display = 'flex'; 
     }
     document.getElementById('btn-play-album').addEventListener('click', () => { if (currentModalAlbum && currentModalAlbum.tracks.length > 0) window.loadAndPlayPlaylist(currentModalAlbum.tracks, 0); }); 
@@ -503,7 +525,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         const bootScreen = document.getElementById('boot-screen'); const logBox = document.getElementById('boot-log');
-        const logs = ["> INITIALIZING DOGFISH CORE...", "> LOADING SYSTEM MODULES... [OK]", "> ESTABLISHING FIREBASE CONNECTION...", "> ACCESS GRANTED.", "> WELCOME TO DOGFISH STUDIO V19.5"];
+        const logs = ["> INITIALIZING DOGFISH CORE...", "> LOADING SYSTEM MODULES... [OK]", "> ESTABLISHING FIREBASE CONNECTION...", "> ACCESS GRANTED.", "> WELCOME TO DOGFISH STUDIO V19.6"];
         let i = 0; function showLog() { if (i < logs.length) { let p = document.createElement('div'); p.className = 'boot-text'; p.innerText = logs[i]; logBox.appendChild(p); i++; setTimeout(showLog, 150 + Math.random() * 100); } else { setTimeout(() => { bootScreen.style.opacity = 0; setTimeout(() => bootScreen.style.display = 'none', 500); }, 400); } }
         showLog();
         initDataListener();
