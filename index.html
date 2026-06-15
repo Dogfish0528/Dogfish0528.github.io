@@ -17,7 +17,7 @@
     ========================================================= */
     :root { 
         --primary: #1db954; --secondary: #1ed760; --accent: #ff1744; 
-        --beautify-11: #ff00ff; --beautify-10: #0078D7;
+        --beautify-11: #ff00ff; --beautify-10: #0078D7; --recovery: #00d4ff;
         --border-color: rgba(255, 255, 255, 0.1); --font-main: 'Noto Sans TC', sans-serif; --player-height: 90px; 
     }
     
@@ -73,12 +73,10 @@
     .os-toggle-btn { background: linear-gradient(135deg, #00d4ff, #1db954); color: #000; font-weight: 900; box-shadow: 0 0 15px rgba(0,212,255,0.4); border: none; padding: 6px 16px; border-radius: 20px; transition: 0.3s; text-decoration: none; display: inline-block; } 
     .os-toggle-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(0,212,255,0.6); color:#000; }
     
-    /* 駭客開機畫面與急救區終端機 */
+    /* 駭客開機畫面 */
     #boot-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 9999999; display: flex; flex-direction: column; padding: 40px; font-family: 'Consolas', monospace; color: #0f0; transition: opacity 0.5s ease; pointer-events: none; }
     .boot-text { margin: 5px 0; font-size: 1.2em; opacity: 0; animation: typeIn 0.1s forwards; text-shadow: 0 0 5px #0f0; }
     @keyframes typeIn { to { opacity: 1; } }
-    .terminal-box { background: #050505; border: 1px solid #333; border-left: 4px solid var(--accent); border-radius: 8px; padding: 20px; font-family: 'Consolas', monospace; color: #0f0; height: 300px; overflow-y: auto; margin-bottom: 20px; box-shadow: inset 0 0 30px rgba(0,255,0,0.1); }
-    .log-line { margin: 5px 0; font-size: 0.95em; text-shadow: 0 0 3px #0f0; }
 
     /* Modals & UI */
     #disclaimer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9999999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
@@ -116,66 +114,57 @@
     .article-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(29, 185, 84, 0.2); } 
     .article-info { padding: 20px; } .article-title { font-size: 1.5em; font-weight: 900; margin: 0 0 10px; color: white; }
 
-    /* Win10/Win11 美化專屬卡片樣式 */
+    /* Win10/Win11/急救區 專屬卡片樣式 */
     .beautify-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; text-align: left; position: relative; }
     .beautify-card:hover { transform: translateY(-5px); }
     .beautify-card.win11:hover { border-color: var(--beautify-11); box-shadow: 0 10px 30px rgba(255,0,255,0.3); background: rgba(255,0,255,0.1); }
     .beautify-card.win10:hover { border-color: var(--beautify-10); box-shadow: 0 10px 30px rgba(0,120,215,0.3); background: rgba(0,120,215,0.1); }
+    .beautify-card.recovery:hover { border-color: var(--recovery); box-shadow: 0 10px 30px rgba(0,212,255,0.3); background: rgba(0,212,255,0.1); }
     .beautify-card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .beautify-info { padding: 20px; }
     .beautify-badge { position: absolute; top: 15px; right: 15px; color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold; z-index: 5; }
     .beautify-badge.win11 { background: var(--beautify-11); box-shadow: 0 2px 10px rgba(255,0,255,0.5); }
     .beautify-badge.win10 { background: var(--beautify-10); box-shadow: 0 2px 10px rgba(0,120,215,0.5); }
+    .beautify-badge.recovery { background: var(--recovery); box-shadow: 0 2px 10px rgba(0,212,255,0.5); color: black; }
 
-    /* 急救區專屬小工具 */
-    .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-    .sys-tool-btn { background: rgba(0,0,0,0.5); border: 1px solid #444; border-radius: 8px; padding: 15px; color: white; font-weight: bold; font-size: 1.1em; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-    .sys-tool-btn:hover { background: rgba(29, 185, 84, 0.2); border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(29, 185, 84, 0.3); }
-    .sys-tool-btn span { font-size: 2em; }
-
+    /* 上帝模式與系統 */
     body.god-mode { border: 2px solid var(--accent); } 
     body.god-mode .admin-overlay { display: flex !important; } 
     .admin-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 20; flex-direction: column; justify-content: center; align-items: center; gap: 15px; backdrop-filter: blur(4px); border-radius: inherit; animation: fadeInOverlay 0.2s; } 
     @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
   </style>
 
+  <!-- 防彈獨立 UI 腳本 -->
   <script>
     window.simpleToast = function(msg, type = 'success') {
-        const c = document.getElementById('toast-container'); 
-        if(!c) return;
-        const t = document.createElement('div'); 
-        t.className = `toast ${type}`; t.innerText = msg; 
-        c.appendChild(t); 
-        setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 4500);
+        const c = document.getElementById('toast-container'); if(!c) return;
+        const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg; 
+        c.appendChild(t); setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 4500);
     }
-
     window.closeDisclaimer = function() {
         localStorage.setItem('dogfish_disclaimer_agreed', 'true');
         const overlay = document.getElementById('disclaimer-overlay');
         if(overlay) overlay.style.display = 'none';
         window.simpleToast('歡迎進入 Dogfish Studio！');
     }
-
-    // Modal 開關函數
     window.showModal = function(id) { document.getElementById(id).style.display = 'flex'; }
     window.hideModal = function(id) { document.getElementById(id).style.display = 'none'; }
-
     document.addEventListener('DOMContentLoaded', () => {
         if (localStorage.getItem('dogfish_disclaimer_agreed') === 'true') {
             const overlay = document.getElementById('disclaimer-overlay');
             if(overlay) overlay.style.display = 'none';
         }
     });
+    window.showToast = simpleToast;
   </script>
 </head>
 <body>
 
-  <div id="boot-screen">
-    <div id="boot-log"></div>
-  </div>
-
+  <!-- 🌟 駭客開機畫面 -->
+  <div id="boot-screen"><div id="boot-log"></div></div>
   <div id="toast-container"></div>
   
+  <!-- ⚠️ 免責聲明 -->
   <div id="disclaimer-overlay">
     <div class="disclaimer-box solid-panel" style="padding: 40px; margin: 20px; text-align: center;">
       <h2 style="color:var(--accent); margin-top:0;">⚠️ 智慧財產權與免責聲明</h2>
@@ -184,6 +173,9 @@
     </div>
   </div>
 
+  <!-- =========================================================
+       系統各類彈出式 Modal
+  ========================================================= -->
   <div id="login-modal" class="spotify-modal">
     <div class="modal-content" style="max-width: 500px; height: auto; max-height: 90vh;">
       <div class="modal-header"><h2>🔒 系統登入</h2><span class="modal-close-btn" onclick="window.hideModal('login-modal')">&times;</span></div>
@@ -217,6 +209,7 @@
             <option value="指令" style="color: var(--secondary);">💻 實用指令</option>
             <option value="Win10美化" style="color: var(--beautify-10);">🟦 Win10 美化資源</option>
             <option value="Win11美化" style="color: var(--beautify-11);">🟪 Win11 美化資源</option>
+            <option value="急救指南" style="color: #00d4ff;">🚑 急救指南/問題排解</option>
           </select>
         </div>
         <div id="mat-dynamic-fields" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;"></div>
@@ -230,34 +223,36 @@
     <div class="modal-content">
       <div class="modal-header"><h1 id="article-title" style="margin: 0; color: white; font-size: 2.2em; line-height: 1.2;">標題</h1><span class="modal-close-btn" onclick="window.hideModal('article-modal')">&times;</span></div>
       <div class="modal-body" style="padding-top: 10px;">
-        <div id="article-meta" class="blog-meta">分類：軟體 | 發布者：站長</div>
-        <hr class="blog-divider">
-        <div id="article-desc" class="rich-editor-content blog-content" style="border:none; background:transparent;"></div>
-        <div id="article-download-box" class="blog-download-box" style="display:none;">
-          <div class="dl-info"><span style="font-size: 2em;">📦</span><div><strong style="display:block; font-size:1.1em; color: white;">資源下載 / 外部連結</strong><span style="font-size:0.85em; color:#888;">點擊前往對應網頁或下載檔案</span></div></div>
+        <div id="article-meta" style="color: #888; font-size: 1em; margin-bottom: 20px;">分類：軟體 | 發布者：站長</div>
+        <hr style="border: 0; border-top: 1px solid #333; margin-bottom: 25px;">
+        <div id="article-desc" style="font-size: 1.2em; line-height: 1.8; color: #ddd; background: transparent; border: none; padding: 0;"></div>
+        <div id="article-download-box" style="display:none; background: #222; border: 1px dashed #444; border-left: 4px solid #0088ff; border-radius: 8px; padding: 25px; margin-top: 50px; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+          <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 2em;">📦</span><div><strong style="display:block; font-size:1.1em; color: white;">相關連結 / 下載</strong><span style="font-size:0.85em; color:#888;">點擊右側按鈕前往對應網頁或下載檔案</span></div></div>
           <a id="article-dl-btn" href="#" target="_blank" class="btn-blue-dl">🔗 前往外部連結</a>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- =========================================================
+       頂部導覽列 (Navbar)
+  ========================================================= -->
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v19.2 完美架構版</span></div>
+    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v19.4 乾淨架構版</span></div>
     <div class="nav-links">
       <button class="btn-nav active" onclick="window.switchPage('blog')">大廳</button>
-      <button class="btn-nav" onclick="window.switchPage('materials')">素材區</button>
+      <button class="btn-nav" onclick="window.switchPage('materials')">素材庫</button>
       <button class="btn-nav" onclick="window.switchPage('software')">🧰 軟體</button>
       <button class="btn-nav" onclick="window.switchPage('commands')">💻 指令</button>
+      <button class="btn-nav" onclick="window.switchPage('beautify')" style="color: var(--beautify-11); font-weight: 900;">✨ 美化</button>
       
-      <button class="btn-nav" onclick="window.switchPage('beautify')" style="color: var(--beautify-11); font-weight: 900;">✨ 系統美化</button>
-      <button class="btn-nav" onclick="window.switchPage('recovery')" style="color: #00d4ff; border: 1px solid #00d4ff; margin-right: 5px;">🚑 系統急救區</button>
+      <!-- 🌟 改名為急救指南 🌟 -->
+      <button class="btn-nav" onclick="window.switchPage('recovery')" style="color: #00d4ff; font-weight: 900;">🚑 急救指南</button>
 
       <button id="nav-add-btn" class="btn-nav" style="display: none; color: #1ed760; font-weight: 900;" onclick="window.showModal('upload-modal')">➕ 發布</button>
       
-      <a href="os.html" class="os-toggle-btn">🖥️ 進入 OS</a>
-      
+      <a href="os.html" class="os-toggle-btn">🖥️ OS 模式</a>
       <button id="login-btn-modal" class="btn-login" onclick="window.showModal('login-modal')">登入</button>
-      
       <div id="top-right-profile">
         <span id="tr-name" style="font-weight: bold;">...</span>
         <img id="tr-img" src="" alt="Avatar">
@@ -266,19 +261,24 @@
     </div>
   </div>
 
+  <!-- =========================================================
+       主要內容區域 (Main Container)
+  ========================================================= -->
   <div class="main-container">
     
+    <!-- 1. 核心大廳 -->
     <div id="page-blog" class="page-panel active">
       <div style="text-align: center; padding: 60px 20px; background: rgba(20,20,20,0.6); border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
         <h1 style="font-size: 3.5em; font-weight: 900; margin: 0 0 10px 0; background: linear-gradient(90deg, #1db954, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Dogfish Studio 核心大廳</h1>
-        <p style="color: #b3b3b3; font-size: 1.3em; margin-bottom: 40px;">全域資源庫・即時路由導流・系統美化中心</p>
+        <p style="color: #b3b3b3; font-size: 1.3em; margin-bottom: 40px;">全域資源庫・系統美化・疑難排解中心</p>
         <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-            <button class="btn-action" onclick="window.switchPage('materials')" style="padding: 15px 40px; font-size: 1.2em;">📂 探索共享素材庫</button>
-            <button class="btn-blue-dl" onclick="window.switchPage('beautify')" style="padding: 15px 40px; font-size: 1.2em; border-radius: 30px; box-shadow: none; background:var(--beautify-11);">✨ 前往 系統美化區</button>
+            <button class="btn-action" onclick="window.switchPage('materials')" style="padding: 15px 40px; font-size: 1.2em;">📂 探索素材庫</button>
+            <button class="btn-blue-dl" onclick="window.switchPage('recovery')" style="padding: 15px 40px; font-size: 1.2em; border-radius: 30px; box-shadow: none; background:#00d4ff;">🚑 前往急救指南</button>
         </div>
       </div>
     </div>
     
+    <!-- 🌟 2. 共享素材庫 (完美分類版) 🌟 -->
     <div id="page-materials" class="page-panel">
       <h2 class="page-title">共享素材庫</h2>
       <div class="controls-wrapper">
@@ -294,51 +294,49 @@
       <div id="material-container" class="material-list"></div>
     </div>
     
+    <!-- 3. 軟體推薦 -->
     <div id="page-software" class="page-panel">
       <h2 class="page-title">🧰 軟體推薦大廳</h2>
       <div id="software-container" class="article-grid"></div>
     </div>
     
+    <!-- 4. 實用指令 -->
     <div id="page-commands" class="page-panel">
       <h2 class="page-title">💻 實用指令知識庫</h2>
       <div id="commands-container" class="article-grid"></div>
     </div>
 
+    <!-- 5. 系統美化專區 -->
     <div id="page-beautify" class="page-panel">
       <h2 class="page-title" style="color: var(--beautify-11); text-shadow: 0 0 10px rgba(255,0,255,0.5);">✨ 系統美化資源</h2>
-      <p style="color: #ccc; margin-bottom: 20px; font-size: 1.1em;">請選擇您的作業系統版本，以載入對應的客製化 UI 工具與微調腳本：</p>
-      
+      <p style="color: #ccc; margin-bottom: 20px; font-size: 1.1em;">請選擇您的作業系統版本：</p>
       <div style="display: flex; gap: 15px; margin-bottom: 30px;">
           <button class="btn-action" style="background: var(--beautify-10); color: white; padding: 12px 30px; font-size:1.1em;" onclick="window.filterBeautify(this, 'Win10美化')">🟦 Windows 10 專區</button>
           <button class="btn-action" style="background: var(--beautify-11); color: white; padding: 12px 30px; font-size:1.1em;" onclick="window.filterBeautify(this, 'Win11美化')">🟪 Windows 11 專區</button>
       </div>
-
       <div id="beautify-container" class="article-grid">
         <p style="color:#888; font-size:1.1em;">☝️ 請點擊上方按鈕選擇作業系統版本。</p>
       </div>
     </div>
 
+    <!-- 🌟 6. 系統急救區 (乾淨的疑難排解文章區) 🌟 -->
     <div id="page-recovery" class="page-panel">
-      <h2 class="page-title" style="color: #00d4ff;">🚑 系統急救區</h2>
-      <p style="color: #888; font-size: 1.1em; margin-bottom: 25px;">執行高權限系統維護工具，排除效能瓶頸與修復錯誤。</p>
+      <h2 class="page-title" style="color: #00d4ff;">🚑 系統急救指南</h2>
+      <p style="color: #ccc; margin-bottom: 25px; font-size: 1.1em;">
+        如果您的系統或設備覺得怪怪的，可以在這裡尋找解決方案。<br>
+        <span style="font-size: 0.85em; color: #888;">（請點擊右上角「➕ 發布」並選擇「急救指南/問題排解」來新增您的教學文章）</span>
+      </p>
       
-      <div class="tool-grid">
-          <button class="sys-tool-btn" onclick="window.runSysTool('Task Manager')">
-              <span>📊</span> 任務管理員<br><small style="color:#888; font-weight:normal;">中止異常處理程序</small>
-          </button>
-          <button class="sys-tool-btn" onclick="window.runSysTool('Disk Cleanup')">
-              <span>🧹</span> 磁碟清理工具<br><small style="color:#888; font-weight:normal;">釋放被佔用的空間</small>
-          </button>
-          <button class="sys-tool-btn" onclick="window.runSysTool('Registry Repair')">
-              <span>🔧</span> 登錄檔修復<br><small style="color:#888; font-weight:normal;">修復損壞的機碼</small>
-          </button>
+      <div id="recovery-container" class="article-grid">
+        <!-- 這裡將由資料庫自動填入你的急救文章 -->
       </div>
-      
-      <div id="recovery-terminal-log" class="terminal-box">> 系統急救終端機已就緒。等待操作指令...</div>
     </div>
 
   </div>
 
+  <!-- =========================================================
+       JavaScript 核心運作邏輯
+  ========================================================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"; 
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"; 
@@ -368,7 +366,7 @@
         if (activeNavBtn) activeNavBtn.classList.add('active'); 
     }
 
-    // 🌟 音樂區分類嚴格過濾邏輯 🌟
+    // 🌟 完美的音樂區分類邏輯 🌟
     window.filterMaterials = function(btn, category) {
         document.querySelectorAll('#page-materials .tab-btn').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
@@ -376,42 +374,64 @@
         window.renderMaterialsData();
     }
 
-    // 🌟 美化區版本切換邏輯 🌟
     window.filterBeautify = function(btn, osVersion) {
-        // 更新按鈕視覺
         const btns = btn.parentElement.querySelectorAll('.btn-action');
         btns.forEach(b => b.style.boxShadow = 'none');
         if(osVersion === 'Win10美化') btn.style.boxShadow = '0 0 20px rgba(0, 120, 215, 0.6)';
         if(osVersion === 'Win11美化') btn.style.boxShadow = '0 0 20px rgba(255, 0, 255, 0.6)';
-        
         currentBeautifyTab = osVersion;
         window.renderMaterialsData();
     }
 
-    // 🌟 急救區駭客終端機邏輯 🌟
-    window.runSysTool = function(toolName) {
-        const log = document.getElementById('recovery-terminal-log');
-        log.innerHTML = `<span style="color:white;">> 啟動 [${toolName}] 工具...</span><br>`;
-        let steps = [];
-        if(toolName === 'Task Manager') steps = ["> 掃描背景處理程序...", "> 發現異常佔用: discord.exe (PID: 4892)", "> 強制中止程序... [成功]", "> 釋放記憶體 1024MB", "> 系統恢復流暢"];
-        if(toolName === 'Disk Cleanup') steps = ["> 分析磁碟 C:...", "> 尋找暫存檔案與系統垃圾...", "> 發現 4.2GB 可清理空間", "> 正在執行深度清理...", "> 清理完成！磁碟效能提升"];
-        if(toolName === 'Registry Repair') steps = ["> 掃描 HKEY_LOCAL_MACHINE...", "> 發現 12 個無效登錄檔機碼", "> 修復中: 0x00000000...", "> 修復中: 0x00000001...", "> 登錄檔結構重組完成！"];
-        
-        let i = 0;
-        function nextStep() {
-            if(i < steps.length) {
-                log.innerHTML += steps[i] + "<br>";
-                log.scrollTop = log.scrollHeight;
-                i++;
-                setTimeout(nextStep, 400 + Math.random()*400);
-            } else {
-                log.innerHTML += `<span style="color:var(--primary); font-weight:bold;">> 任務完成。請關閉視窗。</span><br>`;
-            }
-        }
-        setTimeout(nextStep, 500);
+    window.openArticleModal = function(data) { 
+        const modal = document.getElementById('article-modal'); 
+        document.getElementById('article-title').innerHTML = data.fileName; 
+        document.getElementById('article-meta').innerHTML = `分類：${data.category} | 發布者：${data.uploaderName || '站長'}`; 
+        document.getElementById('article-desc').innerHTML = data.descriptionHTML || '<p style="color:#888;">無描述。</p>'; 
+        const dlBox = document.getElementById('article-download-box'); 
+        if (data.fileUrl) { 
+            document.getElementById('article-dl-btn').innerText = data.btnText || '🔗 前往下載'; 
+            document.getElementById('article-dl-btn').href = data.fileUrl; 
+            dlBox.style.display = 'flex'; 
+        } else { dlBox.style.display = 'none'; } 
+        modal.style.display = 'flex'; 
+    };
+
+    window.renderUploadFields = function(type, prefix) { 
+        const df = document.getElementById(`${prefix}-dynamic-fields`); 
+        if (["完整音樂", "背景音樂", "人聲"].includes(type)) { 
+            df.innerHTML = `<input type="url" id="${prefix}-cover" class="input-box" placeholder="封面圖網址" style="width:100%;">`; 
+        } else if (type === "音效") { 
+            df.innerHTML = `<div style="display:flex;align-items:center;background:rgba(0,0,0,0.5); border:1px solid #444; border-radius:6px;padding:0 8px;">🎨 <input type="color" id="${prefix}-color" class="input-box" value="#ff1744" style="width:30px;padding:0;border:none;background:transparent;"></div>`; 
+        } else if (["軟體", "指令", "Win10美化", "Win11美化", "急救指南"].includes(type)) { 
+            df.innerHTML = `<input type="text" id="${prefix}-btn-text" class="input-box" placeholder="🔘 按鈕文字 (例: 前往下載)" style="width: 180px;"><input type="url" id="${prefix}-cover" class="input-box" placeholder="🖼️ 卡片圖網址" style="width: 150px;">`; 
+            document.getElementById('mat-rich-text-container').style.display = 'block';
+        } else { df.innerHTML = ``; } 
     }
 
-    // 🌟 資料庫讀取與渲染大總管 🌟
+    document.getElementById('add-mat-btn').addEventListener('click', async () => { 
+        if(!db) return;
+        const name = document.getElementById('mat-name').value.trim(); 
+        const type = document.getElementById('mat-type-select').value; 
+        const rawUrl = document.getElementById('mat-url').value.trim(); 
+        if (!name) { window.simpleToast("⚠️ 請輸入標題！", "error"); return; } 
+        
+        let editor = document.getElementById('mat-rich-editor');
+        let cover = document.getElementById('mat-cover') ? document.getElementById('mat-cover').value : '';
+        let btnColor = document.getElementById('mat-color') ? document.getElementById('mat-color').value : '';
+        let btnText = document.getElementById('mat-btn-text') ? document.getElementById('mat-btn-text').value : '🔗 前往連結';
+        
+        let safeUploaderName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0]; 
+        try { 
+            await addDoc(collection(db, "categorized_materials"), { 
+                fileName: name, category: type, fileUrl: rawUrl, coverUrl: cover, btnStyle: btnColor, btnText: btnText,
+                descriptionHTML: editor ? editor.innerHTML : '', uploaderName: safeUploaderName, timestamp: serverTimestamp() 
+            }); 
+            window.simpleToast("✅ 發布成功！"); 
+            window.hideModal('upload-modal'); 
+        } catch (error) { window.simpleToast("❌ 錯誤", "error"); } 
+    });
+
     function initDataListener() {
         if(!db) return;
         onSnapshot(query(collection(db, "categorized_materials"), orderBy("timestamp", "desc")), (snap) => { 
@@ -426,88 +446,63 @@
         const softContainer = document.getElementById('software-container'); 
         const cmdContainer = document.getElementById('commands-container'); 
         const beautifyContainer = document.getElementById('beautify-container'); 
+        const recoveryContainer = document.getElementById('recovery-container'); 
         
-        // --- 軟體與指令渲染 ---
-        if(softContainer) {
-            softContainer.innerHTML = '';
-            let sItems = fetchedMaterialsList.filter(i => i.category === "軟體"); 
-            if(sItems.length === 0) softContainer.innerHTML = '<p style="color:#888;">目前尚無推薦軟體。</p>'; 
-            sItems.forEach(d => { 
-                softContainer.innerHTML += `<div class="article-card" onclick="window.showModal('article-modal')"><div class="article-info"><h3 class="article-title">${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊閱讀</p></div></div>`; 
+        const renderCards = (container, categoryName, emptyMsg, badgeClass = null) => {
+            if(!container) return;
+            container.innerHTML = '';
+            let items = fetchedMaterialsList.filter(i => i.category === categoryName); 
+            if(items.length === 0) { container.innerHTML = `<p style="color:#888;">${emptyMsg}</p>`; return; }
+            items.forEach(d => { 
+                let img = d.coverUrl || 'https://via.placeholder.com/800x400/111/fff?text=App';
+                let badge = badgeClass ? `<div class="beautify-badge ${badgeClass}">${categoryName}</div>` : '';
+                container.innerHTML += `
+                <div class="article-card ${badgeClass || ''}" style="${badgeClass ? 'background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; cursor: pointer; position: relative;' : ''}" onclick="window.openArticleModal(${JSON.stringify(d).replace(/"/g, '&quot;')})">
+                    ${badge}
+                    <img src="${img}" style="width:100%;height:180px;object-fit:cover;">
+                    <div class="article-info"><h3 class="article-title" style="${badgeClass ? 'margin:0 0 10px; font-size:1.4em;' : ''}">${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊閱讀</p></div>
+                </div>`; 
             });
-        }
+        };
 
-        if(cmdContainer) {
-            cmdContainer.innerHTML = '';
-            let lItems = fetchedMaterialsList.filter(i => i.category === "指令"); 
-            if(lItems.length === 0) cmdContainer.innerHTML = '<p style="color:#888;">無資料。</p>'; 
-            lItems.forEach(d => { 
-                cmdContainer.innerHTML += `<div class="article-card" onclick="window.showModal('article-modal')"><div class="article-info"><h3 class="article-title">💻 ${d.fileName}</h3><p style="color:#666;font-size:0.85em;">點擊查看</p></div></div>`; 
-            });
-        }
+        renderCards(softContainer, "軟體", "目前尚無推薦軟體。");
+        renderCards(cmdContainer, "指令", "目前無指令資料。");
+        
+        // 🌟 乾淨的急救區渲染 🌟
+        renderCards(recoveryContainer, "急救指南", "目前尚無急救指南文章。您可以透過右上角發布新增教學！", "recovery");
 
-        // --- 美化區渲染 (Win10 vs Win11) ---
         if(beautifyContainer && currentBeautifyTab !== "") {
-            beautifyContainer.innerHTML = '';
-            let bItems = fetchedMaterialsList.filter(i => i.category === currentBeautifyTab);
-            
-            if(bItems.length === 0) { 
-                beautifyContainer.innerHTML = `<p style="color:#888; font-size:1.1em;">目前 ${currentBeautifyTab === 'Win10美化' ? 'Windows 10' : 'Windows 11'} 專區尚無資源。請點擊右上角「➕ 發布」來新增！</p>`; 
-            } else {
-                bItems.forEach(d => {
-                    let badgeClass = d.category === 'Win10美化' ? 'win10' : 'win11';
-                    let img = d.coverUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&q=80';
-                    beautifyContainer.innerHTML += `
-                    <div class="beautify-card ${badgeClass}">
-                        <div class="beautify-badge ${badgeClass}">美化資源</div>
-                        <img src="${img}">
-                        <div class="beautify-info"><h3 style="margin:0 0 10px; color:white; font-size:1.4em;">${d.fileName}</h3></div>
-                    </div>`;
-                });
-            }
+            let badgeCls = currentBeautifyTab === 'Win10美化' ? 'win10' : 'win11';
+            renderCards(beautifyContainer, currentBeautifyTab, `目前 ${currentBeautifyTab === 'Win10美化' ? 'Windows 10' : 'Windows 11'} 專區尚無資源。`, badgeCls);
         }
 
-        // --- 音樂與素材嚴格分類渲染 ---
+        // 🌟 完美的音樂與素材區渲染 🌟
         if(matContainer) {
             matContainer.innerHTML = '';
             
             if (["全部", "完整音樂", "背景音樂", "人聲"].includes(currentActiveTab)) { 
-                const albums = {}; 
-                fetchedMaterialsList.forEach(item => { 
-                    // 🌟 嚴格過濾邏輯 🌟
-                    if (currentActiveTab === "全部" && !["完整音樂", "背景音樂", "人聲"].includes(item.category)) return;
-                    if (currentActiveTab !== "全部" && item.category !== currentActiveTab) return;
-                    
-                    let albName = item.albumName || "獨立單曲"; 
-                    if (!albums[albName]) albums[albName] = { name: albName, coverUrl: item.coverUrl || "", tracks: [] }; 
-                    if (!albums[albName].coverUrl && item.coverUrl) albums[albName].coverUrl = item.coverUrl; 
-                    albums[albName].tracks.push(item); 
-                }); 
-                
-                Object.values(albums).forEach(album => { 
-                    matContainer.innerHTML += `
-                    <div class="material-item">
-                        <div class="album-art-wrapper"><div class="mat-type-tag">💿 ALBUM</div><div class="default-vinyl"></div></div>
-                        <div><strong style="font-size:1.1em; display:block; margin-bottom: 4px;">${album.name}</strong><span style="font-size:0.8em; color:#b3b3b3;">🎵 內含 ${album.tracks.length} 首</span></div>
-                    </div>`; 
-                }); 
+                fetchedMaterialsList.filter(i => {
+                    if (currentActiveTab === "全部") return ["完整音樂", "背景音樂", "人聲"].includes(i.category);
+                    return i.category === currentActiveTab;
+                }).forEach(d => {
+                    matContainer.innerHTML += `<div class="material-item" style="padding:15px; text-align:center;"><div style="width:100%; aspect-ratio:1/1; background:#000; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:3em; margin-bottom:10px;">🎵</div><strong style="display:block; font-size:1.1em;">${d.fileName}</strong><span style="font-size:0.8em; color:#aaa;">${d.category}</span><br><a href="${d.fileUrl}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; margin-top:10px; font-size:0.9em;">🔗 前往收聽</a></div>`;
+                });
             }
             
             if (currentActiveTab === "全部" || currentActiveTab === "音效") {
                 fetchedMaterialsList.filter(i => i.category === "音效").forEach(d => {
-                    matContainer.innerHTML += `<div class="material-item" style="align-items:center; padding:25px 15px;"><div style="width:80px;height:90px;border-radius:50%;background:#ff1744;border:3px solid #fff;margin-bottom:10px;"></div><strong style="font-size:1.2em; display:block;">${d.fileName}</strong></div>`;
+                    matContainer.innerHTML += `<div class="material-item" style="align-items:center; padding:25px 15px;"><div style="width:80px;height:90px;border-radius:50%;background:${d.btnStyle||'#ff1744'};border:3px solid #fff;margin-bottom:10px;"></div><strong style="font-size:1.2em; display:block;">${d.fileName}</strong><a href="${d.fileUrl}" target="_blank" class="btn-blue-dl" style="padding:6px 12px; margin-top:10px; font-size:0.9em;">下載</a></div>`;
                 });
             }
 
             if (currentActiveTab === "全部" || currentActiveTab === "GIF") {
                 fetchedMaterialsList.filter(i => i.category === "GIF").forEach(d => {
-                    matContainer.innerHTML += `<div class="material-item"><div class="album-art-wrapper"><div class="mat-type-tag">🖼️ GIF</div></div><strong>${d.fileName}</strong></div>`;
+                    matContainer.innerHTML += `<div class="material-item"><img src="${d.fileUrl}" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; margin-bottom:10px;"><strong>${d.fileName}</strong></div>`;
                 });
             }
         }
     }
 
-    // 登入事件綁定
     if(auth) {
         document.getElementById('google-login-btn').addEventListener('click', () => { signInWithPopup(auth, provider).then(() => { window.hideModal('login-modal'); window.switchPage('blog'); }).catch(()=>{}); });
         document.getElementById('secret-login-btn').addEventListener('click', () => { 
@@ -518,17 +513,27 @@
         document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth).then(() => window.switchPage('blog')); });
     }
 
-    // 開機動畫與初始化
-    window.addEventListener('DOMContentLoaded', () => {
-        const bootScreen = document.getElementById('boot-screen'); const logBox = document.getElementById('boot-log');
-        const logs = ["> INITIALIZING DOGFISH CORE...", "> LOADING SYSTEM MODULES... [OK]", "> ESTABLISHING FIREBASE CONNECTION...", "> ACCESS GRANTED.", "> WELCOME TO DOGFISH STUDIO V19.2"];
-        let i = 0; function showLog() { if (i < logs.length) { let p = document.createElement('div'); p.className = 'boot-text'; p.innerText = logs[i]; logBox.appendChild(p); i++; setTimeout(showLog, 150 + Math.random() * 100); } else { setTimeout(() => { bootScreen.style.opacity = 0; setTimeout(() => bootScreen.style.display = 'none', 500); }, 400); } }
-        showLog();
-        
-        // 啟動資料庫
-        initDataListener();
+    onAuthStateChanged(auth, async (user) => { 
+        if (user) { 
+            document.getElementById('login-btn-modal').style.display = 'none'; 
+            document.getElementById('top-right-profile').style.display = 'flex'; 
+            document.getElementById('nav-add-btn').style.display = 'inline-block';
+            let safeName = user.displayName || `㊙️ ${user.email.split('@')[0]}`; 
+            document.getElementById('tr-name').innerHTML = `👤 ${safeName}`; 
+        } else { 
+            document.getElementById('login-btn-modal').style.display = 'inline-block'; 
+            document.getElementById('top-right-profile').style.display = 'none'; 
+            document.getElementById('nav-add-btn').style.display = 'none';
+        } 
     });
 
+    window.addEventListener('DOMContentLoaded', () => {
+        const bootScreen = document.getElementById('boot-screen'); const logBox = document.getElementById('boot-log');
+        const logs = ["> INITIALIZING DOGFISH CORE...", "> LOADING SYSTEM MODULES... [OK]", "> ESTABLISHING FIREBASE CONNECTION...", "> ACCESS GRANTED.", "> WELCOME TO DOGFISH STUDIO V19.4"];
+        let i = 0; function showLog() { if (i < logs.length) { let p = document.createElement('div'); p.className = 'boot-text'; p.innerText = logs[i]; logBox.appendChild(p); i++; setTimeout(showLog, 150 + Math.random() * 100); } else { setTimeout(() => { bootScreen.style.opacity = 0; setTimeout(() => bootScreen.style.display = 'none', 500); }, 400); } }
+        showLog();
+        initDataListener();
+    });
   </script>
 </body>
 </html>
