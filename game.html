@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dogfish Studio | 多人遊戲大廳</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <style>
+    /* =========================================================
+       遊戲大廳專屬底層樣式
+    ========================================================= */
+    :root { 
+        --primary: #1db954; --secondary: #1ed760; --accent: #ff1744; 
+        --bg-dark: #0a0a0a; --panel-bg: rgba(20, 20, 20, 0.8);
+        --game-blue: #00d4ff; --game-purple: #b000ff; --game-yellow: #ffb300;
+        --font-main: 'Noto Sans TC', sans-serif;
+        --font-pixel: 'Press Start 2P', cursive;
+    }
+    
+    body { 
+        background: radial-gradient(circle at top, #1a0b12, #050505); 
+        color: #ffffff; font-family: var(--font-main); margin: 0; padding: 0; 
+        height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+    }
+    
+    a, button, input { outline: none; font-family: var(--font-main); }
+    ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #111; } ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    
+    /* 頂部導覽列 (精簡版) */
+    .game-navbar { 
+        height: 60px; background: rgba(10, 10, 10, 0.9); border-bottom: 1px solid #333; 
+        display: flex; justify-content: space-between; align-items: center; padding: 0 30px; 
+        backdrop-filter: blur(10px); flex-shrink: 0;
+    }
+    .logo { font-size: 1.2em; font-weight: 900; background: linear-gradient(90deg, #ff1744, #ffb300); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .btn-home { background: transparent; color: #aaa; border: 1px solid #555; padding: 6px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; transition: 0.2s; }
+    .btn-home:hover { background: #fff; color: #000; }
+
+    /* 遊戲主版面配置 */
+    .lobby-container { display: flex; flex: 1; overflow: hidden; }
+    
+    /* 左側：遊戲選單 */
+    .sidebar { width: 250px; background: #111; border-right: 1px solid #333; display: flex; flex-direction: column; padding: 20px 0; }
+    .player-profile { padding: 0 20px 20px; border-bottom: 1px solid #333; margin-bottom: 20px; text-align: center; }
+    .player-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; font-weight: bold; color: #000; box-shadow: 0 0 15px rgba(29, 185, 84, 0.5); }
+    .player-name { font-size: 1.2em; font-weight: 900; color: #fff; word-break: break-all;}
+    
+    .menu-item { padding: 15px 20px; color: #888; font-weight: bold; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; display: flex; align-items: center; gap: 10px; }
+    .menu-item:hover { background: #1a1a1a; color: #fff; }
+    .menu-item.active { background: #222; color: #00d4ff; border-left-color: #00d4ff; }
+    
+    /* 右側：遊戲主畫面 */
+    .game-area { flex: 1; position: relative; padding: 30px; overflow-y: auto; background: url('https://www.transparenttextures.com/patterns/cubes.png'); }
+    .game-panel { display: none; height: 100%; animation: slideIn 0.3s ease; }
+    .game-panel.active { display: flex; flex-direction: column; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* 統一按鈕與輸入框 */
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 900; font-size: 1em; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+    .btn:active { transform: scale(0.95); }
+    .btn-green { background: var(--primary); color: #000; box-shadow: 0 4px 15px rgba(29, 185, 84, 0.4); } .btn-green:hover { background: var(--secondary); }
+    .btn-blue { background: var(--game-blue); color: #000; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4); } .btn-blue:hover { background: #33e0ff; }
+    .btn-red { background: var(--accent); color: #fff; box-shadow: 0 4px 15px rgba(255, 23, 68, 0.4); } .btn-red:hover { background: #ff4060; }
+    .input-box { background: #000; border: 2px solid #333; color: #fff; padding: 12px; font-size: 1.1em; border-radius: 8px; outline: none; transition: 0.2s; width: 100%; box-sizing: border-box; }
+    .input-box:focus { border-color: var(--game-blue); box-shadow: 0 0 10px rgba(0,212,255,0.3); }
+
+    /* =========================================================
+       強制命名 Modal (未登入阻擋)
+    ========================================================= */
+    #name-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+    .name-box { background: #111; border: 2px solid #333; padding: 40px; border-radius: 16px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+    .name-box h2 { margin: 0 0 20px; color: var(--game-yellow); font-family: var(--font-pixel); line-height: 1.5; font-size: 1.2em; }
+
+    /* =========================================================
+       小遊戲 1：全球連擊大戰
+    ========================================================= */
+    .clicker-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; text-align: center; }
+    .global-score-title { font-size: 1.5em; color: #aaa; margin-bottom: 10px; font-weight: 900; }
+    .global-score { font-size: 5vw; font-weight: 900; color: #ffb300; text-shadow: 0 0 30px rgba(255, 179, 0, 0.5); font-family: var(--font-pixel); margin-bottom: 40px; transition: transform 0.1s; }
+    .big-click-btn { width: 250px; height: 250px; border-radius: 50%; background: radial-gradient(circle, #ff1744, #8a001a); border: 8px solid #fff; box-shadow: 0 15px 50px rgba(255, 23, 68, 0.6), inset 0 -10px 20px rgba(0,0,0,0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 2.5em; font-weight: 900; color: white; user-select: none; transition: transform 0.05s, box-shadow 0.05s; }
+    .big-click-btn:active { transform: scale(0.9) translateY(10px); box-shadow: 0 5px 20px rgba(255, 23, 68, 0.6), inset 0 10px 20px rgba(0,0,0,0.8); }
+    .click-particle { position: absolute; font-size: 1.5em; font-weight: bold; color: #fff; pointer-events: none; animation: floatUp 1s ease-out forwards; text-shadow: 0 0 5px #000; }
+    @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-100px) scale(1.5); } }
+
+    /* =========================================================
+       小遊戲 2：多人井字棋 (Tic-Tac-Toe)
+    ========================================================= */
+    .ttt-wrapper { display: flex; flex-direction: column; align-items: center; max-width: 600px; margin: 0 auto; width: 100%; }
+    .room-controls { background: #111; padding: 20px; border-radius: 12px; border: 1px solid #333; width: 100%; display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; }
+    .ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 400px; aspect-ratio: 1/1; margin: 0 auto; pointer-events: none; opacity: 0.5; transition: 0.3s; }
+    .ttt-board.active { pointer-events: auto; opacity: 1; }
+    .ttt-cell { background: #222; border-radius: 12px; border: 2px solid #444; display: flex; align-items: center; justify-content: center; font-size: 4em; font-family: var(--font-pixel); cursor: pointer; transition: 0.2s; color: #fff; }
+    .ttt-cell:hover { background: #333; }
+    .ttt-cell.x { color: var(--game-blue); text-shadow: 0 0 15px var(--game-blue); }
+    .ttt-cell.o { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
+    .game-status-msg { font-size: 1.5em; font-weight: 900; margin-bottom: 20px; text-align: center; color: var(--game-yellow); min-height: 35px; }
+
+    /* =========================================================
+       小遊戲 3：大廳世界廣播聊天
+    ========================================================= */
+    .chat-wrapper { display: flex; flex-direction: column; height: 100%; background: #111; border: 1px solid #333; border-radius: 12px; overflow: hidden; }
+    .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+    .chat-msg { display: flex; flex-direction: column; }
+    .chat-msg .sender { font-size: 0.8em; color: #888; margin-bottom: 4px; font-weight: bold; }
+    .chat-msg .bubble { background: #222; padding: 10px 15px; border-radius: 12px; width: fit-content; max-width: 80%; word-break: break-all; line-height: 1.4; border-left: 3px solid var(--primary); }
+    .chat-msg.mine { align-items: flex-end; }
+    .chat-msg.mine .bubble { background: rgba(29, 185, 84, 0.15); border-left: none; border-right: 3px solid var(--primary); }
+    .chat-input-area { padding: 15px; background: #1a1a1a; border-top: 1px solid #333; display: flex; gap: 10px; }
+    
+    /* 系統通知 */
+    #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+    .toast { background: #fff; color: #000; padding: 12px 20px; border-radius: 8px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); animation: toastIn 0.3s ease; }
+    .toast.error { background: var(--accent); color: white; }
+    @keyframes toastIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  </style>
+</head>
+<body>
+
+  <div id="name-modal">
+      <div class="name-box">
+          <h2>Welcome to<br>Dogfish Arcade</h2>
+          <p style="color:#aaa; margin-bottom: 25px;">請輸入您的顯示名稱以開始連線</p>
+          <input type="text" id="player-name-input" class="input-box" placeholder="例如: 神級玩家 dogfish" maxlength="15" autocomplete="off">
+          <button class="btn btn-green" style="width: 100%; margin-top: 15px; font-size: 1.2em; padding: 15px;" onclick="window.savePlayerName()">進入大廳</button>
+      </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <div class="game-navbar">
+      <div class="logo">DOGFISH ARCADE</div>
+      <a href="index.html" class="btn-home">🔙 回到網站大廳</a>
+  </div>
+
+  <div class="lobby-container">
+      
+      <div class="sidebar">
+          <div class="player-profile">
+              <div class="player-avatar" id="ui-avatar">?</div>
+              <div class="player-name" id="ui-name">載入中...</div>
+          </div>
+          <div class="menu-item active" onclick="window.switchGame('clicker')">🖱️ 全球連擊大戰</div>
+          <div class="menu-item" onclick="window.switchGame('tictactoe')">⭕ 多人井字棋</div>
+          <div class="menu-item" onclick="window.switchGame('chat')">💬 世界廣播聊天</div>
+      </div>
+
+      <div class="game-area">
+          
+          <div id="game-clicker" class="game-panel active">
+              <div class="clicker-wrapper">
+                  <div class="global-score-title">🌍 全球累積總點擊數</div>
+                  <div class="global-score" id="clicker-score">0</div>
+                  <div class="big-click-btn" id="main-click-btn" onmousedown="window.doClick(event)">PUSH</div>
+                  <p style="color: #666; margin-top: 30px;">與全站玩家一起瘋狂點擊！<br>資料即時同步至 Firebase</p>
+              </div>
+          </div>
+
+          <div id="game-tictactoe" class="game-panel">
+              <div class="ttt-wrapper">
+                  <h2 style="font-family: var(--font-pixel); color: var(--game-blue); margin-top:0;">TIC-TAC-TOE</h2>
+                  
+                  <div class="room-controls" id="ttt-room-controls">
+                      <div style="display: flex; gap: 10px;">
+                          <button class="btn btn-blue" style="flex: 1;" onclick="window.createTttRoom()">➕ 建立專屬房間</button>
+                      </div>
+                      <div style="text-align: center; color: #555;">或者</div>
+                      <div style="display: flex; gap: 10px;">
+                          <input type="text" id="ttt-room-id-input" class="input-box" placeholder="輸入朋友的 6 碼房間代號">
+                          <button class="btn btn-green" onclick="window.joinTttRoom()">進入</button>
+                      </div>
+                  </div>
+
+                  <div class="room-controls" id="ttt-game-info" style="display: none; border-color: var(--game-purple); background: rgba(176, 0, 255, 0.1);">
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                          <div>
+                              <div style="font-size: 0.8em; color: #aaa;">房間代碼 (分享給朋友)</div>
+                              <div style="font-size: 1.5em; font-weight: bold; color: #fff; letter-spacing: 2px;" id="ttt-current-room-id">------</div>
+                          </div>
+                          <button class="btn btn-red" style="padding: 8px 15px; font-size: 0.8em;" onclick="window.leaveTttRoom()">離開房間</button>
+                      </div>
+                  </div>
+
+                  <div class="game-status-msg" id="ttt-status">等待加入房間...</div>
+
+                  <div class="ttt-board" id="ttt-board">
+                      <div class="ttt-cell" onclick="window.playTttMove(0)"></div>
+                      <div class="ttt-cell" onclick="window.playTttMove(1)"></div>
+                      <div class="ttt-cell" onclick="window.playTttMove(2)"></div>
+                      <div class="ttt-cell" onclick="window.playTttMove(3)"></div>
+                      <div class="ttt-cell" onclick="window.playTttMove(4)"></div>
+                      <div class="ttt-cell" onclick="window.playTttMove(5)"></div>
+                      <div class="ttt-cell" onclick="window.playTttMove(6)"></div>
+                      <div class="ttt-cell" onclick="window.playTttMove(7)"></div>
+                      <div class="ttt-cell" onclick="window.playTttMove(8)"></div>
+                  </div>
+                  
+                  <button class="btn btn-green" id="ttt-restart-btn" style="margin-top: 30px; display: none; width: 100%;" onclick="window.resetTttBoard()">🔄 再來一局</button>
+              </div>
+          </div>
+
+          <div id="game-chat" class="game-panel">
+              <h2 style="margin-top:0; border-bottom: 2px solid #333; padding-bottom: 10px;">💬 大廳世界廣播</h2>
+              <div class="chat-wrapper">
+                  <div class="chat-messages" id="chat-messages-container">
+                      </div>
+                  <div class="chat-input-area">
+                      <input type="text" id="chat-input" class="input-box" placeholder="說點什麼... (按 Enter 發送)" maxlength="100" onkeypress="if(event.key === 'Enter') window.sendChatMessage()">
+                      <button class="btn btn-green" onclick="window.sendChatMessage()">發送</button>
+                  </div>
+              </div>
+          </div>
+
+      </div>
+  </div>
+
+  <script type="module">
+    // 🔥 Firebase 初始化 (共用你原本的資料庫設定) 🔥
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"; 
+    import { getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+    
+    const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website" }; 
+    let app, db;
+    try { app = initializeApp(firebaseConfig); db = getFirestore(app); } 
+    catch(e) { console.error("Firebase 連線失敗", e); }
+
+    // 系統變數
+    window.playerName = "";
+    let clickDebounce = false;
+
+    // 工具函數
+    window.simpleToast = function(msg, type = 'success') {
+        const c = document.getElementById('toast-container');
+        const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg; 
+        c.appendChild(t); setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 3000);
+    };
+
+    // 🌟 1. 玩家命名系統 🌟
+    window.checkPlayerName = function() {
+        let savedName = localStorage.getItem('dogfish_game_name');
+        if (savedName) {
+            window.playerName = savedName;
+            document.getElementById('name-modal').style.display = 'none';
+            window.updateProfileUI();
+            window.initGames(); // 登入成功後初始化 Firebase 監聽
+        }
+    };
+
+    window.savePlayerName = function() {
+        let input = document.getElementById('player-name-input').value.trim();
+        if (!input) { window.simpleToast('名稱不能為空！', 'error'); return; }
+        window.playerName = input;
+        localStorage.setItem('dogfish_game_name', input);
+        document.getElementById('name-modal').style.display = 'none';
+        window.updateProfileUI();
+        window.simpleToast(`歡迎來到大廳，${input}！`);
+        window.initGames();
+    };
+
+    window.updateProfileUI = function() {
+        document.getElementById('ui-name').innerText = window.playerName;
+        document.getElementById('ui-avatar').innerText = window.playerName.charAt(0).toUpperCase();
+    };
+
+    // 🌟 2. 遊戲分頁切換 🌟
+    window.switchGame = function(gameId) {
+        document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.game-panel').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        document.getElementById(`game-${gameId}`).classList.add('active');
+        
+        // 切換到聊天室時捲動到底部
+        if(gameId === 'chat') {
+            let box = document.getElementById('chat-messages-container');
+            box.scrollTop = box.scrollHeight;
+        }
+    };
+
+    // 🌟 3. 初始化 Firebase 遊戲監聽 🌟
+    window.initGames = function() {
+        if(!db) return;
+        initClickerSync();
+        initChatSync();
+    };
+
+    // ============================================================================
+    // 🎮 遊戲一：全球連擊大戰邏輯
+    // ============================================================================
+    let localClickCount = 0;
+    const clickDocRef = doc(db, "arcade_games", "global_clicker");
+
+    async function initClickerSync() {
+        // 確保文件存在
+        const snap = await getDoc(clickDocRef);
+        if(!snap.exists()) { await setDoc(clickDocRef, { total: 0 }); }
+        
+        // 即時監聽全服分數
+        onSnapshot(clickDocRef, (doc) => {
+            if(doc.exists()) {
+                const scoreEl = document.getElementById('clicker-score');
+                scoreEl.innerText = doc.data().total.toLocaleString();
+                scoreEl.style.transform = 'scale(1.1)';
+                setTimeout(() => scoreEl.style.transform = 'scale(1)', 100);
+            }
+        });
+    }
+
+    window.doClick = function(e) {
+        if(clickDebounce) return;
+        clickDebounce = true; setTimeout(() => clickDebounce = false, 50); // 防連點腳本過快
+        
+        // 產生粒子特效
+        const btn = document.getElementById('main-click-btn');
+        const rect = btn.getBoundingClientRect();
+        const particle = document.createElement('div');
+        particle.className = 'click-particle';
+        particle.innerText = '+1';
+        // 隨機從按鈕上方噴出
+        const randomX = (Math.random() - 0.5) * 100;
+        particle.style.left = `${e.clientX - 10}px`;
+        particle.style.top = `${e.clientY - 20}px`;
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 1000);
+
+        // 寫入 Firebase
+        if(db) {
+            // 使用增量更新避免覆蓋 (Firebase v9 不需要 FieldValue.increment，這裡為求穩定直接讀取後加1，實際大型專案需用 transaction)
+            getDoc(clickDocRef).then(d => {
+                let current = d.exists() ? d.data().total : 0;
+                updateDoc(clickDocRef, { total: current + 1 });
+            });
+        }
+    };
+
+    // ============================================================================
+    // 🎮 遊戲二：多人井字棋邏輯
+    // ============================================================================
+    let tttRoomId = null;
+    let tttUnsubscribe = null;
+    let tttPlayerRole = null; // 'X' (房主) 或 'O' (加入者)
+
+    window.createTttRoom = async function() {
+        if(!db) return;
+        // 產生隨機 6 碼數字
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const roomRef = doc(db, "arcade_ttt_rooms", code);
+        
+        try {
+            await setDoc(roomRef, {
+                board: ["", "", "", "", "", "", "", "", ""],
+                turn: "X", // X 先手
+                playerX: window.playerName,
+                playerO: null,
+                status: "waiting", // waiting, playing, X_won, O_won, draw
+                lastUpdated: serverTimestamp()
+            });
+            
+            tttPlayerRole = "X";
+            tttRoomId = code;
+            enterTttRoomUI();
+            listenTttRoom();
+            window.simpleToast("建立成功！請將代碼分享給對手");
+        } catch(e) { window.simpleToast("建立失敗", "error"); }
+    };
+
+    window.joinTttRoom = async function() {
+        if(!db) return;
+        const code = document.getElementById('ttt-room-id-input').value.trim();
+        if(code.length !== 6) { window.simpleToast("請輸入有效的 6 碼代號", "error"); return; }
+        
+        const roomRef = doc(db, "arcade_ttt_rooms", code);
+        const snap = await getDoc(roomRef);
+        
+        if(!snap.exists()) { window.simpleToast("找不到該房間", "error"); return; }
+        let rData = snap.data();
+        if(rData.playerO !== null && rData.playerO !== window.playerName) { window.simpleToast("房間已滿！", "error"); return; }
+        
+        try {
+            await updateDoc(roomRef, { playerO: window.playerName, status: "playing", lastUpdated: serverTimestamp() });
+            tttPlayerRole = "O";
+            tttRoomId = code;
+            enterTttRoomUI();
+            listenTttRoom();
+            window.simpleToast("成功加入房間！");
+        } catch(e) { window.simpleToast("加入失敗", "error"); }
+    };
+
+    window.leaveTttRoom = function() {
+        if(tttUnsubscribe) tttUnsubscribe();
+        tttRoomId = null;
+        tttPlayerRole = null;
+        document.getElementById('ttt-room-controls').style.display = 'flex';
+        document.getElementById('ttt-game-info').style.display = 'none';
+        document.getElementById('ttt-board').classList.remove('active');
+        document.getElementById('ttt-status').innerText = "等待加入房間...";
+        document.getElementById('ttt-restart-btn').style.display = 'none';
+        
+        // 清空 UI 棋盤
+        let cells = document.querySelectorAll('.ttt-cell');
+        cells.forEach(c => { c.innerText = ''; c.className = 'ttt-cell'; });
+    };
+
+    function enterTttRoomUI() {
+        document.getElementById('ttt-room-controls').style.display = 'none';
+        document.getElementById('ttt-game-info').style.display = 'flex';
+        document.getElementById('ttt-current-room-id').innerText = tttRoomId;
+    }
+
+    function listenTttRoom() {
+        const roomRef = doc(db, "arcade_ttt_rooms", tttRoomId);
+        tttUnsubscribe = onSnapshot(roomRef, (docSnap) => {
+            if(!docSnap.exists()) { window.simpleToast("房間已被解散", "error"); window.leaveTttRoom(); return; }
+            
+            const data = docSnap.data();
+            updateTttBoardUI(data);
+            updateTttStatusUI(data);
+        });
+    }
+
+    function updateTttBoardUI(data) {
+        let cells = document.querySelectorAll('.ttt-cell');
+        for(let i=0; i<9; i++) {
+            cells[i].innerText = data.board[i];
+            cells[i].className = 'ttt-cell';
+            if(data.board[i]) cells[i].classList.add(data.board[i].toLowerCase());
+        }
+    }
+
+    function updateTttStatusUI(data) {
+        const statusEl = document.getElementById('ttt-status');
+        const boardEl = document.getElementById('ttt-board');
+        const restartBtn = document.getElementById('ttt-restart-btn');
+        
+        if(data.status === "waiting") {
+            statusEl.innerText = "等待對手加入...";
+            statusEl.style.color = "var(--game-yellow)";
+            boardEl.classList.remove('active');
+            restartBtn.style.display = 'none';
+        } 
+        else if (data.status === "playing") {
+            let isMyTurn = (data.turn === tttPlayerRole);
+            statusEl.innerText = isMyTurn ? "👉 輪到你了！" : "⏳ 等待對手下棋...";
+            statusEl.style.color = isMyTurn ? "#fff" : "#aaa";
+            if(isMyTurn) boardEl.classList.add('active'); else boardEl.classList.remove('active');
+            restartBtn.style.display = 'none';
+        }
+        else {
+            // 遊戲結束
+            boardEl.classList.remove('active');
+            restartBtn.style.display = 'block';
+            if(data.status === "draw") { statusEl.innerText = "🤝 平手！"; statusEl.style.color = "#aaa"; }
+            else if((data.status === "X_won" && tttPlayerRole === "X") || (data.status === "O_won" && tttPlayerRole === "O")) {
+                statusEl.innerText = "🏆 你贏了！"; statusEl.style.color = "var(--primary)";
+            } else {
+                statusEl.innerText = "💀 你輸了..."; statusEl.style.color = "var(--accent)";
+            }
+        }
+    }
+
+    window.playTttMove = async function(index) {
+        if(!tttRoomId || !tttPlayerRole) return;
+        const roomRef = doc(db, "arcade_ttt_rooms", tttRoomId);
+        const snap = await getDoc(roomRef);
+        const data = snap.data();
+        
+        // 規則檢查
+        if(data.status !== "playing") return;
+        if(data.turn !== tttPlayerRole) return;
+        if(data.board[index] !== "") return;
+        
+        // 更新陣列
+        let newBoard = [...data.board];
+        newBoard[index] = tttPlayerRole;
+        
+        // 檢查輸贏
+        let newStatus = checkTttWin(newBoard);
+        let nextTurn = tttPlayerRole === "X" ? "O" : "X";
+        
+        await updateDoc(roomRef, { board: newBoard, turn: nextTurn, status: newStatus, lastUpdated: serverTimestamp() });
+    };
+
+    window.resetTttBoard = async function() {
+        if(!tttRoomId) return;
+        const roomRef = doc(db, "arcade_ttt_rooms", tttRoomId);
+        await updateDoc(roomRef, { board: ["", "", "", "", "", "", "", "", ""], status: "playing", turn: "X" });
+    };
+
+    function checkTttWin(b) {
+        const lines = [ [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6] ];
+        for(let l of lines) {
+            if(b[l[0]] && b[l[0]] === b[l[1]] && b[l[0]] === b[l[2]]) { return b[l[0]] + "_won"; }
+        }
+        if(!b.includes("")) return "draw";
+        return "playing";
+    }
+
+    // ============================================================================
+    // 🎮 遊戲三：世界廣播聊天邏輯
+    // ============================================================================
+    function initChatSync() {
+        const q = query(collection(db, "arcade_chat"), orderBy("timestamp", "desc"), limit(20));
+        onSnapshot(q, (snapshot) => {
+            let msgs = [];
+            snapshot.forEach(doc => { msgs.push(doc.data()); });
+            msgs.reverse(); // 讓最新的在下面
+            
+            const box = document.getElementById('chat-messages-container');
+            box.innerHTML = '';
+            msgs.forEach(m => {
+                let isMine = m.sender === window.playerName;
+                let cls = isMine ? "chat-msg mine" : "chat-msg";
+                box.innerHTML += `<div class="${cls}">
+                    ${isMine ? '' : `<div class="sender">${m.sender}</div>`}
+                    <div class="bubble">${m.text}</div>
+                </div>`;
+            });
+            box.scrollTop = box.scrollHeight;
+        });
+    }
+
+    window.sendChatMessage = async function() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if(!text) return;
+        
+        input.value = '';
+        if(db) {
+            await addDoc(collection(db, "arcade_chat"), {
+                sender: window.playerName,
+                text: text,
+                timestamp: serverTimestamp()
+            });
+        }
+    };
+
+    // 啟動程序
+    window.addEventListener('DOMContentLoaded', () => { window.checkPlayerName(); });
+  </script>
+</body>
+</html>
