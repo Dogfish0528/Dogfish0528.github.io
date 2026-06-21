@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dogfish Lab | 跨裝置感測器實驗室</title>
+  <style>
+    :root { --primary: #1db954; --game-blue: #00d4ff; --accent: #ff1744; --font-main: 'Microsoft JhengHei', sans-serif; }
+    * { font-family: var(--font-main) !important; box-sizing: border-box; }
+    body { background: #050505; color: #fff; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow: hidden; }
+    
+    .navbar { width: 100%; height: 60px; background: rgba(10,10,10,0.9); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+    .logo { font-size: 1.2em; font-weight: 900; color: var(--game-blue); }
+    .btn-nav-back { color: #aaa; text-decoration: none; border: 1px solid #555; padding: 6px 16px; border-radius: 20px; font-weight: bold; }
+    
+    .lab-container { display: flex; width: 100%; height: calc(100vh - 60px); }
+    
+    /* 左側選單 */
+    .sidebar { width: 260px; background: #0a0a0a; border-right: 1px solid #333; padding: 20px 0; overflow-y: auto; }
+    .menu-item { padding: 15px 20px; color: #aaa; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; border-left: 4px solid transparent; }
+    .menu-item:hover { background: #111; color: #fff; }
+    .menu-item.active { background: #222; color: var(--game-blue); border-left-color: var(--game-blue); }
+    
+    /* 右側主區 */
+    .main-area { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; }
+    .panel { display: none; width: 100%; max-width: 600px; background: #111; border: 1px solid #333; border-radius: 12px; padding: 30px; text-align: center; }
+    .panel.active { display: block; }
+    
+    .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; font-size: 1.1em; }
+    .btn-green { background: var(--primary); color: #000; } .btn-blue { background: var(--game-blue); color: #000; }
+    .input-box { background: #000; border: 2px solid #333; color: #fff; padding: 12px; border-radius: 8px; width: 100%; text-align: center; margin-bottom: 10px; font-size: 1.2em; letter-spacing: 2px; }
+
+    /* 🏎️ 1. 陀螺儀賽車 */
+    .car-visual { width: 60px; height: 100px; background: var(--accent); border-radius: 8px; margin: 40px auto; transition: transform 0.1s ease-out; position: relative; }
+    .car-visual::before { content: ''; position: absolute; top: 10px; left: 10px; right: 10px; height: 20px; background: #fff; border-radius: 4px; }
+    
+    /* 🖲️ 2. 軌跡滑鼠 */
+    .touchpad-area { width: 100%; height: 300px; background: #222; border: 2px dashed #555; border-radius: 12px; margin-top: 20px; position: relative; touch-action: none; }
+    .custom-cursor { width: 20px; height: 20px; background: var(--game-blue); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--game-blue); transition: left 0.05s, top 0.05s; }
+    
+    /* 🎮 4. 虛擬搖桿 */
+    .joystick-base { width: 150px; height: 150px; background: #222; border-radius: 50%; margin: 20px auto; position: relative; touch-action: none; border: 2px solid #444; }
+    .joystick-stick { width: 60px; height: 60px; background: var(--primary); border-radius: 50%; position: absolute; top: 45px; left: 45px; pointer-events: none; }
+    .ship-visual { width: 40px; height: 40px; background: #fff; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); position: absolute; top: 50%; left: 50%; transition: 0.1s; }
+
+    /* 🔦 5. 光影光劍 */
+    .saber-hilt { width: 30px; height: 100px; background: #666; border-radius: 0 0 10px 10px; margin: 0 auto; position: relative; }
+    .saber-blade { width: 20px; height: 0px; background: #0f0; box-shadow: 0 0 20px #0f0; position: absolute; bottom: 100%; left: 5px; border-radius: 10px 10px 0 0; transition: height 0.2s ease-out, background 0.2s, box-shadow 0.2s; }
+    
+    /* 🎙️ 7. 吹力感應 */
+    .balloon { width: 100px; height: 120px; background: var(--accent); border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; margin: 50px auto 0; transition: transform 0.1s ease-out; }
+
+    #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
+    .toast { background: #fff; color: #000; padding: 12px 20px; border-radius: 8px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+    .status-text { color: var(--game-yellow); font-weight: bold; margin-bottom: 10px; display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+      <div class="logo">跨裝置硬體實驗室</div>
+      <a href="index.html" class="btn-nav-back">🔙 返回大廳</a>
+  </div>
+  <div id="toast-container"></div>
+
+  <div class="lab-container">
+      <div class="sidebar">
+          <div class="menu-item active" onclick="switchLab('setup')">⚙️ 連線配對中心</div>
+          <div class="menu-item" onclick="switchLab('gyro')">🏎️ 1. 陀螺儀賽車</div>
+          <div class="menu-item" onclick="switchLab('touchpad')">🖲️ 2. 軌跡滑鼠板</div>
+          <div class="menu-item" onclick="switchLab('joystick')">🎮 4. 虛擬搖桿</div>
+          <div class="menu-item" onclick="switchLab('light')">🔦 5. 光影光劍</div>
+          <div class="menu-item" onclick="switchLab('blow')">🎙️ 7. 吹力感應</div>
+      </div>
+
+      <div class="main-area">
+          
+          <div id="lab-setup" class="panel active">
+              <h2 style="color:var(--game-blue);">實驗室連線中心</h2>
+              <p style="color:#aaa; font-size:0.9em;">先在此建立 P2P WebRTC 數據通道，再切換左側功能。</p>
+              
+              <div style="background:#222; padding:20px; border-radius:8px; margin-bottom:20px;">
+                  <h3 style="margin-top:0; color:var(--primary);">📱 手機端 (發送感測數據)</h3>
+                  <button class="btn btn-green" onclick="createRoom()">建立感測器房間</button>
+                  <div id="room-code-display" style="font-size:2em; font-weight:bold; letter-spacing:5px; margin-top:10px;">------</div>
+              </div>
+
+              <div style="background:#222; padding:20px; border-radius:8px;">
+                  <h3 style="margin-top:0; color:var(--game-blue);">🖥️ 電腦端 (接收渲染畫面)</h3>
+                  <input type="text" id="room-input" class="input-box" placeholder="輸入6碼房號" maxlength="6">
+                  <button class="btn btn-blue" onclick="joinRoom()">連接手機設備</button>
+              </div>
+              <span id="conn-status" class="status-text" style="margin-top:20px;">狀態：未連線</span>
+          </div>
+
+          <div id="lab-gyro" class="panel">
+              <h2 style="color:var(--game-blue);">🏎️ 陀螺儀方向盤</h2>
+              <p style="color:#888;">手機端：左右傾斜手機。<br>電腦端：看著車子甩尾。</p>
+              <div class="car-visual" id="demo-car"></div>
+              <div id="gyro-data" style="font-family:monospace; color:#aaa;">Gamma: 0°</div>
+          </div>
+
+          <div id="lab-touchpad" class="panel">
+              <h2 style="color:var(--game-blue);">🖲️ 虛擬軌跡滑鼠</h2>
+              <p style="color:#888;">手機端：在下方黑色區域滑動手指。<br>電腦端：游標即時移動。</p>
+              <div class="touchpad-area" id="touch-pad">
+                  <span style="color:#555; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none;">手機觸控區</span>
+                  <div class="custom-cursor" id="demo-cursor" style="display:none;"></div>
+              </div>
+          </div>
+
+          <div id="lab-joystick" class="panel">
+              <h2 style="color:var(--game-blue);">🎮 360度虛擬搖桿</h2>
+              <p style="color:#888;">手機端：拖曳下方搖桿。<br>電腦端：戰機全方位平滑移動。</p>
+              
+              <div class="joystick-base" id="joy-base">
+                  <div class="joystick-stick" id="joy-stick"></div>
+              </div>
+              
+              <div style="width:100%; height:300px; background:#000; border:1px solid #444; position:relative; overflow:hidden; border-radius:8px; display:none;" id="joy-screen">
+                  <div class="ship-visual" id="demo-ship"></div>
+              </div>
+          </div>
+
+          <div id="lab-light" class="panel">
+              <h2 style="color:var(--game-blue);">🔦 光影感應光劍</h2>
+              <p style="color:#888;">手機端：用手電筒照手機螢幕 (需設備支援)。<br>電腦端：光劍隨亮度伸長！</p>
+              <div style="height: 350px; display:flex; flex-direction:column; justify-content:flex-end;">
+                  <div class="saber-hilt">
+                      <div class="saber-blade" id="demo-blade"></div>
+                  </div>
+              </div>
+              <div id="light-data" style="font-family:monospace; color:#aaa; margin-top:20px;">Lux: 0</div>
+          </div>
+
+          <div id="lab-blow" class="panel">
+              <h2 style="color:var(--game-blue);">🎙️ 氣流吹力感應</h2>
+              <p style="color:#888;">手機端：對麥克風大力吹氣。<br>電腦端：熱氣球膨脹升空！</p>
+              <div style="height: 300px; position:relative;">
+                  <div class="balloon" id="demo-balloon"></div>
+              </div>
+              <div id="blow-data" style="font-family:monospace; color:#aaa; margin-top:20px;">Volume: 0</div>
+          </div>
+
+      </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"; 
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+    const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website" }; 
+    let app, db; try { app = initializeApp(firebaseConfig); db = getFirestore(app); } catch(e) {}
+
+    let peerConnection = null; let dataChannel = null; let role = null; let roomId = null;
+    let currentLab = 'setup';
+
+    window.simpleToast = function(msg) { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000); };
+
+    window.switchLab = function(id) {
+        document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
+        document.getElementById(`lab-${id}`).classList.add('active');
+        currentLab = id;
+
+        // UI 自適應：如果是電腦端(Receiver)，隱藏手機控制盤，顯示大螢幕
+        if(role === 'receiver') {
+            if(id === 'touchpad') document.getElementById('demo-cursor').style.display = 'block';
+            if(id === 'joystick') { document.getElementById('joy-base').style.display = 'none'; document.getElementById('joy-screen').style.display = 'block'; }
+        }
+        
+        // 感測器啟動開關
+        if(role === 'sender') {
+            if(id === 'gyro') startGyro(); else stopGyro();
+            if(id === 'light') startLight(); else stopLight();
+            if(id === 'blow') startBlow(); else stopBlow();
+        }
+    };
+
+    // ==========================================
+    // 🌐 WebRTC 萬用資料通道連線 (Signaling)
+    // ==========================================
+    const rtcConfig = { iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }] };
+
+    window.createRoom = async function() {
+        if(!db) return; role = 'sender';
+        roomId = Math.floor(100000 + Math.random() * 900000).toString();
+        document.getElementById('room-code-display').innerText = roomId;
+        document.getElementById('conn-status').innerText = "狀態：等待接收端加入...";
+
+        const roomRef = doc(db, 'lab_rooms', roomId);
+        peerConnection = new RTCPeerConnection(rtcConfig);
+        dataChannel = peerConnection.createDataChannel('labData');
+        
+        peerConnection.onicecandidate = e => { if (e.candidate) addDoc(collection(roomRef, 'senderIce'), e.candidate.toJSON()); };
+
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        await setDoc(roomRef, { offer: { type: offer.type, sdp: offer.sdp }, timestamp: serverTimestamp() });
+
+        onSnapshot(roomRef, async snap => {
+            const data = snap.data();
+            if (!peerConnection.currentRemoteDescription && data && data.answer) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                document.getElementById('conn-status').innerText = "🟢 狀態：已連線！手機準備發送數據";
+                document.getElementById('conn-status').style.color = "var(--primary)";
+                window.simpleToast("電腦已連接！請切換左側實驗室！");
+            }
+        });
+        onSnapshot(collection(roomRef, 'receiverIce'), snap => { snap.docChanges().forEach(async c => { if (c.type === 'added') await peerConnection.addIceCandidate(new RTCIceCandidate(c.doc.data())); }); });
+    };
+
+    window.joinRoom = async function() {
+        if(!db) return; role = 'receiver';
+        roomId = document.getElementById('room-input').value.trim();
+        const roomRef = doc(db, 'lab_rooms', roomId);
+        const snap = await getDoc(roomRef); if(!snap.exists()) { window.simpleToast("找不到房間"); return; }
+
+        document.getElementById('conn-status').innerText = "狀態：連線中...";
+        peerConnection = new RTCPeerConnection(rtcConfig);
+        
+        // 🌟 接收端核心：監聽所有感測器傳來的數據 🌟
+        peerConnection.ondatachannel = event => {
+            dataChannel = event.channel;
+            dataChannel.onmessage = e => {
+                const data = JSON.parse(e.data);
+                if(data.type === 'gyro' && currentLab === 'gyro') updateGyroReceiver(data);
+                if(data.type === 'touch' && currentLab === 'touchpad') updateTouchpadReceiver(data);
+                if(data.type === 'joy' && currentLab === 'joystick') updateJoystickReceiver(data);
+                if(data.type === 'light' && currentLab === 'light') updateLightReceiver(data);
+                if(data.type === 'blow' && currentLab === 'blow') updateBlowReceiver(data);
+            };
+        };
+
+        peerConnection.onicecandidate = e => { if (e.candidate) addDoc(collection(roomRef, 'receiverIce'), e.candidate.toJSON()); };
+
+        const offer = snap.data().offer;
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        await updateDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp } });
+
+        document.getElementById('conn-status').innerText = "🟢 狀態：連線成功！準備接收畫面";
+        document.getElementById('conn-status').style.color = "var(--primary)";
+        onSnapshot(collection(roomRef, 'senderIce'), snap => { snap.docChanges().forEach(async c => { if (c.type === 'added') await peerConnection.addIceCandidate(new RTCIceCandidate(c.doc.data())); }); });
+    };
+
+    function sendData(payload) {
+        if(dataChannel && dataChannel.readyState === 'open') {
+            dataChannel.send(JSON.stringify(payload));
+        }
+    }
+
+    // ==========================================
+    // 🏎️ 1. 陀螺儀賽車方向盤 (Gyro)
+    // ==========================================
+    function handleOrientation(e) {
+        if(currentLab !== 'gyro') return;
+        let gamma = Math.round(e.gamma); // 左右傾斜
+        if(gamma > 90) gamma = 90; if(gamma < -90) gamma = -90;
+        document.getElementById('gyro-data').innerText = `Gamma: ${gamma}°`;
+        sendData({ type: 'gyro', g: gamma });
+    }
+    function startGyro() {
+        if(typeof DeviceOrientationEvent.requestPermission === 'function') { DeviceOrientationEvent.requestPermission().then(r => { if(r === 'granted') window.addEventListener('deviceorientation', handleOrientation); }).catch(console.error); } 
+        else window.addEventListener('deviceorientation', handleOrientation);
+    }
+    function stopGyro() { window.removeEventListener('deviceorientation', handleOrientation); }
+    
+    // 接收端 LERP 平滑演算法
+    let currentCarAngle = 0;
+    function updateGyroReceiver(data) {
+        // 電腦端收到角度，加上 0.2 的平滑係數，讓車子轉彎順滑不卡頓
+        currentCarAngle = currentCarAngle + (data.g - currentCarAngle) * 0.2;
+        document.getElementById('demo-car').style.transform = `rotate(${currentCarAngle}deg)`;
+        document.getElementById('gyro-data').innerText = `收到 Gamma: ${data.g}° (運算平滑中)`;
+    }
+
+    // ==========================================
+    // 🖲️ 2. 虛擬軌跡滑鼠板 (Touchpad)
+    // ==========================================
+    const pad = document.getElementById('touch-pad');
+    let lastX = 0, lastY = 0;
+    pad.addEventListener('touchstart', e => { lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; });
+    pad.addEventListener('touchmove', e => {
+        if(currentLab !== 'touchpad' || role !== 'sender') return;
+        e.preventDefault(); // 防止螢幕跟著滾動
+        let dx = e.touches[0].clientX - lastX; let dy = e.touches[0].clientY - lastY;
+        lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+        sendData({ type: 'touch', dx: dx, dy: dy });
+    });
+    
+    let cursorX = 300, cursorY = 150;
+    function updateTouchpadReceiver(data) {
+        cursorX += data.dx * 1.5; // 加上游標加速度
+        cursorY += data.dy * 1.5;
+        // 邊界限制
+        if(cursorX < 10) cursorX = 10; if(cursorX > 590) cursorX = 590;
+        if(cursorY < 10) cursorY = 10; if(cursorY > 290) cursorY = 290;
+        let c = document.getElementById('demo-cursor');
+        c.style.left = cursorX + 'px'; c.style.top = cursorY + 'px';
+    }
+
+    // ==========================================
+    // 🎮 4. 虛擬 360 度搖桿 (Joystick)
+    // ==========================================
+    const joyBase = document.getElementById('joy-base'); const joyStick = document.getElementById('joy-stick');
+    let joyActive = false; let joyCenter = {x:0, y:0};
+    joyBase.addEventListener('touchstart', e => {
+        joyActive = true; const rect = joyBase.getBoundingClientRect();
+        joyCenter = { x: rect.left + rect.width/2, y: rect.top + rect.height/2 };
+        moveJoystick(e.touches[0]);
+    });
+    joyBase.addEventListener('touchmove', e => { if(joyActive) moveJoystick(e.touches[0]); e.preventDefault(); });
+    joyBase.addEventListener('touchend', () => {
+        joyActive = false; joyStick.style.transform = `translate(0px, 0px)`;
+        sendData({ type: 'joy', vx: 0, vy: 0 }); // 回歸圓心
+    });
+
+    function moveJoystick(touch) {
+        if(currentLab !== 'joystick' || role !== 'sender') return;
+        let dx = touch.clientX - joyCenter.x; let dy = touch.clientY - joyCenter.y;
+        let dist = Math.sqrt(dx*dx + dy*dy); let maxDist = 45;
+        if(dist > maxDist) { dx = (dx/dist)*maxDist; dy = (dy/dist)*maxDist; }
+        joyStick.style.transform = `translate(${dx}px, ${dy}px)`;
+        
+        // 算出 -1.0 到 1.0 的向量數據傳給電腦
+        sendData({ type: 'joy', vx: dx/maxDist, vy: dy/maxDist });
+    }
+
+    let shipX = 50, shipY = 50;
+    function updateJoystickReceiver(data) {
+        // 根據手機傳來的微小向量，平滑移動飛船
+        shipX += data.vx * 15; shipY += data.vy * 15;
+        if(shipX < 0) shipX = 0; if(shipX > 100) shipX = 100;
+        if(shipY < 0) shipY = 0; if(shipY > 100) shipY = 100;
+        let ship = document.getElementById('demo-ship');
+        ship.style.left = shipX + '%'; ship.style.top = shipY + '%';
+        // 根據向量計算旋轉角度 (Math.atan2)
+        if(data.vx !== 0 || data.vy !== 0) {
+            let angle = Math.atan2(data.vy, data.vx) * (180/Math.PI) + 90;
+            ship.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+        }
+    }
+
+    // ==========================================
+    // 🔦 5. 光影感應光劍 (Ambient Light)
+    // ==========================================
+    let lightSensor = null;
+    function startLight() {
+        try {
+            if('AmbientLightSensor' in window) {
+                lightSensor = new AmbientLightSensor();
+                lightSensor.addEventListener('reading', () => {
+                    if(currentLab === 'light') {
+                        document.getElementById('light-data').innerText = `Lux: ${lightSensor.illuminance}`;
+                        sendData({ type: 'light', lux: lightSensor.illuminance });
+                    }
+                });
+                lightSensor.start();
+            } else throw new Error("無感測器");
+        } catch(err) {
+            window.simpleToast("光線感測器需開啟 Chrome Flag 或設備不支援", "error");
+            // Fallback 假資料發送測試
+            setInterval(() => { if(currentLab === 'light') sendData({ type: 'light', lux: Math.random()*1000 }); }, 500);
+        }
+    }
+    function stopLight() { if(lightSensor) lightSensor.stop(); }
+
+    function updateLightReceiver(data) {
+        let lux = data.lux; document.getElementById('light-data').innerText = `接收到 Lux: ${Math.round(lux)}`;
+        // 光越強，光劍越長。設定最高 1000 Lux 對應 300px
+        let h = Math.min((lux / 1000) * 300, 300);
+        let blade = document.getElementById('demo-blade');
+        blade.style.height = h + 'px';
+        if(lux > 500) { blade.style.background = '#f00'; blade.style.boxShadow = '0 0 30px #f00'; } // 太亮變紅光劍
+        else { blade.style.background = '#0f0'; blade.style.boxShadow = '0 0 20px #0f0'; }
+    }
+
+    // ==========================================
+    // 🎙️ 7. 吹力感應氣球 (Microphone Blow)
+    // ==========================================
+    let audioCtx = null; let blowInterval = null;
+    async function startBlow() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const src = audioCtx.createMediaStreamSource(stream);
+            const analyser = audioCtx.createAnalyser();
+            src.connect(analyser);
+            const dataArr = new Uint8Array(analyser.frequencyBinCount);
+            
+            blowInterval = setInterval(() => {
+                if(currentLab !== 'blow') return;
+                analyser.getByteFrequencyData(dataArr);
+                // 計算音量總和 (RMS 近似值)
+                let sum = dataArr.reduce((a,b) => a + b, 0);
+                let vol = sum / dataArr.length;
+                document.getElementById('blow-data').innerText = `Volume: ${Math.round(vol)}`;
+                sendData({ type: 'blow', vol: vol });
+            }, 50);
+            window.simpleToast("🎙️ 吹力感測器已啟動");
+        } catch(e) { window.simpleToast("麥克風權限被拒絕", "error"); }
+    }
+    function stopBlow() { clearInterval(blowInterval); if(audioCtx) audioCtx.close(); }
+
+    let balloonScale = 1;
+    function updateBlowReceiver(data) {
+        document.getElementById('blow-data').innerText = `收到音量: ${Math.round(data.vol)}`;
+        // 如果音量大於 50 (代表有在吹氣)，氣球膨脹
+        if(data.vol > 40) { balloonScale += 0.05; } else { balloonScale -= 0.02; }
+        if(balloonScale < 1) balloonScale = 1; if(balloonScale > 3) balloonScale = 3;
+        
+        let b = document.getElementById('demo-balloon');
+        b.style.transform = `scale(${balloonScale})`;
+        // 快爆炸時變色震動
+        if(balloonScale > 2.5) { b.style.background = '#ff0000'; b.style.marginLeft = (Math.random()*10 - 5) + 'px'; }
+        else { b.style.background = 'var(--accent)'; b.style.marginLeft = 'auto'; }
+    }
+  </script>
+</body>
+</html>
