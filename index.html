@@ -12,7 +12,7 @@
   
   <style>
     /* =========================================================
-       系統底層與全域變數
+        系統底層與全域變數
     ========================================================= */
     :root { 
         --primary: #1db954; --secondary: #1ed760; --accent: #ff1744; 
@@ -368,7 +368,6 @@
     </div>
   </div>
 
-  <!-- 系統 Modal -->
   <div id="login-modal" class="spotify-modal">
     <div class="modal-content" style="max-width: 500px; height: auto;">
       <div class="modal-header"><h2>🔒 系統登入</h2><span class="modal-close-btn" onclick="window.hideModal('login-modal')">×</span></div>
@@ -386,11 +385,9 @@
     </div>
   </div>
 
-  <!-- 🌟 隱藏的編輯器專用檔案輸入框 🌟 -->
   <input type="file" id="editor-local-img-input" accept="image/*" style="display:none;" onchange="window.handleEditorLocalImg(event)">
   <input type="file" id="editor-local-vid-input" accept="video/mp4,video/webm" style="display:none;" onchange="window.handleEditorLocalVid(event)">
 
-  <!-- 🌟 發布 Modal 🌟 -->
   <div id="upload-modal" class="spotify-modal">
     <div class="modal-content">
       <div class="modal-header"><h2>➕ 發布新資源</h2><span class="modal-close-btn" onclick="window.hideModal('upload-modal')">×</span></div>
@@ -404,7 +401,8 @@
             <option value="音效">🔊 小音效</option>
             <option value="GIF">🖼️ 圖片/GIF</option>
             <option value="MP4影片">🎬 影片 / MP4</option>
-            <option value="軟體" style="color: var(--secondary);">🧰 軟體推薦</option>
+            <option value="軟體介紹" style="color: var(--secondary);">📖 軟體介紹</option>
+            <option value="軟體收集" style="color: #00d4ff;">📦 軟體收集區</option>
             <option value="指令" style="color: var(--secondary);">💻 實用指令</option>
             <option value="Win10美化" style="color: var(--beautify-10);">🟦 Win10 美化資源</option>
             <option value="Win11美化" style="color: var(--beautify-11);">🟪 Win11 美化資源</option>
@@ -422,7 +420,6 @@
         
         <div id="mat-rich-text-container" style="display: none; margin-bottom: 15px;">
           
-          <!-- 🌟 吸頂總控台 🌟 -->
           <div class="sticky-editor-header">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                   <label style="color:#00d4ff; font-weight:bold; margin:0;">📚 專屬教學頁面管理</label>
@@ -435,7 +432,6 @@
                 <select onchange="document.execCommand('fontSize', false, this.value); this.selectedIndex=0;" class="size-picker"><option value="">字體大小</option><option value="2">小字</option><option value="3">標準</option><option value="5">大字</option><option value="7">特大</option></select>
                 <div class="color-picker-wrap" title="更改文字顏色">🎨 <input type="color" onchange="document.execCommand('foreColor', false, this.value)"></div>
                 
-                <!-- 🌟 網址與本機完全兼顧 🌟 -->
                 <button class="rich-editor-btn" onclick="window.insertEditorContent('mat-rich-editor', 'img')">🖼️ 網址圖</button>
                 <button class="rich-editor-btn" onclick="window.currentEditorForUpload='mat-rich-editor'; document.getElementById('editor-local-img-input').click()">📤 本機圖</button>
                 <button class="rich-editor-btn" onclick="window.insertEditorContent('mat-rich-editor', 'video')">🎬 網址影片</button>
@@ -454,7 +450,6 @@
     </div>
   </div>
 
-  <!-- 🌟 編輯 Modal 🌟 -->
   <div id="edit-modal" class="spotify-modal">
     <div class="modal-content">
       <div class="modal-header"><h2>⚙️ 編輯內容</h2><span class="modal-close-btn" onclick="window.hideModal('edit-modal')">×</span></div>
@@ -484,7 +479,6 @@
                 <select onchange="document.execCommand('fontSize', false, this.value); this.selectedIndex=0;" class="size-picker"><option value="">字體大小</option><option value="2">小字</option><option value="3">標準</option><option value="5">大字</option><option value="7">特大</option></select>
                 <div class="color-picker-wrap" title="更改文字顏色">🎨 <input type="color" onchange="document.execCommand('foreColor', false, this.value)"></div>
                 
-                <!-- 🌟 網址與本機完全兼顧 🌟 -->
                 <button class="rich-editor-btn" onclick="window.insertEditorContent('edit-rich-editor', 'img')">🖼️ 網址圖</button>
                 <button class="rich-editor-btn" onclick="window.currentEditorForUpload='edit-rich-editor'; document.getElementById('editor-local-img-input').click()">📤 本機圖</button>
                 <button class="rich-editor-btn" onclick="window.insertEditorContent('edit-rich-editor', 'video')">🎬 網址影片</button>
@@ -503,7 +497,6 @@
     </div>
   </div>
 
-  <!-- 🌟 沉浸式專屬教學編輯大黑板 🌟 -->
   <div id="fullscreen-tutorial-overlay">
       <div class="fs-toolbar">
           <h2 id="fs-tutorial-title" style="color: white; margin: 0; text-shadow: 0 0 5px #00d4ff;">正在撰寫教學</h2>
@@ -515,7 +508,6 @@
             <select onchange="document.execCommand('fontSize', false, this.value); this.selectedIndex=0;" class="size-picker"><option value="">字體大小</option><option value="2">小字</option><option value="3">標準</option><option value="5">大字</option><option value="7">特大</option></select>
             <div class="color-picker-wrap" title="更改文字顏色">🎨 <input type="color" onchange="document.execCommand('foreColor', false, this.value)"></div>
             
-            <!-- 🌟 網址與本機完全兼顧 🌟 -->
             <button class="rich-editor-btn" onclick="window.insertEditorContent('fs-rich-editor', 'img')">🖼️ 網址圖</button>
             <button class="rich-editor-btn" onclick="window.currentEditorForUpload='fs-rich-editor'; document.getElementById('editor-local-img-input').click()">📤 本機圖</button>
             <button class="rich-editor-btn" onclick="window.insertEditorContent('fs-rich-editor', 'video')">🎬 網址影片</button>
@@ -529,7 +521,6 @@
       </div>
   </div>
 
-  <!-- 前台閱讀文章 Modal -->
   <div id="article-modal" class="spotify-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -552,7 +543,6 @@
     </div>
   </div>
 
-  <!-- 🌟 獨立的 Wiki 教學專頁 (全螢幕覆蓋) 🌟 -->
   <div id="wiki-page-overlay">
       <div class="wiki-header">
           <button class="btn-copy" style="font-size: 1.1em; padding: 10px 20px; border-radius: 30px;" onclick="window.closeWikiPage()">🔙 返回文章</button>
@@ -564,10 +554,8 @@
   </div>
 
   <div id="album-modal" class="spotify-modal">
-    <!-- 專輯彈窗保持不變 -->
-  </div>
+    </div>
 
-  <!-- 導覽列 -->
   <div class="navbar">
     <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v37.0 雙引擎版</span></div>
     <div class="nav-links">
@@ -593,7 +581,6 @@
     </div>
   </div>
 
-  <!-- 主要內容區域 -->
   <div class="main-container">
     <div id="page-blog" class="page-panel active">
       <div style="text-align: center; padding: 60px 20px; background: rgba(20,20,20,0.6); border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
@@ -622,7 +609,18 @@
       <div id="material-container" class="material-list"></div>
     </div>
     
-    <div id="page-software" class="page-panel"><h2 class="page-title">🧰 軟體推薦大廳</h2><div id="software-container"></div></div>
+    <div id="page-software" class="page-panel">
+      <h2 class="page-title">🧰 軟體專區</h2>
+      
+      <div class="controls-wrapper" style="margin-bottom: 20px;">
+        <div class="category-tabs">
+            <button id="tab-soft-intro" class="tab-btn active" onclick="window.filterSoftware('軟體介紹')">📖 軟體介紹區</button>
+            <button id="tab-soft-collect" class="tab-btn" onclick="window.filterSoftware('軟體收集')">📦 軟體收集區</button>
+        </div>
+      </div>
+
+      <div id="software-container"></div>
+    </div>
     
     <div id="page-beautify" class="page-panel">
       <h2 class="page-title" style="color: var(--beautify-11); text-shadow: 0 0 10px rgba(255,0,255,0.5);">✨ 系統美化資源</h2>
@@ -679,6 +677,7 @@
     } catch(e) {}
 
     let fetchedMaterialsList = []; let currentActiveTab = "全部"; let currentBeautifyTab = ""; let userRole = "user"; let 尊稱 = "👤";
+    let currentSoftwareTab = '軟體介紹'; // 新增：預設顯示軟體介紹
     const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1";
     let initialRouteChecked = false;
     
@@ -775,7 +774,8 @@
             const targetItem = fetchedMaterialsList.find(item => item.routeCode && item.routeCode.toString() === goCode.toString()); 
             if (targetItem) { 
                 initialRouteChecked = true; let targetPage = 'blog'; 
-                if(targetItem.category === '軟體') targetPage = 'software'; else if(targetItem.category === '指令') targetPage = 'commands'; else if(targetItem.category.includes('美化')) targetPage = 'beautify'; else if(["音樂", "背景音樂", "人聲", "音效", "GIF", "MP4影片"].includes(targetItem.category)) targetPage = 'materials';
+                // 新增：加入對新的軟體分類的跳轉支援
+                if(targetItem.category === '軟體' || targetItem.category === '軟體介紹' || targetItem.category === '軟體收集') targetPage = 'software'; else if(targetItem.category === '指令') targetPage = 'commands'; else if(targetItem.category.includes('美化')) targetPage = 'beautify'; else if(["音樂", "背景音樂", "人聲", "音效", "GIF", "MP4影片"].includes(targetItem.category)) targetPage = 'materials';
                 window.switchPage(targetPage); setTimeout(() => window.openArticleModal(targetItem), 300); window.simpleToast(`🚀 路由跳轉成功！`); 
             } 
         } 
@@ -783,6 +783,16 @@
 
     window.filterMaterials = function(btn, category) { document.querySelectorAll('#page-materials .tab-btn').forEach(b => b.classList.remove('active')); if(btn) btn.classList.add('active'); currentActiveTab = category; window.renderMaterialsData(); }
     window.filterBeautify = function(btn, osVersion) { const btns = btn.parentElement.querySelectorAll('.btn-action'); btns.forEach(b => b.style.boxShadow = 'none'); if(osVersion === 'Win10美化') btn.style.boxShadow = '0 0 20px rgba(0, 120, 215, 0.6)'; if(osVersion === 'Win11美化') btn.style.boxShadow = '0 0 20px rgba(255, 0, 255, 0.6)'; currentBeautifyTab = osVersion; window.renderMaterialsData(); }
+
+    // 新增：軟體專區切換
+    window.filterSoftware = function(tabName) {
+        document.getElementById('tab-soft-intro').classList.remove('active');
+        document.getElementById('tab-soft-collect').classList.remove('active');
+        if(tabName === '軟體介紹') document.getElementById('tab-soft-intro').classList.add('active');
+        if(tabName === '軟體收集') document.getElementById('tab-soft-collect').classList.add('active');
+        currentSoftwareTab = tabName;
+        window.renderMaterialsData();
+    };
 
     window.openEditModal = function(id) { 
         const i = fetchedMaterialsList.find(x => x.id === id); if(!i) return; 
@@ -828,8 +838,9 @@
             df.innerHTML = `<input type="text" id="${prefix}-route-code" class="input-box" placeholder="🔗 直連代碼(英文)" style="width: 130px;" oninput="window.saveDraft()"><div style="display:flex;align-items:center;background:rgba(0,0,0,0.5); border:1px solid #444; border-radius:6px;padding:0 8px;">🎨 <input type="color" id="${prefix}-color" class="input-box" value="#ff1744" style="width:30px;padding:0;border:none;background:transparent;"></div>`; 
             document.getElementById(previewId).style.display = 'none'; rtc.style.display = 'none'; 
         } 
-        else if (["軟體", "指令", "Win10美化", "Win11美化", "急救資源"].includes(type)) { 
-            let folderInput = (type === "軟體") ? `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 分類 (例: 影音)" style="width: 120px;" oninput="window.saveDraft()">` : '';
+        // 更新：將「軟體介紹」與「軟體收集」加入欄位判斷中
+        else if (["軟體", "軟體介紹", "軟體收集", "指令", "Win10美化", "Win11美化", "急救資源"].includes(type)) { 
+            let folderInput = (type === "軟體" || type === "軟體介紹" || type === "軟體收集") ? `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 分類 (例: 影音)" style="width: 120px;" oninput="window.saveDraft()">` : '';
             df.innerHTML = `${folderInput}<input type="text" id="${prefix}-btn-text" class="input-box" placeholder="🔘 按鈕文字" style="width: 120px;" oninput="window.saveDraft()"><input type="text" id="${prefix}-route-code" class="input-box" placeholder="🔗 直連代碼(英文)" style="width: 130px;" oninput="window.saveDraft()"><div style="display:flex; gap:5px; width:100%; margin-top:5px;"><input type="url" id="${prefix}-cover" class="input-box" placeholder="🖼️ 卡片圖網址 或 按上傳" style="flex:1;" oninput="window.updateImagePreview(this.value, '${previewId}')"><button class="btn-action" style="padding: 8px 15px;" onclick="document.getElementById('${prefix}-file-input').click()">📤 本機</button></div><div style="display:flex; gap:5px; width:100%;"><select id="${prefix}-cover-fit" class="input-box" style="flex:1; padding: 8px;" onchange="window.updatePreviewFit('${previewId}', this.value)"><option value="cover">預覽: 填滿(Cover)</option><option value="contain">預覽: 完整保留(Contain)</option></select><select id="${prefix}-cover-pos" class="input-box" style="flex:1; padding: 8px;" onchange="window.updatePreviewPos('${previewId}', this.value)"><option value="center">對齊: 置中 (預設)</option><option value="top">對齊: 靠上</option><option value="bottom">對齊: 靠下</option><option value="left">對齊: 靠左</option><option value="right">對齊: 靠右</option></select></div><input type="file" id="${prefix}-file-input" style="display:none;" accept="image/*" onchange="window.handleLocalImageUpload(event, '${prefix}')">`; 
             rtc.style.display = 'block'; 
         }
@@ -886,15 +897,41 @@
             return card;
         };
 
+        // 更新：軟體區的動態渲染
         if(softContainer) {
-            softContainer.innerHTML = ''; let sItems = getVisibleItems("軟體");
-            if(sItems.length === 0) { softContainer.innerHTML = '<p style="color:#888;">目前尚無推薦軟體。</p>'; }
-            else {
-                const sGrps = {}; sItems.forEach(d => { let f = d.folderName || '未分類軟體'; if(!sGrps[f]) sGrps[f] = []; sGrps[f].push(d); });
+            softContainer.innerHTML = ''; 
+            
+            // 判斷現在要顯示哪一區的資料（舊的「軟體」會被歸類在介紹區）
+            let targetCategories = currentSoftwareTab === '軟體介紹' ? ['軟體介紹', '軟體'] : ['軟體收集'];
+            let emptyMsg = currentSoftwareTab === '軟體介紹' ? '目前尚無軟體介紹。' : '目前尚無收集的軟體。';
+            
+            // 過濾資料
+            let sItems = fetchedMaterialsList.filter(i => targetCategories.includes(i.category) && (i.isHidden !== true || window.isEditMode));
+            
+            if(sItems.length === 0) { 
+                softContainer.innerHTML = `<p style="color:#888;">${emptyMsg}</p>`; 
+            } else {
+                // 照資料夾 (大項) 分類渲染
+                const sGrps = {}; 
+                sItems.forEach(d => { 
+                    let f = d.folderName || '未分類'; 
+                    if(!sGrps[f]) sGrps[f] = []; 
+                    sGrps[f].push(d); 
+                });
+                
                 Object.keys(sGrps).sort().forEach(folder => {
-                    const h = document.createElement('div'); h.className = 'folder-header'; h.innerHTML = `📁 ${folder}`; softContainer.appendChild(h);
-                    const grid = document.createElement('div'); grid.className = 'article-grid'; grid.style.width = "100%"; grid.style.gridColumn = "1 / -1";
-                    sGrps[folder].forEach(d => grid.appendChild(buildSafeCard(d, null))); softContainer.appendChild(grid);
+                    const h = document.createElement('div'); 
+                    h.className = 'folder-header'; 
+                    h.innerHTML = `📁 ${folder}`; 
+                    softContainer.appendChild(h);
+                    
+                    const grid = document.createElement('div'); 
+                    grid.className = 'article-grid'; 
+                    grid.style.width = "100%"; 
+                    grid.style.gridColumn = "1 / -1";
+                    
+                    sGrps[folder].forEach(d => grid.appendChild(buildSafeCard(d, null))); 
+                    softContainer.appendChild(grid);
                 });
             }
         }
