@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dogfish Adventure | 跨屏 RPG 迷宮</title>
+  <style>
+    :root { --primary: #1db954; --game-blue: #00d4ff; --accent: #ff1744; --font-main: 'Microsoft JhengHei', sans-serif; }
+    * { font-family: var(--font-main) !important; box-sizing: border-box; touch-action: none; user-select: none;}
+    body { background: #050505; color: #fff; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden; }
+    
+    .navbar { width: 100%; height: 60px; background: rgba(10,10,10,0.9); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 1000; flex-shrink: 0;}
+    .logo { font-size: 1.2em; font-weight: 900; color: var(--game-blue); }
+    .btn-nav-back { color: #aaa; text-decoration: none; border: 1px solid #555; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.85em; }
+    
+    .btn { padding: 12px 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; font-size: 1em; transition: 0.2s;} .btn:active { transform: scale(0.95); }
+    .btn-green { background: var(--primary); color: #000; } .btn-blue { background: var(--game-blue); color: #000; }
+    .input-box { background: #000; border: 2px solid #333; color: #fff; padding: 12px; border-radius: 8px; width: 100%; text-align: center; margin-bottom: 10px; font-size: 1.2em; letter-spacing: 2px; }
+
+    /* 配對畫面 */
+    #setup-panel { width: 90%; max-width: 500px; background: #111; padding: 30px; border-radius: 12px; border: 1px solid #333; margin: auto; text-align: center; }
+    
+    /* 📱 手機端控制器 UI */
+    #mobile-controller { display: none; width: 100%; height: calc(100vh - 60px); flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a1a1a, #000); }
+    .joystick-base { width: 180px; height: 180px; background: rgba(255,255,255,0.05); border-radius: 50%; border: 2px solid #444; position: relative; margin-bottom: 40px;}
+    .joystick-stick { width: 70px; height: 70px; background: var(--game-blue); border-radius: 50%; position: absolute; top: 55px; left: 55px; pointer-events: none; box-shadow: 0 0 20px rgba(0,212,255,0.5);}
+    .sensor-status { display: flex; gap: 20px; font-family: monospace; color: #aaa; font-size: 0.9em; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 20px; border: 1px solid #333;}
+    .action-hint { color: var(--accent); font-weight: bold; margin-top: 30px; font-size: 1.2em; text-shadow: 0 0 10px rgba(255,23,68,0.5); animation: pulse 1s infinite alternate; }
+    @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; transform: scale(1.05); } }
+
+    /* 🖥️ 電腦端地圖大畫布 */
+    #pc-screen { display: none; width: 100%; height: calc(100vh - 60px); align-items: center; justify-content: center; background: #050505; }
+    canvas { background: #111; border: 4px solid #333; border-radius: 8px; box-shadow: 0 0 40px rgba(0,212,255,0.1); }
+
+    #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
+    .toast { background: #fff; color: #000; padding: 12px 20px; border-radius: 8px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+      <div class="logo">Dogfish RPG 冒險</div>
+      <button class="btn-nav-back" onclick="alert('獨立版')">🔙 返回</button>
+  </div>
+  <div id="toast-container"></div>
+
+  <!-- 連線配對中心 -->
+  <div id="setup-panel">
+      <h2 style="color:var(--game-blue); margin-top:0;">跨屏連線中心</h2>
+      <p style="color:#aaa; font-size:0.9em; margin-bottom: 25px;">讓手機化身為探索神器的控制器！</p>
+      
+      <div style="background:#222; padding:20px; border-radius:8px; margin-bottom:15px;">
+          <h3 style="margin-top:0; color:var(--primary);">📱 手機端 (建立搖桿)</h3>
+          <button class="btn btn-green" onclick="createRoom()">產生連接碼</button>
+          <div id="room-code-display" style="font-size:2.5em; font-weight:900; letter-spacing:8px; margin-top:10px;">------</div>
+      </div>
+
+      <div style="background:#222; padding:20px; border-radius:8px;">
+          <h3 style="margin-top:0; color:var(--game-blue);">🖥️ 電腦端 (開啟地圖)</h3>
+          <input type="text" id="room-input" class="input-box" placeholder="輸入6碼" maxlength="6">
+          <button class="btn btn-blue" style="margin-bottom:0;" onclick="joinRoom()">啟動冒險世界</button>
+      </div>
+      <span id="conn-status" style="color:var(--game-yellow); font-weight:bold; margin-top:20px; display:block;">狀態：等待中...</span>
+  </div>
+
+  <!-- 手機端控制器介面 -->
+  <div id="mobile-controller">
+      <div class="joystick-base" id="joy-base">
+          <div class="joystick-stick" id="joy-stick"></div>
+      </div>
+      <div class="sensor-status">
+          <span id="ui-lux">🔦 光源: 偵測中</span>
+          <span id="ui-shake">📳 地震: 待命</span>
+      </div>
+      <div class="action-hint">遇到巨石請瘋狂搖晃手機！</div>
+  </div>
+
+  <!-- 電腦端迷宮畫布 -->
+  <div id="pc-screen">
+      <canvas id="gameCanvas" width="800" height="600"></canvas>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"; 
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+    const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website" }; 
+    let app, db; try { app = initializeApp(firebaseConfig); db = getFirestore(app); } catch(e) {}
+
+    let peerConnection = null; let dataChannel = null; let role = null; let roomId = null;
+    const rtcConfig = { iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }] };
+
+    window.simpleToast = function(msg) { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000); };
+
+    // ==========================================
+    // 🌐 WebRTC 連線邏輯
+    // ==========================================
+    window.createRoom = async function() {
+        if(!db) return; role = 'sender';
+        roomId = Math.floor(100000 + Math.random() * 900000).toString();
+        document.getElementById('room-code-display').innerText = roomId;
+        document.getElementById('conn-status').innerText = "等待電腦加入...";
+
+        const roomRef = doc(db, 'adv_rooms', roomId);
+        peerConnection = new RTCPeerConnection(rtcConfig);
+        dataChannel = peerConnection.createDataChannel('advData');
+        
+        peerConnection.onicecandidate = e => { if (e.candidate) addDoc(collection(roomRef, 'senderIce'), e.candidate.toJSON()); };
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        await setDoc(roomRef, { offer: { type: offer.type, sdp: offer.sdp }, timestamp: serverTimestamp() });
+
+        onSnapshot(roomRef, async snap => {
+            const data = snap.data();
+            if (!peerConnection.currentRemoteDescription && data && data.answer) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                // 連線成功，顯示手機 UI，啟動感測器
+                document.getElementById('setup-panel').style.display = 'none';
+                document.getElementById('mobile-controller').style.display = 'flex';
+                initMobileSensors();
+                window.simpleToast("連線成功！請控制搖桿！");
+            }
+        });
+        onSnapshot(collection(roomRef, 'receiverIce'), snap => { snap.docChanges().forEach(async c => { if (c.type === 'added') await peerConnection.addIceCandidate(new RTCIceCandidate(c.doc.data())); }); });
+    };
+
+    window.joinRoom = async function() {
+        if(!db) return; role = 'receiver';
+        roomId = document.getElementById('room-input').value.trim();
+        const roomRef = doc(db, 'adv_rooms', roomId);
+        const snap = await getDoc(roomRef); if(!snap.exists()) { window.simpleToast("找不到房間"); return; }
+
+        peerConnection = new RTCPeerConnection(rtcConfig);
+        peerConnection.ondatachannel = event => {
+            dataChannel = event.channel;
+            dataChannel.onmessage = e => {
+                const data = JSON.parse(e.data);
+                if(data.type === 'joy') { netInput.vx = data.vx; netInput.vy = data.vy; }
+                if(data.type === 'light') { netInput.lux = data.lux; }
+                if(data.type === 'shake') { triggerEarthquake(); }
+            };
+        };
+
+        peerConnection.onicecandidate = e => { if (e.candidate) addDoc(collection(roomRef, 'receiverIce'), e.candidate.toJSON()); };
+        const offer = snap.data().offer;
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        await updateDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp } });
+
+        // 連線成功，顯示電腦畫布，啟動遊戲引擎
+        document.getElementById('setup-panel').style.display = 'none';
+        document.getElementById('pc-screen').style.display = 'flex';
+        startGameEngine();
+        
+        onSnapshot(collection(roomRef, 'senderIce'), snap => { snap.docChanges().forEach(async c => { if (c.type === 'added') await peerConnection.addIceCandidate(new RTCIceCandidate(c.doc.data())); }); });
+    };
+
+    function sendData(payload) { if(dataChannel && dataChannel.readyState === 'open') dataChannel.send(JSON.stringify(payload)); }
+
+    // ==========================================
+    // 📱 手機端感測器採集 (搖桿 + 光線 + 搖晃)
+    // ==========================================
+    function initMobileSensors() {
+        // 1. 虛擬搖桿
+        const joyBase = document.getElementById('joy-base'); const joyStick = document.getElementById('joy-stick');
+        let joyActive = false; let joyCenter = {x:0, y:0};
+        joyBase.addEventListener('touchstart', e => { joyActive = true; const rect = joyBase.getBoundingClientRect(); joyCenter = { x: rect.left + rect.width/2, y: rect.top + rect.height/2 }; moveJoystick(e.touches[0]); });
+        joyBase.addEventListener('touchmove', e => { if(joyActive) moveJoystick(e.touches[0]); e.preventDefault(); });
+        joyBase.addEventListener('touchend', () => { joyActive = false; joyStick.style.transform = `translate(0px, 0px)`; sendData({ type: 'joy', vx: 0, vy: 0 }); });
+
+        function moveJoystick(touch) {
+            let dx = touch.clientX - joyCenter.x; let dy = touch.clientY - joyCenter.y;
+            let dist = Math.sqrt(dx*dx + dy*dy); let maxDist = 55;
+            if(dist > maxDist) { dx = (dx/dist)*maxDist; dy = (dy/dist)*maxDist; }
+            joyStick.style.transform = `translate(${dx}px, ${dy}px)`;
+            sendData({ type: 'joy', vx: dx/maxDist, vy: dy/maxDist });
+        }
+
+        // 2. 光線感測器 (Ambient Light)
+        try {
+            if('AmbientLightSensor' in window) {
+                const lightSensor = new AmbientLightSensor();
+                lightSensor.addEventListener('reading', () => {
+                    document.getElementById('ui-lux').innerText = `🔦 光源: ${Math.round(lightSensor.illuminance)}`;
+                    sendData({ type: 'light', lux: lightSensor.illuminance });
+                });
+                lightSensor.start();
+            }
+        } catch(e) {} // 忽略錯誤，若無權限則無光
+
+        // 3. 劇烈搖晃偵測 (DeviceMotion Earthquake)
+        let lastShakeTime = 0;
+        window.addEventListener('devicemotion', (e) => {
+            let acc = e.accelerationIncludingGravity;
+            if(!acc) return;
+            // 計算三軸加速度總和
+            let force = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+            if (force > 35) { // 搖晃臨界點
+                let now = Date.now();
+                if(now - lastShakeTime > 1500) { // 冷卻時間 1.5 秒
+                    document.getElementById('ui-shake').innerText = `📳 地震: 觸發！`;
+                    document.getElementById('ui-shake').style.color = 'var(--accent)';
+                    sendData({ type: 'shake' });
+                    // 手機實體震動回饋
+                    if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                    setTimeout(() => { document.getElementById('ui-shake').innerText = `📳 地震: 待命`; document.getElementById('ui-shake').style.color = '#aaa'; }, 1500);
+                    lastShakeTime = now;
+                }
+            }
+        });
+    }
+
+    // ==========================================
+    // 🖥️ 電腦端遊戲引擎 (地圖、碰撞、視野)
+    // ==========================================
+    let netInput = { vx: 0, vy: 0, lux: 0 };
+    let screenShake = 0; // 震動參數
+
+    function triggerEarthquake() {
+        screenShake = 30; // 震動幅度
+        // 尋找玩家周圍的巨石(ID=2)並破壞它
+        let pCol = Math.floor((player.x + player.w/2) / TILE_SIZE);
+        let pRow = Math.floor((player.y + player.h/2) / TILE_SIZE);
+        
+        for(let r = pRow - 2; r <= pRow + 2; r++) {
+            for(let c = pCol - 2; c <= pCol + 2; c++) {
+                if(r >= 0 && r < map.length && c >= 0 && c < map[0].length) {
+                    if(map[r][c] === 2) {
+                        map[r][c] = 0; // 變成平地
+                        createParticles(c * TILE_SIZE + 20, r * TILE_SIZE + 20); // 產生碎片特效
+                    }
+                }
+            }
+        }
+    }
+
+    const cvs = document.getElementById('gameCanvas');
+    const ctx = cvs.getContext('2d');
+    const TILE_SIZE = 40;
+    
+    // 地圖定義 (0=平地, 1=石牆, 2=可破壞巨石)
+    const map = [
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,0,0,0,1,0,0,0,0,0,2,2,0,0,0,0,0,0,0,1],
+        [1,0,1,0,1,0,1,1,1,0,2,2,0,1,1,1,1,1,0,1],
+        [1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1],
+        [1,0,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1,1],
+        [1,0,0,0,0,0,2,0,0,0,0,0,0,0,0,1,0,0,0,1],
+        [1,1,1,1,1,0,2,1,1,1,1,1,1,1,1,1,0,1,0,1],
+        [1,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,1,0,1],
+        [1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1],
+        [1,0,0,0,0,0,0,0,0,0,1,0,2,2,0,0,0,0,0,1],
+        [1,1,1,1,1,1,1,1,1,0,1,0,2,2,0,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1]
+    ];
+
+    let player = { x: 60, y: 60, w: 20, h: 20, speed: 4 };
+    let particles = [];
+
+    function createParticles(x, y) {
+        for(let i=0; i<15; i++) {
+            particles.push({
+                x: x, y: y,
+                vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10,
+                life: 1.0, size: Math.random() * 6 + 2
+            });
+        }
+    }
+
+    function checkWall(newX, newY) {
+        // 簡易 AABB 角落碰撞檢測
+        let points = [
+            {x: newX, y: newY}, {x: newX + player.w, y: newY},
+            {x: newX, y: newY + player.h}, {x: newX + player.w, y: newY + player.h}
+        ];
+        for(let p of points) {
+            let c = Math.floor(p.x / TILE_SIZE); let r = Math.floor(p.y / TILE_SIZE);
+            if(r >= 0 && r < map.length && c >= 0 && c < map[0].length) {
+                if(map[r][c] === 1 || map[r][c] === 2) return true; // 碰到牆或巨石
+            }
+        }
+        return false;
+    }
+
+    function startGameEngine() {
+        function loop() {
+            // 物理移動
+            let nextX = player.x + netInput.vx * player.speed;
+            let nextY = player.y + netInput.vy * player.speed;
+            
+            // X 軸碰撞
+            if(!checkWall(nextX, player.y)) player.x = nextX;
+            // Y 軸碰撞
+            if(!checkWall(player.x, nextY)) player.y = nextY;
+
+            // 地震畫面抖動
+            let dx = 0, dy = 0;
+            if(screenShake > 0) {
+                dx = (Math.random() - 0.5) * screenShake;
+                dy = (Math.random() - 0.5) * screenShake;
+                screenShake *= 0.9; // 慢慢減弱
+                if(screenShake < 0.5) screenShake = 0;
+            }
+
+            ctx.save();
+            ctx.translate(dx, dy);
+
+            // 繪製底層地圖
+            ctx.fillStyle = "#111"; ctx.fillRect(0, 0, cvs.width, cvs.height);
+            for(let r=0; r<map.length; r++) {
+                for(let c=0; c<map[0].length; c++) {
+                    let tile = map[r][c];
+                    let tx = c * TILE_SIZE; let ty = r * TILE_SIZE;
+                    if(tile === 1) { // 一般牆壁
+                        ctx.fillStyle = "#333"; ctx.fillRect(tx, ty, TILE_SIZE, TILE_SIZE);
+                        ctx.strokeStyle = "#222"; ctx.strokeRect(tx, ty, TILE_SIZE, TILE_SIZE);
+                    } else if (tile === 2) { // 巨石
+                        ctx.fillStyle = "#555"; ctx.fillRect(tx+2, ty+2, TILE_SIZE-4, TILE_SIZE-4);
+                        ctx.fillStyle = "#888"; ctx.font = "20px Arial"; ctx.fillText("🪨", tx+8, ty+28);
+                    }
+                }
+            }
+
+            // 繪製玩家
+            ctx.fillStyle = var(--game-blue);
+            ctx.fillRect(player.x, player.y, player.w, player.h);
+
+            // 繪製粒子特效 (碎石)
+            ctx.fillStyle = "#777";
+            for(let i=particles.length-1; i>=0; i--) {
+                let p = particles[i];
+                p.x += p.vx; p.y += p.vy; p.life -= 0.05;
+                if(p.life <= 0) { particles.splice(i, 1); continue; }
+                ctx.globalAlpha = p.life;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            }
+            ctx.globalAlpha = 1.0;
+
+            // 🔦 繪製 Fog of War 視野盲區黑科技
+            // 光源計算：基礎半徑 60，手機 Lux 越強光圈越大
+            let targetRadius = 60 + Math.min((netInput.lux / 500) * 150, 200); 
+            
+            // 畫一塊巨大的黑色遮罩
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.95)'; // 95% 黑
+            ctx.fillRect(0, 0, cvs.width, cvs.height);
+
+            // 利用 destination-out 挖空遮罩，露出下方的地圖
+            ctx.globalCompositeOperation = 'destination-out';
+            let grad = ctx.createRadialGradient(player.x + player.w/2, player.y + player.h/2, targetRadius * 0.2, player.x + player.w/2, player.y + player.h/2, targetRadius);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 1)'); // 中心完全挖空
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)'); // 邊緣漸層過渡
+            
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(player.x + player.w/2, player.y + player.h/2, targetRadius, 0, Math.PI*2);
+            ctx.fill();
+
+            // 恢復預設繪圖模式
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.restore();
+
+            requestAnimationFrame(loop);
+        }
+        loop();
+    }
+  </script>
+</body>
+</html>
