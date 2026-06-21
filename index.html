@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish Studio | 核心網站</title>
+  <title>Dogfish Studio</title>
   
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1db954">
@@ -33,7 +33,27 @@
     .btn-edit { background: rgba(29, 185, 84, 0.1); color: var(--primary); border: 1px solid var(--primary); padding: 6px 14px; border-radius: 20px; font-weight: 800; transition: 0.2s; } .btn-edit:hover { background: var(--primary); color: #000; }
     .btn-hide { background: rgba(255, 179, 0, 0.1); color: #ffb300; border: 1px solid #ffb300; padding: 6px 14px; border-radius: 20px; font-weight: 800; transition: 0.2s; } .btn-hide:hover { background: #ffb300; color: #000; }
     .btn-blue-dl { background: #0088ff; color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 800; font-size: 1.05em; transition: 0.2s; display: inline-block; text-decoration: none; box-shadow: 0 4px 15px rgba(0,136,255,0.4); } .btn-blue-dl:hover { background: #00aaff; transform: translateY(-2px); }
+    
     .input-box { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px 16px; font-size: 1em; border-radius: 6px; outline: none; transition: 0.2s; box-sizing: border-box; } .input-box:focus { border-color: var(--primary); background: rgba(0,0,0,0.8); }
+
+    /* 🌟 新增：無邊框加大版輸入框 (專門給分類、按鈕文字使用) 🌟 */
+    .input-box-large {
+        background: rgba(255, 255, 255, 0.08);
+        border: none !important;
+        color: white;
+        padding: 16px 20px;
+        font-size: 1.15em;
+        border-radius: 8px;
+        outline: none;
+        transition: 0.2s;
+        box-sizing: border-box;
+        flex: 1;
+        min-width: 140px;
+    }
+    .input-box-large:focus {
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 0 15px rgba(29, 185, 84, 0.3);
+    }
 
     /* 頂部導覽列 */
     .navbar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: rgba(10, 10, 10, 0.7); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 1000; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
@@ -409,10 +429,10 @@
             <option value="急救資源" style="color: #00d4ff;">🚑 急救指南/問題排解</option>
           </select>
         </div>
-        <div id="mat-dynamic-fields" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;"></div>
+        <div id="mat-dynamic-fields"></div>
         <img id="mat-preview-img" style="display:none; width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #555; background: rgba(0,0,0,0.5);">
         
-        <div style="display:flex; gap:10px; margin-bottom: 15px;">
+        <div id="mat-url-container" style="display:flex; gap:10px; margin-bottom: 15px;">
             <input type="url" id="mat-url" class="input-box" placeholder="主要直連 / 跳轉下載連結" style="flex:1;" oninput="window.saveDraft()">
             <button class="btn-copy" style="padding: 12px 15px;" onclick="document.getElementById('mat-file-upload-general').click()">📤 上傳本機檔案</button>
             <input type="file" id="mat-file-upload-general" style="display:none;" onchange="window.handleGeneralFileUpload(event, 'mat-url')">
@@ -421,11 +441,13 @@
         <div id="mat-rich-text-container" style="display: none; margin-bottom: 15px;">
           
           <div class="sticky-editor-header">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                  <label style="color:#00d4ff; font-weight:bold; margin:0;">📚 專屬教學頁面管理</label>
-                  <button class="btn-action" style="padding:4px 12px; font-size:0.85em; background:#00d4ff; color:#000;" onclick="window.addTutorial('mat')">➕ 新增教學頁</button>
+              <div id="mat-tutorial-manager">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                      <label style="color:#00d4ff; font-weight:bold; margin:0;">📚 專屬教學頁面管理</label>
+                      <button class="btn-action" style="padding:4px 12px; font-size:0.85em; background:#00d4ff; color:#000;" onclick="window.addTutorial('mat')">➕ 新增教學頁</button>
+                  </div>
+                  <div id="mat-tutorials-list" style="display:flex; flex-direction:column; gap:5px; margin-bottom: 15px;"></div>
               </div>
-              <div id="mat-tutorials-list" style="display:flex; flex-direction:column; gap:5px;"></div>
               
               <div class="rich-editor-toolbar">
                 <button class="rich-editor-btn" onclick="document.execCommand('bold')">B 粗體</button>
@@ -457,22 +479,24 @@
         <input type="hidden" id="edit-id"><input type="hidden" id="edit-category">
         <div style="display:flex; flex-direction:column; gap:10px;"><input type="text" id="edit-name" class="input-box"><input type="url" id="edit-url" class="input-box"></div>
         
-        <div style="display:flex; gap:10px; margin-top: 10px;">
+        <div id="edit-url-container" style="display:flex; gap:10px; margin-top: 10px;">
             <button class="btn-copy" style="padding: 12px 15px;" onclick="document.getElementById('edit-file-upload-general').click()">📤 上傳檔案</button>
             <input type="file" id="edit-file-upload-general" style="display:none;" onchange="window.handleGeneralFileUpload(event, 'edit-url')">
         </div>
 
-        <div id="edit-dynamic-fields" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0;"></div>
+        <div id="edit-dynamic-fields"></div>
         <img id="edit-preview-img" style="display:none; width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #555; background: rgba(0,0,0,0.5);">
         
         <div id="edit-rich-text-container" style="display: none; margin-bottom: 15px;">
           
           <div class="sticky-editor-header">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                  <label style="color:#00d4ff; font-weight:bold; margin:0;">📚 專屬教學頁面管理</label>
-                  <button class="btn-action" style="padding:4px 12px; font-size:0.85em; background:#00d4ff; color:#000;" onclick="window.addTutorial('edit')">➕ 新增教學頁</button>
+              <div id="edit-tutorial-manager">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                      <label style="color:#00d4ff; font-weight:bold; margin:0;">📚 專屬教學頁面管理</label>
+                      <button class="btn-action" style="padding:4px 12px; font-size:0.85em; background:#00d4ff; color:#000;" onclick="window.addTutorial('edit')">➕ 新增教學頁</button>
+                  </div>
+                  <div id="edit-tutorials-list" style="display:flex; flex-direction:column; gap:5px; margin-bottom: 15px;"></div>
               </div>
-              <div id="edit-tutorials-list" style="display:flex; flex-direction:column; gap:5px;"></div>
               
               <div class="rich-editor-toolbar">
                 <button class="rich-editor-btn" onclick="document.execCommand('bold')">B 粗體</button>
@@ -677,7 +701,7 @@
     } catch(e) {}
 
     let fetchedMaterialsList = []; let currentActiveTab = "全部"; let currentBeautifyTab = ""; let userRole = "user"; let 尊稱 = "👤";
-    let currentSoftwareTab = '軟體介紹'; // 新增：預設顯示軟體介紹
+    let currentSoftwareTab = '軟體介紹'; 
     const CREATOR_UID = "5IciY7tGpDTLY3IMBv6FR9TxNpx1";
     let initialRouteChecked = false;
     
@@ -774,7 +798,6 @@
             const targetItem = fetchedMaterialsList.find(item => item.routeCode && item.routeCode.toString() === goCode.toString()); 
             if (targetItem) { 
                 initialRouteChecked = true; let targetPage = 'blog'; 
-                // 新增：加入對新的軟體分類的跳轉支援
                 if(targetItem.category === '軟體' || targetItem.category === '軟體介紹' || targetItem.category === '軟體收集') targetPage = 'software'; else if(targetItem.category === '指令') targetPage = 'commands'; else if(targetItem.category.includes('美化')) targetPage = 'beautify'; else if(["音樂", "背景音樂", "人聲", "音效", "GIF", "MP4影片"].includes(targetItem.category)) targetPage = 'materials';
                 window.switchPage(targetPage); setTimeout(() => window.openArticleModal(targetItem), 300); window.simpleToast(`🚀 路由跳轉成功！`); 
             } 
@@ -784,7 +807,6 @@
     window.filterMaterials = function(btn, category) { document.querySelectorAll('#page-materials .tab-btn').forEach(b => b.classList.remove('active')); if(btn) btn.classList.add('active'); currentActiveTab = category; window.renderMaterialsData(); }
     window.filterBeautify = function(btn, osVersion) { const btns = btn.parentElement.querySelectorAll('.btn-action'); btns.forEach(b => b.style.boxShadow = 'none'); if(osVersion === 'Win10美化') btn.style.boxShadow = '0 0 20px rgba(0, 120, 215, 0.6)'; if(osVersion === 'Win11美化') btn.style.boxShadow = '0 0 20px rgba(255, 0, 255, 0.6)'; currentBeautifyTab = osVersion; window.renderMaterialsData(); }
 
-    // 新增：軟體專區切換
     window.filterSoftware = function(tabName) {
         document.getElementById('tab-soft-intro').classList.remove('active');
         document.getElementById('tab-soft-collect').classList.remove('active');
@@ -838,13 +860,49 @@
             df.innerHTML = `<input type="text" id="${prefix}-route-code" class="input-box" placeholder="🔗 直連代碼(英文)" style="width: 130px;" oninput="window.saveDraft()"><div style="display:flex;align-items:center;background:rgba(0,0,0,0.5); border:1px solid #444; border-radius:6px;padding:0 8px;">🎨 <input type="color" id="${prefix}-color" class="input-box" value="#ff1744" style="width:30px;padding:0;border:none;background:transparent;"></div>`; 
             document.getElementById(previewId).style.display = 'none'; rtc.style.display = 'none'; 
         } 
-        // 更新：將「軟體介紹」與「軟體收集」加入欄位判斷中
         else if (["軟體", "軟體介紹", "軟體收集", "指令", "Win10美化", "Win11美化", "急救資源"].includes(type)) { 
-            let folderInput = (type === "軟體" || type === "軟體介紹" || type === "軟體收集") ? `<input type="text" id="${prefix}-folder" class="input-box" placeholder="📁 分類 (例: 影音)" style="width: 120px;" oninput="window.saveDraft()">` : '';
-            df.innerHTML = `${folderInput}<input type="text" id="${prefix}-btn-text" class="input-box" placeholder="🔘 按鈕文字" style="width: 120px;" oninput="window.saveDraft()"><input type="text" id="${prefix}-route-code" class="input-box" placeholder="🔗 直連代碼(英文)" style="width: 130px;" oninput="window.saveDraft()"><div style="display:flex; gap:5px; width:100%; margin-top:5px;"><input type="url" id="${prefix}-cover" class="input-box" placeholder="🖼️ 卡片圖網址 或 按上傳" style="flex:1;" oninput="window.updateImagePreview(this.value, '${previewId}')"><button class="btn-action" style="padding: 8px 15px;" onclick="document.getElementById('${prefix}-file-input').click()">📤 本機</button></div><div style="display:flex; gap:5px; width:100%;"><select id="${prefix}-cover-fit" class="input-box" style="flex:1; padding: 8px;" onchange="window.updatePreviewFit('${previewId}', this.value)"><option value="cover">預覽: 填滿(Cover)</option><option value="contain">預覽: 完整保留(Contain)</option></select><select id="${prefix}-cover-pos" class="input-box" style="flex:1; padding: 8px;" onchange="window.updatePreviewPos('${previewId}', this.value)"><option value="center">對齊: 置中 (預設)</option><option value="top">對齊: 靠上</option><option value="bottom">對齊: 靠下</option><option value="left">對齊: 靠左</option><option value="right">對齊: 靠右</option></select></div><input type="file" id="${prefix}-file-input" style="display:none;" accept="image/*" onchange="window.handleLocalImageUpload(event, '${prefix}')">`; 
+            // 🌟 將輸入框改為新的 input-box-large 並排列 🌟
+            let folderInput = (type === "軟體" || type === "軟體介紹" || type === "軟體收集") ? `<input type="text" id="${prefix}-folder" class="input-box-large" placeholder="📁 分類 (例: 影音剪輯)" oninput="window.saveDraft()">` : '';
+            
+            df.innerHTML = `
+            <div style="display:flex; gap:10px; width:100%; margin-bottom: 10px; flex-wrap: wrap;">
+                ${folderInput}
+                <input type="text" id="${prefix}-btn-text" class="input-box-large" placeholder="🔘 按鈕文字" oninput="window.saveDraft()">
+                <input type="text" id="${prefix}-route-code" class="input-box-large" placeholder="🔗 直連代碼(英文)" oninput="window.saveDraft()">
+            </div>
+            <div style="display:flex; gap:5px; width:100%;">
+                <input type="url" id="${prefix}-cover" class="input-box" placeholder="🖼️ 卡片圖網址 或 按上傳" style="flex:1;" oninput="window.updateImagePreview(this.value, '${previewId}')">
+                <button class="btn-action" style="padding: 8px 15px;" onclick="document.getElementById('${prefix}-file-input').click()">📤 本機</button>
+            </div>
+            <div style="display:flex; gap:5px; width:100%; margin-top:5px;">
+                <select id="${prefix}-cover-fit" class="input-box" style="flex:1; padding: 8px;" onchange="window.updatePreviewFit('${previewId}', this.value)">
+                    <option value="cover">預覽: 填滿(Cover)</option>
+                    <option value="contain">預覽: 完整保留(Contain)</option>
+                </select>
+                <select id="${prefix}-cover-pos" class="input-box" style="flex:1; padding: 8px;" onchange="window.updatePreviewPos('${previewId}', this.value)">
+                    <option value="center">對齊: 置中 (預設)</option>
+                    <option value="top">對齊: 靠上</option>
+                    <option value="bottom">對齊: 靠下</option>
+                    <option value="left">對齊: 靠左</option>
+                    <option value="right">對齊: 靠右</option>
+                </select>
+            </div>
+            <input type="file" id="${prefix}-file-input" style="display:none;" accept="image/*" onchange="window.handleLocalImageUpload(event, '${prefix}')">`; 
             rtc.style.display = 'block'; 
         }
         else { df.innerHTML = ``; rtc.style.display = 'block'; } 
+        
+        // 🌟 自動隱藏多餘功能邏輯 🌟
+        const urlContainer = document.getElementById(`${prefix}-url-container`);
+        const tutorialManager = document.getElementById(`${prefix}-tutorial-manager`);
+        
+        if (type === "軟體收集") {
+            if (urlContainer) urlContainer.style.display = 'none';
+            if (tutorialManager) tutorialManager.style.display = 'none';
+        } else {
+            if (urlContainer) urlContainer.style.display = 'flex';
+            if (tutorialManager) tutorialManager.style.display = 'block';
+        }
     }
 
     window.submitMaterial = async function() { 
@@ -897,21 +955,17 @@
             return card;
         };
 
-        // 更新：軟體區的動態渲染
         if(softContainer) {
             softContainer.innerHTML = ''; 
             
-            // 判斷現在要顯示哪一區的資料（舊的「軟體」會被歸類在介紹區）
             let targetCategories = currentSoftwareTab === '軟體介紹' ? ['軟體介紹', '軟體'] : ['軟體收集'];
             let emptyMsg = currentSoftwareTab === '軟體介紹' ? '目前尚無軟體介紹。' : '目前尚無收集的軟體。';
             
-            // 過濾資料
             let sItems = fetchedMaterialsList.filter(i => targetCategories.includes(i.category) && (i.isHidden !== true || window.isEditMode));
             
             if(sItems.length === 0) { 
                 softContainer.innerHTML = `<p style="color:#888;">${emptyMsg}</p>`; 
             } else {
-                // 照資料夾 (大項) 分類渲染
                 const sGrps = {}; 
                 sItems.forEach(d => { 
                     let f = d.folderName || '未分類'; 
