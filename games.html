@@ -3,321 +3,433 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogfish Studio | 核心宇宙版</title>
-  <meta name="theme-color" content="#1db954">
+  <title>Dogfish Arcade | 終極遊戲大廳</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
   
   <style>
     /* =========================================================
-       系統底層與全域變數
+       系統底層與全域變數 (完美修復滾動與排版)
     ========================================================= */
-    :root { --primary: #1db954; --accent: #ff1744; --game-blue: #00d4ff; --game-yellow: #ffb300; --font-main: 'Noto Sans TC', sans-serif; --font-pixel: 'Press Start 2P', cursive; }
-    body { background: radial-gradient(circle at top, #1a0b12, #050505); background-attachment: fixed; color: #ffffff; font-family: var(--font-main); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
+    :root { 
+        --primary: #1db954; --accent: #ff1744; --game-blue: #00d4ff; --game-yellow: #ffb300;
+        --font-main: 'Noto Sans TC', sans-serif; --font-pixel: 'Press Start 2P', cursive;
+    }
+    
+    body { background: radial-gradient(circle at top, #1a0b12, #050505); background-attachment: fixed; color: #ffffff; font-family: var(--font-main); margin: 0; padding: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
     a, button, input, select { outline: none; font-family: var(--font-main); }
     ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
     
-    .navbar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: rgba(10, 10, 10, 0.85); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000; backdrop-filter: blur(15px); }
-    .logo { font-size: 1.2em; font-weight: 900; background: linear-gradient(90deg, #1db954, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display:flex; align-items:center; gap:10px; }
-    .mobile-menu-btn { display: none; background: transparent; border: none; color: white; font-size: 1.5em; cursor: pointer; padding: 0; }
-    .btn-nav { background: transparent; color: #b3b3b3; border: none; padding: 6px 12px; font-size: 0.95em; font-weight: 700; border-radius: 8px; transition: 0.2s; cursor:pointer;} .btn-nav:hover { color: white; background: rgba(255,255,255,0.1); } .btn-nav.active { background: rgba(255,255,255,0.15); color: white; }
-    .btn-action { background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 800; transition: 0.2s; cursor:pointer; } .btn-action:hover { transform: scale(1.05); }
+    /* 頂部導覽列 */
+    .navbar { height: 60px; background: rgba(10, 10, 10, 0.95); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000; flex-shrink: 0; }
+    .logo-area { display: flex; align-items: center; gap: 15px; }
+    .mobile-menu-btn { display: none; background: transparent; border: none; color: white; font-size: 1.8em; cursor: pointer; padding: 0; }
+    .logo { font-size: 1.2em; font-weight: 900; background: linear-gradient(90deg, #ff1744, #ffb300); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .btn-home { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid #555; padding: 6px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; transition: 0.2s; font-size: 0.9em; } .btn-home:hover { background: #fff; color: #000; }
 
-    .main-container { width: 95%; max-width: 1920px; margin: 80px auto 30px; position: relative; min-height: 80vh; }
-    .page-panel { display: none; animation: fadeIn 0.3s ease; } .page-panel.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* 按鈕與表單 */
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 900; font-size: 1em; cursor: pointer; transition: 0.2s; text-transform: uppercase; } .btn:active { transform: scale(0.95); }
+    .btn-green { background: var(--primary); color: #000; box-shadow: 0 4px 15px rgba(29, 185, 84, 0.4); } .btn-green:hover { background: #1ed760; }
+    .btn-blue { background: var(--game-blue); color: #000; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4); } .btn-blue:hover { background: #33e0ff; }
+    .btn-red { background: var(--accent); color: #fff; box-shadow: 0 4px 15px rgba(255, 23, 68, 0.4); } .btn-red:hover { background: #ff4060; }
+    .input-box { background: #000; border: 2px solid #333; color: #fff; padding: 10px; font-size: 1em; border-radius: 8px; outline: none; width: 100%; box-sizing: border-box; } .input-box:focus { border-color: var(--game-blue); }
+    .btn-spectate { background: rgba(0,212,255,0.1); border: 1px solid var(--game-blue); color: var(--game-blue); padding: 4px 10px; border-radius: 4px; font-size: 0.8em; cursor: pointer; transition: 0.2s; font-weight: bold; margin-right: 10px;} .btn-spectate.active { background: var(--game-blue); color: #000; box-shadow: 0 0 10px rgba(0,212,255,0.5); }
 
-    /* =========================================================
-       🎮 遊戲大廳版面
-    ========================================================= */
-    #page-arcade.active { display: flex; padding: 0; height: calc(100vh - 100px); border-radius: 12px; border: 1px solid #333; overflow: hidden; background: #0a0a0a; margin-top: 10px; }
-    .sidebar { width: 280px; background: #111; border-right: 1px solid #333; display: flex; flex-direction: column; padding: 20px 0; overflow-y: auto; flex-shrink: 0; z-index: 100; transition: left 0.3s ease; }
+    /* 遊戲主版面 */
+    .lobby-container { display: flex; flex: 1; overflow: hidden; position: relative; }
+    
+    /* 側邊欄 */
+    .sidebar { width: 280px; background: #0a0a0a; border-right: 1px solid #333; display: flex; flex-direction: column; padding: 20px 0; overflow-y: auto; flex-shrink: 0; z-index: 100; transition: left 0.3s ease; }
     .player-profile { padding: 0 20px 15px; border-bottom: 1px solid #333; margin-bottom: 15px; text-align: center; }
     .player-avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--primary); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; font-weight: bold; color: #000; }
     .menu-section { padding: 5px 20px; color: #555; font-size: 0.8em; font-weight: bold; margin-top: 10px; }
     .menu-item { padding: 10px 20px; color: #aaa; font-weight: bold; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; display: flex; align-items: center; gap: 10px; font-size:0.9em;}
     .menu-item:hover { background: #1a1a1a; color: #fff; } .menu-item.active { background: #222; color: #00d4ff; border-left-color: #00d4ff; }
+    .spectate-item { background: #222; border-left: 3px solid var(--game-blue); padding: 10px; margin-bottom: 8px; border-radius: 0 6px 6px 0; font-size: 0.85em; display: flex; justify-content: space-between; align-items: center; }
+
+    /* 🌟 修復核心：右側遊戲區域 🌟 */
+    .game-area { flex: 1; overflow-y: auto; background: url('https://www.transparenttextures.com/patterns/cubes.png'); padding: 20px; }
+    .game-panel { display: none; width: 100%; max-width: 800px; margin: 0 auto; animation: slideIn 0.3s ease; padding-bottom: 50px; }
+    .game-panel.active { display: flex; flex-direction: column; align-items: center; }
     
-    .game-area { flex: 1; position: relative; padding: 25px; overflow-y: auto; background: url('https://www.transparenttextures.com/patterns/cubes.png'); display: flex; justify-content: center; }
-    .game-panel { display: none; width: 100%; max-width: 800px; animation: slideIn 0.3s ease; padding-bottom: 50px; } .game-panel.active { display: block; }
-    
-    /* 設定與遊玩畫面切換 */
-    .setup-screen { display: flex; flex-direction: column; align-items: center; background: rgba(20,20,20,0.9); padding: 30px; border-radius: 12px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+    .setup-screen { display: flex; flex-direction: column; align-items: center; background: rgba(20,20,20,0.95); padding: 30px; border-radius: 12px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.7); width: 100%; box-sizing: border-box; }
     .play-screen { display: none; flex-direction: column; align-items: center; width: 100%; } .play-screen.active { display: flex; animation: slideIn 0.3s ease; }
 
+    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
     @media (max-width: 768px) {
-        .mobile-menu-btn { display: block; } .nav-links { display:none; }
-        .sidebar { position: absolute; top: 0; left: -100%; height: 100%; width: 260px; background: rgba(15,15,15,0.98); backdrop-filter: blur(15px); } .sidebar.open { left: 0; }
+        .mobile-menu-btn { display: block; }
+        .sidebar { position: absolute; top: 0; left: -100%; height: 100%; width: 260px; background: rgba(10,10,10,0.98); backdrop-filter: blur(15px); } .sidebar.open { left: 0; }
         .game-area { padding: 15px; }
     }
 
-    /* 按鈕與表單 */
-    .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 900; font-size: 1em; cursor: pointer; transition: 0.2s; text-transform: uppercase; } .btn:active { transform: scale(0.95); }
-    .btn-green { background: var(--primary); color: #000; } .btn-blue { background: var(--game-blue); color: #000; } .btn-red { background: var(--accent); color: #fff; }
-    .input-box { background: #000; border: 2px solid #333; color: #fff; padding: 10px; font-size: 1em; border-radius: 8px; outline: none; width: 100%; box-sizing: border-box; } .input-box:focus { border-color: var(--game-blue); }
-
-    /* 遊戲共用 UI */
+    /* 遊戲通用 UI */
     .game-title { font-family: var(--font-pixel); color: var(--game-blue); margin: 0 0 10px; font-size: 1.5em; text-shadow: 0 0 10px rgba(0,212,255,0.4); text-align: center;}
     .game-desc { color: #aaa; font-size: 0.85em; margin-bottom: 20px; text-align: center; line-height: 1.6; }
-    .game-canvas { background: #050505; border: 2px solid #333; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 212, 255, 0.1); width: 100%; max-width: 600px; margin: 0 auto; display: block; touch-action: none; }
-    .game-score-board { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-pixel); margin-bottom: 10px; color: var(--game-yellow); width: 100%; max-width: 600px; margin: 0 auto 10px; font-size: 0.8em; }
+    .game-canvas { background: #050505; border: 2px solid #333; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 212, 255, 0.1); width: 100%; max-width: 600px; display: block; touch-action: none; }
+    .game-score-board { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-pixel); margin-bottom: 10px; color: var(--game-yellow); width: 100%; max-width: 600px; font-size: 0.8em; }
     
-    /* 🌟 完美修正：難度整合與即時數值顯示 🌟 */
+    /* 自訂參數面板 */
     .custom-settings-panel { background: rgba(0,0,0,0.5); border: 1px solid #333; padding: 20px; border-radius: 8px; margin-bottom: 20px; width: 100%; box-sizing: border-box; display: none; }
     .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.9em; color: #ccc; font-weight: bold; }
     .setting-row input[type="range"] { flex: 1; margin: 0 15px; accent-color: var(--game-blue); }
     .val-display { color: var(--game-yellow); width: 45px; text-align: right; font-family: monospace; font-size: 1.1em; }
 
-    /* 📺 觀戰按鈕 */
-    .btn-spectate { background: rgba(0,212,255,0.1); border: 1px solid var(--game-blue); color: var(--game-blue); padding: 4px 10px; border-radius: 4px; font-size: 0.8em; cursor: pointer; transition: 0.2s; font-weight: bold; }
-    .btn-spectate.active { background: var(--game-blue); color: #000; box-shadow: 0 0 10px rgba(0,212,255,0.5); }
+    /* 手機虛擬按鍵 */
+    .mobile-controls { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px; width: 100%; max-width: 600px; }
+    .mobile-row { display: flex; gap: 10px; justify-content: center; width: 100%; }
+    .m-btn { background: #222; border: 2px solid #444; border-radius: 12px; font-size: 1.5em; width: 60px; height: 60px; color: white; display: flex; align-items: center; justify-content: center; user-select: none; touch-action: manipulation; box-shadow: 0 5px 0 #111; transition: 0.1s; cursor: pointer;}
+    .m-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #111; background: #333; }
 
-    /* 觀戰大廳廣播條 */
-    .spectate-item { background: #222; border-left: 3px solid var(--game-blue); padding: 10px; margin-bottom: 8px; border-radius: 0 6px 6px 0; font-size: 0.85em; display: flex; justify-content: space-between; align-items: center; }
-
-    /* 雙人對戰條 */
-    .vs-match-bar { width: 100%; max-width: 600px; background: linear-gradient(90deg, rgba(0,212,255,0.1), rgba(255,23,68,0.1)); border: 2px dashed #555; border-radius: 8px; padding: 10px; margin: 0 auto 15px; display: none; justify-content: space-between; align-items: center; font-family: var(--font-pixel); font-size: 0.8em; }
-
-    /* 特定遊戲樣式 */
-    .clicker-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; }
-    .global-score { font-size: 4em; font-weight: 900; color: #ffb300; font-family: var(--font-pixel); margin-bottom: 40px; text-align: center; }
+    /* 遊戲獨立樣式 */
+    .clicker-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; width: 100%; }
+    .global-score { font-size: 4em; font-weight: 900; color: #ffb300; font-family: var(--font-pixel); margin-bottom: 40px; text-align: center; text-shadow: 0 0 30px rgba(255, 179, 0, 0.5); }
     .big-click-btn { width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, #ff1744, #8a001a); border: 8px solid #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 2em; font-weight: 900; color: white; user-select: none; transition: 0.05s; } .big-click-btn:active { transform: scale(0.9); }
 
-    .ttt-board { display: grid; gap: 8px; width: 100%; max-width: 400px; aspect-ratio: 1/1; margin: 0 auto; pointer-events: none; opacity: 0.5; } .ttt-board.active { pointer-events: auto; opacity: 1; }
+    /* 井字棋 */
+    .ttt-board { display: grid; gap: 6px; width: 100%; max-width: 450px; aspect-ratio: 1/1; pointer-events: none; opacity: 0.5; margin-bottom: 20px;}
+    .ttt-board.active { pointer-events: auto; opacity: 1; }
     .ttt-cell { background: #222; border-radius: 8px; border: 2px solid #444; display: flex; align-items: center; justify-content: center; font-family: var(--font-pixel); cursor: pointer; color: #fff; font-weight: 900;}
+    .ttt-cell.x { color: var(--game-blue); text-shadow: 0 0 15px var(--game-blue); } .ttt-cell.o { color: var(--accent); text-shadow: 0 0 15px var(--accent); } .ttt-cell.t { color: #1db954; text-shadow: 0 0 15px #1db954; } .ttt-cell.s { color: #ffb300; text-shadow: 0 0 15px #ffb300; } 
 
-    /* 🌟 2048 動畫樣式 🌟 */
-    .g2048-grid { position: relative; background: #333; border-radius: 8px; width: 100%; max-width: 400px; margin: 0 auto; aspect-ratio: 1/1; padding: 8px; box-sizing: border-box;}
+    /* 踩地雷 */
+    .mine-grid { display: grid; gap: 2px; background: #333; padding: 2px; border-radius: 4px; }
+    .mine-cell { width: 25px; height: 25px; background: #666; display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: monospace; cursor: pointer; user-select: none; }
+    @media (min-width: 768px) { .mine-cell { width: 30px; height: 30px; font-size: 1em; } }
+    .mine-cell.revealed { background: #222; box-shadow: inset 0 0 5px #000; } .mine-cell.focused { outline: 3px solid var(--game-blue); outline-offset: -3px; background: #888; z-index:10;}
+    .mine-c-1 { color: #00d4ff; } .mine-c-2 { color: #1db954; } .mine-c-3 { color: #ff1744; }
+
+    /* 記憶翻牌 */
+    .memory-grid { display: grid; gap: 10px; width: 100%; max-width: 450px; }
+    .memory-card { background: #222; border: 2px solid #444; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2em; cursor: pointer; aspect-ratio: 1/1; transition: transform 0.3s; transform-style: preserve-3d; position: relative; }
+    .memory-card.flipped { transform: rotateY(180deg); }
+    .memory-card .front, .memory-card .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+    .memory-card .front { background: #222; } .memory-card .back { background: #ddd; transform: rotateY(180deg); }
+    .memory-card.matched .back { background: var(--primary); } .memory-card.focused { outline: 4px solid var(--game-blue); z-index: 10; }
+
+    /* 🌟 2048 (支援平滑移動動畫) 🌟 */
+    .g2048-grid { position: relative; background: #333; border-radius: 8px; width: 100%; max-width: 400px; aspect-ratio: 1/1; padding: 8px; box-sizing: border-box; }
     .g2048-cell { position: absolute; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 2em; font-weight: 900; color: #fff; font-family: monospace; transition: all 0.15s ease-in-out; }
 
-    .chat-messages { height: 40vh; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background:#111; border-radius:8px;}
+    /* 聊天室 */
+    .chat-wrapper { display: flex; flex-direction: column; width: 100%; max-width: 800px; background: #111; border: 1px solid #333; border-radius: 12px; overflow: hidden; height: 60vh; }
+    .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
     .chat-msg .bubble { background: #222; padding: 10px 15px; border-radius: 12px; width: fit-content; max-width: 80%; border-left: 3px solid var(--primary); word-break: break-word; }
     .chat-msg.mine { align-items: flex-end; } .chat-msg.mine .bubble { background: rgba(29, 185, 84, 0.15); border-left: none; border-right: 3px solid var(--primary); }
 
     #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
-    .toast { background: #fff; color: #000; padding: 12px 20px; border-radius: 8px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+    .toast { background: #fff; color: #000; padding: 12px 20px; border-radius: 8px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); animation: toastIn 0.3s ease; } .toast.error { background: var(--accent); color: white; }
+    @keyframes toastIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    
+    /* 遊戲內小區塊 */
+    .room-box { background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 15px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 15px; }
   </style>
 </head>
 <body>
 
-  <div id="name-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.9); z-index:99999; justify-content:center; align-items:center;">
-      <div style="background:#111; padding:40px; border-radius:16px; border:1px solid #333; text-align:center; width:90%; max-width:400px;">
-          <h2 style="font-family:var(--font-pixel); color:var(--game-yellow); font-size:1.1em;">Dogfish Arcade</h2>
-          <p style="color:#aaa; font-size:0.9em; margin-bottom:20px;">請登入或輸入名稱進入大廳</p>
-          <input type="text" id="player-name-input" class="input-box" placeholder="訪客名稱..." maxlength="15" onkeypress="if(event.key === 'Enter') window.savePlayerName()">
-          <button class="btn btn-green" style="width:100%; margin-top:15px;" onclick="window.savePlayerName()">進入</button>
+  <!-- 強制登入遮罩 -->
+  <div id="name-modal">
+      <div class="name-box">
+          <h2 style="font-family: var(--font-pixel); color: var(--game-yellow); font-size: 1.1em; line-height: 1.5;">Dogfish Arcade</h2>
+          <p style="color:#aaa; font-size: 0.9em; margin-bottom: 25px;">請輸入名稱以啟動大廳</p>
+          <input type="text" id="player-name-input" class="input-box" placeholder="訪客顯示名稱" maxlength="15" autocomplete="off" onkeypress="if(event.key === 'Enter') window.savePlayerName()">
+          <button class="btn btn-green" style="width: 100%; margin-top: 15px; font-size: 1em; padding: 12px;" onclick="window.savePlayerName()">進入大廳</button>
       </div>
   </div>
 
   <div id="toast-container"></div>
 
+  <!-- 導覽列 -->
   <div class="navbar">
-    <div class="logo">Dogfish Studio <span class="version-badge">v41.0</span></div>
-    <div class="nav-links" id="main-nav">
-      <button class="btn-nav active" onclick="window.switchPage('blog')">🏠 首頁大廳</button>
-      <button class="btn-action" style="background: var(--accent); color: white;" onclick="window.switchPage('arcade'); window.checkPlayerName();">🎮 遊戲競技場</button>
-    </div>
-    <button class="mobile-menu-btn" onclick="window.toggleSidebar()">☰</button>
+      <div class="logo-area">
+          <button class="mobile-menu-btn" onclick="window.toggleSidebar()">☰</button>
+          <div class="logo">ARCADE 大廳</div>
+      </div>
+      <a href="index.html" class="btn-home">🔙 返回主網站</a>
   </div>
 
-  <div class="main-container" id="main-container">
-    
-    <div id="page-blog" class="page-panel active">
-      <div style="text-align: center; padding: 60px 20px; background: rgba(20,20,20,0.6); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-top:20px;">
-        <h1 style="font-size: 3em; font-weight: 900; background: linear-gradient(90deg, #1db954, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Dogfish 核心宇宙</h1>
-        <p style="color: #b3b3b3;">點擊右上方「遊戲競技場」進入多重宇宙大廳</p>
+  <!-- 主體區 -->
+  <div class="lobby-container">
+      <div id="sidebar-overlay" class="sidebar-overlay" onclick="window.closeSidebar()"></div>
+
+      <!-- 左側選單 -->
+      <div class="sidebar" id="mobile-sidebar">
+          <div class="player-profile">
+              <div class="player-avatar" id="ui-avatar">?</div>
+              <div class="player-name" id="ui-name">載入中...</div>
+              <button style="background:transparent; border:1px solid #555; color:#aaa; border-radius:10px; padding:4px 10px; font-size:0.7em; margin-top:5px; cursor:pointer;" onclick="document.getElementById('name-modal').style.display='flex'">切換帳號</button>
+          </div>
+          
+          <!-- 📺 觀戰大廳 -->
+          <div style="background: rgba(0,0,0,0.4); padding: 15px; margin: 0 15px 15px; border-radius: 8px; border: 1px solid #333;">
+              <span style="color:var(--game-yellow); font-size:0.8em; font-weight:bold; display:block; margin-bottom:8px;">📺 觀戰大廳 (Live)</span>
+              <div id="spectate-list" style="font-size: 0.8em; color: #888;">目前無人直播...</div>
+          </div>
+
+          <div class="menu-section">🌐 網路社群區</div>
+          <div class="menu-item active" onclick="window.switchArcadeGame(event, 'clicker')">🖱️ 全球連擊大戰</div>
+          <div class="menu-item" onclick="window.switchArcadeGame(event, 'chat')">💬 大廳世界廣播</div>
+          <div class="menu-item" onclick="window.switchArcadeGame(event, 'tictactoe')">⭕ 井字棋 (支援連線)</div>
+          
+          <div class="menu-section">🕹️ 單機挑戰 & 雙人同樂</div>
+          <div class="menu-item" onclick="window.switchArcadeGame(event, 'neon')">🚀 3D霓虹閃避</div>
+          <div class="menu-item" onclick="window.switchArcadeGame(event, 'catch')">⚾ 2D像素接球</div>
+          <div class="menu-item" onclick="window.switchArcadeGame(event, 'snake')">🐍 經典貪吃蛇</div>
+          <div class="menu-item" onclick="window.switchArcadeGame(event, 'mine')">💣 經典踩地雷</div>
+          <div class="menu-item" onclick="window.switchArcadeGame(event, 'breakout')">🧱 磚塊破壞者</div>
+          <div class="menu-item" onclick="window.switchArcadeGame(event, 'flappy')">🐦 像素飛鳥</div>
+          <div class="menu-item" onclick="window.switchArcadeGame(event, 'shooter')">🛸 宇宙戰機</div>
+          <div class="menu-item" onclick="window.switchArcadeGame(event, 'pong')">🏓 雙人乒乓球</div>
+          <div class="menu-item" onclick="window.switchArcadeGame(event, 'memory')">🃏 記憶翻牌</div>
+          <div class="menu-item" onclick="window.switchArcadeGame(event, '2048')">🔢 2048滑塊</div>
       </div>
-    </div>
 
-    <div id="page-arcade" class="page-panel">
-        <div class="lobby-container">
-          <div class="sidebar" id="mobile-sidebar">
-              <div class="player-profile"><div class="player-avatar" id="ui-avatar">?</div><div class="player-name" id="ui-name">載入中</div></div>
-              
-              <div style="background: rgba(0,0,0,0.4); padding: 15px; margin: 0 15px 10px; border-radius: 8px; border: 1px solid #333;">
-                  <span style="color:#00d4ff; font-size:0.8em; font-weight:bold; display:block; margin-bottom:8px;">⚔️ 雙人連線比賽</span>
-                  <button class="btn btn-blue" style="width:100%; font-size:0.8em; padding:8px; margin-bottom:8px;" onclick="window.createMatchRoom()">➕ 建立房間</button>
-                  <div style="display:flex; gap:5px;"><input type="text" id="match-room-input" class="input-box" placeholder="6碼代號" style="padding:6px; font-size:0.85em;"><button class="btn btn-green" style="padding:6px 12px;" onclick="window.joinMatchRoom()">加入</button></div>
-                  <div id="vs-room-active-info" style="display:none; margin-top:10px; font-size:0.8em; color:var(--game-purple); font-weight:bold; text-align:center;"></div>
-              </div>
-
-              <div style="background: rgba(0,0,0,0.4); padding: 15px; margin: 0 15px 15px; border-radius: 8px; border: 1px solid #333;">
-                  <span style="color:var(--game-yellow); font-size:0.8em; font-weight:bold; display:block; margin-bottom:8px;">📺 觀戰大廳 (Live)</span>
-                  <div id="spectate-list" style="font-size: 0.8em; color: #888;">目前無人直播...</div>
-              </div>
-
-              <div class="menu-section">🕹️ 遊戲列表</div>
-              <div class="menu-item active" onclick="window.switchArcadeGame(event, 'clicker')">🖱️ 全球連擊大戰</div>
-              <div class="menu-item" onclick="window.switchArcadeGame(event, 'chat')">💬 大廳世界廣播</div>
-              <div class="menu-item" onclick="window.switchArcadeGame(event, 'tictactoe')">⭕ 井字棋 (2-4人)</div>
-              <div class="menu-item" onclick="window.switchArcadeGame(event, 'neon')">🚀 3D霓虹閃避</div>
-              <div class="menu-item" onclick="window.switchArcadeGame(event, 'catch')">⚾ 2D像素接球</div>
-              <div class="menu-item" onclick="window.switchArcadeGame(event, 'snake')">🐍 經典貪吃蛇</div>
-              <div class="menu-item" onclick="window.switchArcadeGame(event, 'mine')">💣 經典踩地雷</div>
-              <div class="menu-item" onclick="window.switchArcadeGame(event, 'breakout')">🧱 磚塊破壞者</div>
-              <div class="menu-item" onclick="window.switchArcadeGame(event, 'flappy')">🐦 像素飛鳥</div>
-              <div class="menu-item" onclick="window.switchArcadeGame(event, 'shooter')">🛸 宇宙戰機</div>
-              <div class="menu-item" onclick="window.switchArcadeGame(event, '2048')">🔢 2048滑塊</div>
+      <!-- 右側遊戲主區 -->
+      <div class="game-area">
+          
+          <!-- 1. Clicker -->
+          <div id="game-clicker" class="game-panel active">
+              <h2 class="game-title">GLOBAL CLICKER</h2>
+              <div class="clicker-wrapper"><div class="global-score" id="clicker-score">0</div><div class="big-click-btn" onmousedown="window.doClick(event)">PUSH</div></div>
           </div>
 
-          <div class="game-area">
-              <div style="width:100%; max-width:800px; margin:0 auto;">
+          <!-- 2. Chat -->
+          <div id="game-chat" class="game-panel">
+              <h2 class="game-title">GLOBAL CHAT</h2>
+              <div class="chat-wrapper"><div class="chat-messages" id="chat-messages-container"></div><div style="padding: 15px; background: #1a1a1a; border-top: 1px solid #333; display: flex; gap: 10px;"><input type="text" id="chat-input" class="input-box" placeholder="說點什麼..." onkeypress="if(event.key === 'Enter') window.sendChatMessage()"><button class="btn btn-green" onclick="window.sendChatMessage()">發送</button></div></div>
+          </div>
+
+          <!-- 3. TicTacToe (線上2-4人 / 變更大小) -->
+          <div id="game-tictactoe" class="game-panel">
+              <div class="setup-screen" id="setup-ttt">
+                  <h2 class="game-title">TIC-TAC-TOE</h2>
+                  <p class="game-desc">支援 2-4 人連線對戰，或單機同樂。<br>【鍵盤】: 數字鍵 1~9 下棋</p>
                   
-                  <div class="vs-match-bar" id="vs-match-score-bar">
-                      <span style="color:var(--game-blue);" id="vs-p1-label">P1: 0</span><span style="color:var(--game-yellow);">VS</span><span style="color:var(--accent);" id="vs-p2-label">P2: 0</span>
+                  <div class="custom-settings-panel" style="display:block;">
+                      <div class="setting-row"><label>👥 遊玩人數 (2-4)</label><select id="cfg-ttt-p"><option value="2">2 人</option><option value="3">3 人 (加△)</option><option value="4">4 人 (加□)</option></select></div>
+                      <div class="setting-row"><label>📏 棋盤大小 (3-8)</label><input type="range" id="cfg-ttt-size" min="3" max="8" value="3" oninput="this.nextElementSibling.innerText=this.value+'x'+this.value"><span class="val-display">3x3</span></div>
                   </div>
 
-                  <div id="game-clicker" class="game-panel active">
-                      <div class="game-header"><h2 class="game-title">GLOBAL CLICKER</h2></div>
-                      <div class="clicker-wrapper"><div class="global-score" id="clicker-score">0</div><div class="big-click-btn" onmousedown="window.doClick(event)">PUSH</div></div>
+                  <div class="room-box">
+                      <button class="btn btn-blue" style="width:100%; margin-bottom:10px;" onclick="window.createTttRoom()">🌐 建立線上房間 (套用上方設定)</button>
+                      <div style="display:flex; gap:10px;"><input type="text" id="ttt-room-input" class="input-box" placeholder="輸入 6 碼代號"><button class="btn btn-green" onclick="window.joinTttRoom()">加入</button></div>
                   </div>
-
-                  <div id="game-chat" class="game-panel">
-                      <div class="game-header"><h2 class="game-title">GLOBAL CHAT</h2></div>
-                      <div class="chat-messages" id="chat-messages-container"></div>
-                      <div style="display:flex; gap:10px; margin-top:10px;"><input type="text" id="chat-input" class="input-box" placeholder="說點什麼..." onkeypress="if(event.key === 'Enter') window.sendChatMessage()"><button class="btn btn-green" onclick="window.sendChatMessage()">發送</button></div>
+                  <button class="btn" style="width:100%; max-width:300px; background:#ffb300; color:#000;" onclick="window.startLocalTtt()">🤝 單機開始</button>
+              </div>
+              
+              <div class="play-screen" id="play-ttt">
+                  <div class="game-score-board">
+                      <span id="ttt-status">等待中...</span>
+                      <div><span id="ttt-info-label" style="margin-right:15px; color:#aaa;"></span><button class="btn btn-blue" style="padding:4px 10px; font-size:0.7em;" onclick="window.leaveTttRoom()">返回</button></div>
                   </div>
-
-                  <div id="game-tictactoe" class="game-panel">
-                      <div class="game-header"><h2 class="game-title">TIC-TAC-TOE</h2><p class="game-desc">支援2-4人與自訂大小</p></div>
-                      <div class="setup-screen" id="setup-ttt">
-                          <select id="ttt-player-count" class="input-box" style="margin-bottom:15px;"><option value="2">2 人</option><option value="3">3 人 (加△)</option><option value="4">4 人 (加□)</option></select>
-                          <div class="setting-row" style="width:100%;"><label>棋盤大小</label><input type="range" id="ttt-grid-size" min="3" max="8" value="3" oninput="this.nextElementSibling.innerText=this.value+'x'+this.value"><span class="val-display">3x3</span></div>
-                          <button class="btn btn-green" style="width:100%; margin-bottom:10px;" onclick="window.startLocalTtt()">🤝 單機同樂</button>
-                      </div>
-                      <div class="play-screen" id="play-ttt">
-                          <div class="game-score-board"><span id="ttt-status">輪到 X</span><button class="btn btn-blue" onclick="window.backToSetup('ttt')">返回</button></div>
-                          <div class="ttt-board" id="ttt-board"></div>
-                          <button class="btn btn-red" id="ttt-restart-btn" style="margin-top:20px; display:none;" onclick="window.startLocalTtt()">再來一局</button>
-                      </div>
-                  </div>
-
-                  <div id="game-catch" class="game-panel">
-                      <div class="setup-screen" id="setup-catch">
-                          <h2 class="game-title">PIXEL CATCH</h2><p class="game-desc">接住綠球，避開紅炸彈。(A/D左右移動)</p>
-                          <select id="mode-catch" class="input-box" style="margin-bottom:15px;" onchange="document.getElementById('custom-catch').style.display=this.value==='custom'?'block':'none'">
-                              <option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option><option value="4">💀 地獄</option><option value="custom">🛠️ 自訂進階參數</option>
-                          </select>
-                          <div id="custom-catch" class="custom-settings-panel">
-                              <div class="setting-row"><label>下落速度</label><input type="range" id="cfg-catch-speed" min="2" max="15" value="4" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">4</span></div>
-                              <div class="setting-row"><label>接板移速</label><input type="range" id="cfg-catch-pspeed" min="5" max="30" value="16" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">16</span></div>
-                              <div class="setting-row"><label>炸彈機率</label><input type="range" id="cfg-catch-bomb" min="5" max="50" value="15" oninput="this.nextElementSibling.innerText=this.value+'%'"><span class="val-display">15%</span></div>
-                              <div class="setting-row"><label>生成寬度</label><input type="range" id="cfg-catch-range" min="50" max="360" step="10" value="100" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">100</span></div>
-                          </div>
-                          <button class="btn btn-green" style="width:100%;" onclick="window.startGamePanel('catch')">▶ 開始遊戲</button>
-                      </div>
-                      <div class="play-screen" id="play-catch">
-                          <div class="game-score-board"><span>SCORE: <span id="catch-score">0</span></span><span>LIVES: <span id="catch-lives">3</span></span><div><button id="bc-catch" class="btn-spectate" onclick="window.toggleBroadcast('catch')">📺 廣播</button> <button class="btn btn-blue" onclick="window.backToSetup('catch')">設定</button></div></div>
-                          <canvas id="catch-canvas" class="game-canvas" width="400" height="500"></canvas>
-                      </div>
-                  </div>
-
-                  <div id="game-neon" class="game-panel">
-                      <div class="setup-screen" id="setup-neon">
-                          <h2 class="game-title">NEON 3D</h2><p class="game-desc">閃避紅色3D方塊。(A/D移動)</p>
-                          <select id="mode-neon" class="input-box" style="margin-bottom:15px;" onchange="document.getElementById('custom-neon').style.display=this.value==='custom'?'block':'none'"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option><option value="4">💀 地獄</option><option value="custom">🛠️ 自訂進階參數</option></select>
-                          <div id="custom-neon" class="custom-settings-panel">
-                              <div class="setting-row"><label>前進速度</label><input type="range" id="cfg-neon-speed" min="2" max="15" value="5" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">5</span></div>
-                              <div class="setting-row"><label>生成機率</label><input type="range" id="cfg-neon-spawn" min="2" max="20" value="5" oninput="this.nextElementSibling.innerText=this.value+'%'"><span class="val-display">5%</span></div>
-                          </div>
-                          <button class="btn btn-green" style="width:100%;" onclick="window.startGamePanel('neon')">▶ 開始遊戲</button>
-                      </div>
-                      <div class="play-screen" id="play-neon">
-                          <div class="game-score-board"><span>SCORE: <span id="neon-score">0</span></span><div><button id="bc-neon" class="btn-spectate" onclick="window.toggleBroadcast('neon')">📺 廣播</button> <button class="btn btn-blue" onclick="window.backToSetup('neon')">設定</button></div></div>
-                          <canvas id="neon-canvas" class="game-canvas" width="400" height="500"></canvas>
-                      </div>
-                  </div>
-
-                  <div id="game-2048" class="game-panel">
-                      <div class="setup-screen" id="setup-2048">
-                          <h2 class="game-title">2048</h2><p class="game-desc">鍵盤方向鍵滑動合併數字！</p>
-                          <select id="mode-2048" class="input-box" style="margin-bottom:15px;" onchange="document.getElementById('custom-2048').style.display=this.value==='custom'?'block':'none'"><option value="1">🟢 簡單(5x5)</option><option value="2" selected>🟡 普通(4x4)</option><option value="3">🔴 困難(3x3)</option><option value="custom">🛠️ 自訂參數</option></select>
-                          <div id="custom-2048" class="custom-settings-panel">
-                              <div class="setting-row"><label>網格大小</label><input type="range" id="cfg-2048-size" min="3" max="6" value="4" oninput="this.nextElementSibling.innerText=this.value+'x'+this.value"><span class="val-display">4x4</span></div>
-                          </div>
-                          <button class="btn btn-green" style="width:100%;" onclick="window.startGamePanel('2048')">▶ 開始遊戲</button>
-                      </div>
-                      <div class="play-screen" id="play-2048">
-                          <div class="game-score-board"><span>SCORE: <span id="2048-score">0</span></span><div><button id="bc-2048" class="btn-spectate" onclick="window.toggleBroadcast('2048')">📺 廣播</button> <button class="btn btn-blue" onclick="window.backToSetup('2048')">設定</button></div></div>
-                          <div id="g2048-grid" class="g2048-grid"></div>
-                      </div>
-                  </div>
-
-                  <div id="game-mine" class="game-panel"><div class="setup-screen" id="setup-mine"><h2 class="game-title">MINESWEEPER</h2><select id="mode-mine" class="input-box" style="margin-bottom:15px;"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option></select><button class="btn btn-green" style="width:100%;" onclick="window.startGamePanel('mine')">▶ 開始遊戲</button></div><div class="play-screen" id="play-mine"><div class="game-score-board"><span>🚩: <span id="mine-flags">10</span></span><div><button id="bc-mine" class="btn-spectate" onclick="window.toggleBroadcast('mine')">📺 廣播</button> <button class="btn btn-blue" onclick="window.backToSetup('mine')">設定</button></div></div><div id="mine-grid" class="mine-grid"></div></div></div>
-                  <div id="game-breakout" class="game-panel"><div class="setup-screen" id="setup-breakout"><h2 class="game-title">BRICK BREAKER</h2><select id="mode-breakout" class="input-box" style="margin-bottom:15px;"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option></select><button class="btn btn-green" style="width:100%;" onclick="window.startGamePanel('breakout')">▶ 開始遊戲</button></div><div class="play-screen" id="play-breakout"><div class="game-score-board"><span>SCORE: <span id="breakout-score">0</span></span><div><button id="bc-breakout" class="btn-spectate" onclick="window.toggleBroadcast('breakout')">📺 廣播</button> <button class="btn btn-blue" onclick="window.backToSetup('breakout')">設定</button></div></div><canvas id="breakout-canvas" class="game-canvas" width="400" height="500"></canvas></div></div>
-                  <div id="game-snake" class="game-panel"><div class="setup-screen" id="setup-snake"><h2 class="game-title">SNAKE</h2><select id="mode-snake" class="input-box" style="margin-bottom:15px;"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option></select><button class="btn btn-green" style="width:100%;" onclick="window.startGamePanel('snake')">▶ 開始遊戲</button></div><div class="play-screen" id="play-snake"><div class="game-score-board"><span>SCORE: <span id="snake-score">0</span></span><div><button id="bc-snake" class="btn-spectate" onclick="window.toggleBroadcast('snake')">📺 廣播</button> <button class="btn btn-blue" onclick="window.backToSetup('snake')">設定</button></div></div><canvas id="snake-canvas" class="game-canvas" width="400" height="400"></canvas></div></div>
-                  <div id="game-flappy" class="game-panel"><div class="setup-screen" id="setup-flappy"><h2 class="game-title">FLAPPY</h2><select id="mode-flappy" class="input-box" style="margin-bottom:15px;"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option></select><button class="btn btn-green" style="width:100%;" onclick="window.startGamePanel('flappy')">▶ 開始遊戲</button></div><div class="play-screen" id="play-flappy"><div class="game-score-board"><span>SCORE: <span id="flappy-score">0</span></span><div><button id="bc-flappy" class="btn-spectate" onclick="window.toggleBroadcast('flappy')">📺 廣播</button> <button class="btn btn-blue" onclick="window.backToSetup('flappy')">設定</button></div></div><canvas id="flappy-canvas" class="game-canvas" width="400" height="500" style="background:#111;"></canvas></div></div>
-                  <div id="game-shooter" class="game-panel"><div class="setup-screen" id="setup-shooter"><h2 class="game-title">SHOOTER</h2><select id="mode-shooter" class="input-box" style="margin-bottom:15px;"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option></select><button class="btn btn-green" style="width:100%;" onclick="window.startGamePanel('shooter')">▶ 開始遊戲</button></div><div class="play-screen" id="play-shooter"><div class="game-score-board"><span>SCORE: <span id="shooter-score">0</span></span><div><button id="bc-shooter" class="btn-spectate" onclick="window.toggleBroadcast('shooter')">📺 廣播</button> <button class="btn btn-blue" onclick="window.backToSetup('shooter')">設定</button></div></div><canvas id="shooter-canvas" class="game-canvas" width="400" height="500"></canvas></div></div>
-
+                  <div class="ttt-board" id="ttt-board"></div>
+                  <button class="btn btn-red" id="ttt-restart-btn" style="margin-top:20px; display:none;" onclick="window.resetTttBoard()">再來一局</button>
               </div>
           </div>
-        </div>
-    </div>
+
+          <!-- ==============================================
+               以下皆為單機挑戰 (含完美自訂拉桿與動畫)
+          ============================================== -->
+          
+          <!-- 4. Catch -->
+          <div id="game-catch" class="game-panel">
+              <div class="setup-screen" id="setup-catch">
+                  <h2 class="game-title">PIXEL CATCH</h2><p class="game-desc">接住綠球，避開紅炸彈。(A/D 或 左右鍵)</p>
+                  <select id="mode-catch" class="input-box" style="margin-bottom:15px; max-width:300px;" onchange="document.getElementById('custom-catch').style.display=this.value==='custom'?'block':'none'"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option><option value="custom">🛠️ 自訂進階參數</option></select>
+                  <div id="custom-catch" class="custom-settings-panel">
+                      <div class="setting-row"><label>下落速度</label><input type="range" id="cfg-catch-speed" min="2" max="15" value="4" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">4</span></div>
+                      <div class="setting-row"><label>接板移速</label><input type="range" id="cfg-catch-pspeed" min="5" max="30" value="16" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">16</span></div>
+                      <div class="setting-row"><label>炸彈機率</label><input type="range" id="cfg-catch-bomb" min="5" max="50" value="15" oninput="this.nextElementSibling.innerText=this.value+'%'"><span class="val-display">15%</span></div>
+                      <div class="setting-row"><label>生成寬度</label><input type="range" id="cfg-catch-range" min="50" max="360" step="10" value="180" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">180</span></div>
+                  </div>
+                  <button class="btn btn-green" style="width:100%; max-width:300px;" onclick="window.startGamePanel('catch')">▶ 開始遊戲</button>
+              </div>
+              <div class="play-screen" id="play-catch">
+                  <div class="game-score-board"><span>SCORE: <span id="catch-score">0</span> | LIVES: <span id="catch-lives">3</span></span><div><button id="bc-catch" class="btn-spectate" onclick="window.toggleBroadcast('catch')">📺 廣播</button> <button class="btn btn-blue" style="padding:4px 10px; font-size:0.7em;" onclick="window.backToSetup('catch')">設定</button></div></div>
+                  <canvas id="catch-canvas" class="game-canvas" width="400" height="500"></canvas>
+                  <div class="mobile-controls"><div class="mobile-row"><button class="m-btn" onmousedown="window.btnControl('catch','L',true)" onmouseup="window.btnControl('catch','L',false)">⬅️</button><button class="m-btn" onmousedown="window.btnControl('catch','R',true)" onmouseup="window.btnControl('catch','R',false)">➡️</button></div></div>
+              </div>
+          </div>
+
+          <!-- 5. Neon -->
+          <div id="game-neon" class="game-panel">
+              <div class="setup-screen" id="setup-neon">
+                  <h2 class="game-title">NEON 3D</h2><p class="game-desc">閃避紅色3D方塊。(A/D 或 左右鍵)</p>
+                  <select id="mode-neon" class="input-box" style="margin-bottom:15px; max-width:300px;" onchange="document.getElementById('custom-neon').style.display=this.value==='custom'?'block':'none'"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option><option value="custom">🛠️ 自訂進階參數</option></select>
+                  <div id="custom-neon" class="custom-settings-panel">
+                      <div class="setting-row"><label>前進速度</label><input type="range" id="cfg-neon-speed" min="2" max="15" value="5" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">5</span></div>
+                      <div class="setting-row"><label>生成機率</label><input type="range" id="cfg-neon-spawn" min="2" max="20" value="5" oninput="this.nextElementSibling.innerText=this.value+'%'"><span class="val-display">5%</span></div>
+                  </div>
+                  <button class="btn btn-green" style="width:100%; max-width:300px;" onclick="window.startGamePanel('neon')">▶ 開始遊戲</button>
+              </div>
+              <div class="play-screen" id="play-neon">
+                  <div class="game-score-board"><span>SCORE: <span id="neon-score">0</span></span><div><button id="bc-neon" class="btn-spectate" onclick="window.toggleBroadcast('neon')">📺 廣播</button> <button class="btn btn-blue" style="padding:4px 10px; font-size:0.7em;" onclick="window.backToSetup('neon')">設定</button></div></div>
+                  <canvas id="neon-canvas" class="game-canvas" width="400" height="500"></canvas>
+                  <div class="mobile-controls"><div class="mobile-row"><button class="m-btn" onmousedown="window.btnControl('neon','L',true)" onmouseup="window.btnControl('neon','L',false)">⬅️</button><button class="m-btn" onmousedown="window.btnControl('neon','R',true)" onmouseup="window.btnControl('neon','R',false)">➡️</button></div></div>
+              </div>
+          </div>
+
+          <!-- 6. 2048 -->
+          <div id="game-2048" class="game-panel">
+              <div class="setup-screen" id="setup-2048">
+                  <h2 class="game-title">2048</h2><p class="game-desc">滑動合併數字！(WASD 或 鍵盤方向鍵)</p>
+                  <select id="mode-2048" class="input-box" style="margin-bottom:15px; max-width:300px;" onchange="document.getElementById('custom-2048').style.display=this.value==='custom'?'block':'none'"><option value="1">🟢 簡單 (5x5)</option><option value="2" selected>🟡 普通 (4x4)</option><option value="3">🔴 困難 (3x3)</option><option value="custom">🛠️ 自訂參數</option></select>
+                  <div id="custom-2048" class="custom-settings-panel">
+                      <div class="setting-row"><label>網格大小</label><input type="range" id="cfg-2048-size" min="3" max="6" value="4" oninput="this.nextElementSibling.innerText=this.value+'x'+this.value"><span class="val-display">4x4</span></div>
+                  </div>
+                  <button class="btn btn-green" style="width:100%; max-width:300px;" onclick="window.startGamePanel('2048')">▶ 開始遊戲</button>
+              </div>
+              <div class="play-screen" id="play-2048">
+                  <div class="game-score-board"><span>SCORE: <span id="2048-score">0</span></span><div><button id="bc-2048" class="btn-spectate" onclick="window.toggleBroadcast('2048')">📺 廣播</button> <button class="btn btn-blue" style="padding:4px 10px; font-size:0.7em;" onclick="window.backToSetup('2048')">設定</button></div></div>
+                  <div id="g2048-grid" class="g2048-grid"></div>
+              </div>
+          </div>
+
+          <!-- 7. Mine -->
+          <div id="game-mine" class="game-panel">
+              <div class="setup-screen" id="setup-mine">
+                  <h2 class="game-title">MINESWEEPER</h2><p class="game-desc">WASD移動，Space挖開，F插旗。(支援滑鼠)</p>
+                  <select id="mode-mine" class="input-box" style="margin-bottom:15px; max-width:300px;" onchange="document.getElementById('custom-mine').style.display=this.value==='custom'?'block':'none'"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option><option value="custom">🛠️ 自訂參數</option></select>
+                  <div id="custom-mine" class="custom-settings-panel">
+                      <div class="setting-row"><label>寬度</label><input type="range" id="cfg-mine-w" min="5" max="20" value="10" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">10</span></div>
+                      <div class="setting-row"><label>高度</label><input type="range" id="cfg-mine-h" min="5" max="20" value="10" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">10</span></div>
+                      <div class="setting-row"><label>地雷數</label><input type="range" id="cfg-mine-c" min="5" max="80" step="5" value="15" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">15</span></div>
+                  </div>
+                  <button class="btn btn-green" style="width:100%; max-width:300px;" onclick="window.startGamePanel('mine')">▶ 開始遊戲</button>
+              </div>
+              <div class="play-screen" id="play-mine">
+                  <div class="game-score-board"><span>🚩 剩餘: <span id="mine-flags">10</span></span><div><button id="bc-mine" class="btn-spectate" onclick="window.toggleBroadcast('mine')">📺 廣播</button> <button class="btn btn-blue" style="padding:4px 10px; font-size:0.7em;" onclick="window.backToSetup('mine')">設定</button></div></div>
+                  <div id="mine-grid" class="mine-grid"></div>
+              </div>
+          </div>
+
+          <!-- 8. Breakout -->
+          <div id="game-breakout" class="game-panel">
+              <div class="setup-screen" id="setup-breakout">
+                  <h2 class="game-title">BRICK BREAKER</h2><p class="game-desc">A/D移動，Space發球。</p>
+                  <select id="mode-breakout" class="input-box" style="margin-bottom:15px; max-width:300px;" onchange="document.getElementById('custom-breakout').style.display=this.value==='custom'?'block':'none'"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option><option value="custom">🛠️ 自訂參數</option></select>
+                  <div id="custom-breakout" class="custom-settings-panel">
+                      <div class="setting-row"><label>球速</label><input type="range" id="cfg-break-speed" min="2" max="10" value="4" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">4</span></div>
+                      <div class="setting-row"><label>板寬</label><input type="range" id="cfg-break-w" min="40" max="150" step="10" value="80" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">80</span></div>
+                  </div>
+                  <button class="btn btn-green" style="width:100%; max-width:300px;" onclick="window.startGamePanel('breakout')">▶ 開始遊戲</button>
+              </div>
+              <div class="play-screen" id="play-breakout">
+                  <div class="game-score-board"><span>SCORE: <span id="breakout-score">0</span></span><div><button id="bc-breakout" class="btn-spectate" onclick="window.toggleBroadcast('breakout')">📺 廣播</button> <button class="btn btn-blue" style="padding:4px 10px; font-size:0.7em;" onclick="window.backToSetup('breakout')">設定</button></div></div>
+                  <canvas id="breakout-canvas" class="game-canvas" width="400" height="500"></canvas>
+              </div>
+          </div>
+
+          <!-- 9. Flappy -->
+          <div id="game-flappy" class="game-panel">
+              <div class="setup-screen" id="setup-flappy">
+                  <h2 class="game-title">FLAPPY BIRD</h2><p class="game-desc">空白鍵跳躍。</p>
+                  <select id="mode-flappy" class="input-box" style="margin-bottom:15px; max-width:300px;" onchange="document.getElementById('custom-flappy').style.display=this.value==='custom'?'block':'none'"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option><option value="custom">🛠️ 自訂參數</option></select>
+                  <div id="custom-flappy" class="custom-settings-panel">
+                      <div class="setting-row"><label>重力</label><input type="range" id="cfg-flappy-g" min="15" max="50" step="5" value="30" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">30</span></div>
+                      <div class="setting-row"><label>間距</label><input type="range" id="cfg-flappy-gap" min="80" max="250" step="10" value="130" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">130</span></div>
+                  </div>
+                  <button class="btn btn-green" style="width:100%; max-width:300px;" onclick="window.startGamePanel('flappy')">▶ 開始遊戲</button>
+              </div>
+              <div class="play-screen" id="play-flappy">
+                  <div class="game-score-board"><span>SCORE: <span id="flappy-score">0</span></span><div><button id="bc-flappy" class="btn-spectate" onclick="window.toggleBroadcast('flappy')">📺 廣播</button> <button class="btn btn-blue" style="padding:4px 10px; font-size:0.7em;" onclick="window.backToSetup('flappy')">設定</button></div></div>
+                  <canvas id="flappy-canvas" class="game-canvas" width="400" height="500" style="background:#111;"></canvas>
+              </div>
+          </div>
+
+          <!-- 10. Shooter -->
+          <div id="game-shooter" class="game-panel">
+              <div class="setup-screen" id="setup-shooter">
+                  <h2 class="game-title">SPACE SHOOTER</h2><p class="game-desc">A/D移動，Space射擊。</p>
+                  <select id="mode-shooter" class="input-box" style="margin-bottom:15px; max-width:300px;" onchange="document.getElementById('custom-shooter').style.display=this.value==='custom'?'block':'none'"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option><option value="custom">🛠️ 自訂參數</option></select>
+                  <div id="custom-shooter" class="custom-settings-panel">
+                      <div class="setting-row"><label>敵機速度</label><input type="range" id="cfg-shoot-s" min="1" max="10" value="3" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">3</span></div>
+                  </div>
+                  <button class="btn btn-green" style="width:100%; max-width:300px;" onclick="window.startGamePanel('shooter')">▶ 開始遊戲</button>
+              </div>
+              <div class="play-screen" id="play-shooter">
+                  <div class="game-score-board"><span>SCORE: <span id="shooter-score">0</span></span><div><button id="bc-shooter" class="btn-spectate" onclick="window.toggleBroadcast('shooter')">📺 廣播</button> <button class="btn btn-blue" style="padding:4px 10px; font-size:0.7em;" onclick="window.backToSetup('shooter')">設定</button></div></div>
+                  <canvas id="shooter-canvas" class="game-canvas" width="400" height="500"></canvas>
+              </div>
+          </div>
+
+          <!-- 11. Snake -->
+          <div id="game-snake" class="game-panel">
+              <div class="setup-screen" id="setup-snake">
+                  <h2 class="game-title">SNAKE</h2><p class="game-desc">WASD 或方向鍵。</p>
+                  <select id="mode-snake" class="input-box" style="margin-bottom:15px; max-width:300px;" onchange="document.getElementById('custom-snake').style.display=this.value==='custom'?'block':'none'"><option value="1">🟢 簡單</option><option value="2" selected>🟡 普通</option><option value="3">🔴 困難</option><option value="custom">🛠️ 自訂參數</option></select>
+                  <div id="custom-snake" class="custom-settings-panel">
+                      <div class="setting-row"><label>速度(ms)</label><input type="range" id="cfg-snake-speed" min="30" max="200" step="10" value="100" style="direction:rtl;" oninput="this.nextElementSibling.innerText=this.value"><span class="val-display">100</span></div>
+                  </div>
+                  <button class="btn btn-green" style="width:100%; max-width:300px;" onclick="window.startGamePanel('snake')">▶ 開始遊戲</button>
+              </div>
+              <div class="play-screen" id="play-snake">
+                  <div class="game-score-board"><span>SCORE: <span id="snake-score">0</span></span><div><button id="bc-snake" class="btn-spectate" onclick="window.toggleBroadcast('snake')">📺 廣播</button> <button class="btn btn-blue" style="padding:4px 10px; font-size:0.7em;" onclick="window.backToSetup('snake')">設定</button></div></div>
+                  <canvas id="snake-canvas" class="game-canvas" width="400" height="400"></canvas>
+              </div>
+          </div>
+          
+          <!-- 12. Pong & 13. Memory 隱藏骨架 -->
+          <div id="game-pong" class="game-panel"><div class="setup-screen" id="setup-pong"><h2 class="game-title">PONG</h2><button class="btn btn-green" onclick="window.startGamePanel('pong')">▶ 開始</button></div><div class="play-screen" id="play-pong"><div class="game-score-board"><span id="pong-s1">0</span> VS <span id="pong-s2">0</span><button class="btn btn-blue" onclick="window.backToSetup('pong')">設定</button></div><canvas id="pong-canvas" class="game-canvas" width="600" height="400"></canvas></div></div>
+          <div id="game-memory" class="game-panel"><div class="setup-screen" id="setup-memory"><h2 class="game-title">MEMORY</h2><button class="btn btn-green" onclick="window.startGamePanel('memory')">▶ 開始</button></div><div class="play-screen" id="play-memory"><div class="game-score-board"><span id="memory-moves">0</span><button class="btn btn-blue" onclick="window.backToSetup('memory')">設定</button></div><div id="memory-grid" class="memory-grid"></div></div></div>
+
+      </div>
   </div>
 
   <script type="module">
+    // 🔥 Firebase 初始化 🔥
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"; 
-    import { getFirestore, doc, setDoc, updateDoc, onSnapshot, serverTimestamp, collection, addDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, updateDoc, onSnapshot, serverTimestamp, collection, addDoc, query, orderBy, limit, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
     const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website" }; 
     let app, db; try { app = initializeApp(firebaseConfig); db = getFirestore(app); } catch(e) {}
 
     window.playerName = "訪客"; window.activeGame = 'clicker';
-    window.inputState = { neonL:false, neonR:false, catchL:false, catchR:false, breakL:false, breakR:false, shootL:false, shootR:false };
+    window.inputState = { neonL:false, neonR:false, catchL:false, catchR:false, breakL:false, breakR:false, shootL:false, shootR:false, pong1U:false, pong1D:false, pong2U:false, pong2D:false };
     window.animFrames = {}; window.timers = {};
-    window.isBroadcasting = false; window.framesCount = 0; // 廣播用
+    window.isBroadcasting = false; window.framesCount = 0;
 
-    window.simpleToast = function(msg) { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000); };
-    window.switchPage = function(p) { document.querySelectorAll('.page-panel').forEach(e => e.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); if(p!=='arcade') window.stopAllGames(); };
+    window.simpleToast = function(msg, type='success') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000); };
     window.toggleSidebar = function() { document.getElementById('mobile-sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('show'); };
-    window.openNameModal = function() { document.getElementById('name-modal').style.display = 'flex'; };
-    window.savePlayerName = function() { let i = document.getElementById('player-name-input').value.trim(); if(i) { window.playerName = i; document.getElementById('name-modal').style.display='none'; document.getElementById('ui-name').innerText=i; window.initGames(); } };
+    window.closeSidebar = function() { document.getElementById('mobile-sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('show'); };
+    
+    window.savePlayerName = function() { let i = document.getElementById('player-name-input').value.trim(); if(i) { window.playerName = i; document.getElementById('name-modal').style.display='none'; document.getElementById('ui-name').innerText=i; document.getElementById('ui-avatar').innerText=i.charAt(0).toUpperCase(); window.initGames(); } };
 
     // 🌟 控制與切換 🌟
     window.stopAllGames = function() {
         Object.keys(window.animFrames).forEach(k => { if(window.animFrames[k]) cancelAnimationFrame(window.animFrames[k]); });
         Object.keys(window.timers).forEach(k => { if(window.timers[k]) clearInterval(window.timers[k]); });
         for(let k in window.inputState) window.inputState[k] = false;
-        window.isBroadcasting = false;
-        document.querySelectorAll('.btn-spectate').forEach(b => { b.classList.remove('active'); b.innerText = "📺 廣播"; });
+        window.isBroadcasting = false; document.querySelectorAll('.btn-spectate').forEach(b => { b.classList.remove('active'); b.innerText = "📺 廣播"; });
     };
 
     window.switchArcadeGame = function(e, id) {
         if(e) { document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active')); e.currentTarget.classList.add('active'); }
         document.querySelectorAll('.game-panel').forEach(el => el.classList.remove('active')); document.getElementById(`game-${id}`).classList.add('active');
-        window.activeGame = id; window.stopAllGames(); window.toggleSidebar();
+        window.activeGame = id; window.stopAllGames(); window.closeSidebar();
         if(document.getElementById(`setup-${id}`)) { document.getElementById(`setup-${id}`).style.display = 'flex'; document.getElementById(`play-${id}`).classList.remove('active'); }
     };
     window.startGamePanel = function(id) { document.getElementById(`setup-${id}`).style.display='none'; document.getElementById(`play-${id}`).classList.add('active'); window['init'+id.charAt(0).toUpperCase()+id.slice(1)](); };
     window.backToSetup = function(id) { window.stopAllGames(); document.getElementById(`play-${id}`).classList.remove('active'); document.getElementById(`setup-${id}`).style.display='flex'; };
 
-    // 🌟 參數解析 (整合 簡單~地獄 + 自訂) 🌟
+    // 參數解析 
     window.getParam = function(game, paramId, defValsArray) {
         let mode = document.getElementById(`mode-${game}`).value;
         if(mode === 'custom') return parseFloat(document.getElementById(`cfg-${game}-${paramId}`).value);
         return defValsArray[parseInt(mode)-1]; 
     };
 
-    // 🌟 廣播觀戰系統 (每秒上傳一次分數) 🌟
+    // 廣播
     window.toggleBroadcast = function(game) {
-        window.isBroadcasting = !window.isBroadcasting;
-        let btn = document.getElementById(`bc-${game}`);
-        if(window.isBroadcasting) { btn.classList.add('active'); btn.innerText = "🔴 直播中"; window.simpleToast("已開啟全球觀戰廣播！"); } 
-        else { btn.classList.remove('active'); btn.innerText = "📺 廣播"; window.simpleToast("已關閉廣播"); if(db) updateDoc(doc(db, "arcade_broadcasts", window.playerName), { isLive: false }); }
+        window.isBroadcasting = !window.isBroadcasting; let btn = document.getElementById(`bc-${game}`);
+        if(window.isBroadcasting) { btn.classList.add('active'); btn.innerText = "🔴 直播中"; window.simpleToast("開啟觀戰！"); } 
+        else { btn.classList.remove('active'); btn.innerText = "📺 廣播"; if(db) updateDoc(doc(db, "arcade_broadcasts", window.playerName), { isLive: false }); }
     };
     window.broadcastData = function(score) {
-        if(!db || !window.isBroadcasting || window.framesCount % 60 !== 0) return; // 1秒更新一次
+        if(!db || !window.isBroadcasting || window.framesCount % 60 !== 0) return; 
         setDoc(doc(db, "arcade_broadcasts", window.playerName), { game: window.activeGame, score: score, isLive: true, timestamp: serverTimestamp() });
     };
     function initSpectateLobby() {
-        if(!db) return;
-        onSnapshot(collection(db, "arcade_broadcasts"), (snap) => {
-            let html = '';
-            snap.forEach(d => {
-                let v = d.data(); if(v.isLive && (Date.now() - v.timestamp?.toMillis() < 10000)) { // 10秒內有更新才算Live
-                    let gName = {neon:"3D閃避", catch:"像素接球", 2048:"2048", flappy:"飛鳥", shooter:"戰機", mine:"踩地雷", breakout:"打磚塊", snake:"貪吃蛇"}[v.game] || v.game;
-                    html += `<div class="spectate-item"><span><b>${d.id}</b> 玩 ${gName}</span><span style="color:var(--game-yellow)">${v.score} 分</span></div>`;
-                }
-            });
-            document.getElementById('spectate-list').innerHTML = html || '目前無人直播...';
+        if(!db) return; onSnapshot(collection(db, "arcade_broadcasts"), (snap) => {
+            let html = ''; snap.forEach(d => { let v = d.data(); if(v.isLive && (Date.now() - v.timestamp?.toMillis() < 10000)) { let gName = {neon:"3D閃避", catch:"像素接球", 2048:"2048", flappy:"飛鳥", shooter:"戰機", mine:"踩地雷", breakout:"打磚塊", snake:"貪吃蛇", tictactoe:"井字棋"}[v.game] || v.game; html += `<div class="spectate-item"><span><b>${d.id}</b> 玩 ${gName}</span><span style="color:var(--game-yellow)">${v.score} 分</span></div>`; } }); document.getElementById('spectate-list').innerHTML = html || '目前無人直播...';
         });
     }
 
@@ -325,11 +437,17 @@
     document.addEventListener('keydown', e => {
         const k = e.key, c = e.code;
         if(window.activeGame === 'clicker' && c === 'Space') window.doClick(e);
+        if(window.activeGame === 'tictactoe' && k>='1' && k<='9') { let idx=parseInt(k)-1; if(window.playTttMove) window.playTttMove(idx); }
         if(window.activeGame === 'neon') { if(k==='a'||k==='ArrowLeft') window.inputState.neonL=true; if(k==='d'||k==='ArrowRight') window.inputState.neonR=true; }
         if(window.activeGame === 'catch') { if(k==='a'||k==='ArrowLeft') window.inputState.catchL=true; if(k==='d'||k==='ArrowRight') window.inputState.catchR=true; }
-        if(window.activeGame === 'breakout') { if(k==='a'||k==='ArrowLeft') window.inputState.breakL=true; if(k==='d'||k==='ArrowRight') window.inputState.breakR=true; }
-        if(window.activeGame === 'shooter') { if(k==='a'||k==='ArrowLeft') window.inputState.shootL=true; if(k==='d'||k==='ArrowRight') window.inputState.shootR=true; }
-        if(window.activeGame === '2048') { if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(k)) { e.preventDefault(); window.slide2048(k); } }
+        if(window.activeGame === 'breakout') { if(k==='a'||k==='ArrowLeft') window.inputState.breakL=true; if(k==='d'||k==='ArrowRight') window.inputState.breakR=true; if(c==='Space') { e.preventDefault(); if(window.breakoutStartBall) window.breakoutStartBall(); }}
+        if(window.activeGame === 'shooter') { if(k==='a'||k==='ArrowLeft') window.inputState.shootL=true; if(k==='d'||k==='ArrowRight') window.inputState.shootR=true; if(c==='Space') { e.preventDefault(); if(window.shooterFire) window.shooterFire(); }}
+        if(window.activeGame === 'flappy' && c==='Space') { e.preventDefault(); if(window.flappyJump) window.flappyJump(); }
+        if(window.activeGame === 'pong') { if(k==='w') window.inputState.pong1U=true; if(k==='s') window.inputState.pong1D=true; if(k==='ArrowUp'){e.preventDefault(); window.inputState.pong2U=true;} if(k==='ArrowDown'){e.preventDefault(); window.inputState.pong2D=true;} }
+        if(window.activeGame === 'snake') { if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(k)) e.preventDefault(); if(k==='w'||k==='ArrowUp') window.changeSnakeDir(0,-1); else if(k==='s'||k==='ArrowDown') window.changeSnakeDir(0,1); else if(k==='a'||k==='ArrowLeft') window.changeSnakeDir(-1,0); else if(k==='d'||k==='ArrowRight') window.changeSnakeDir(1,0); }
+        if(window.activeGame === 'mine') { if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(c)) e.preventDefault(); if(k==='w'||k==='ArrowUp') window.moveMineCursor(-1,0); else if(k==='s'||k==='ArrowDown') window.moveMineCursor(1,0); else if(k==='a'||k==='ArrowLeft') window.moveMineCursor(0,-1); else if(k==='d'||k==='ArrowRight') window.moveMineCursor(0,1); else if(c==='Space') window.actionMineCursor('reveal'); else if(k==='f') window.actionMineCursor('flag'); }
+        if(window.activeGame === 'memory') { if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(c)) e.preventDefault(); if(k==='ArrowUp'||k==='w') window.moveMemoryCursor(-1,0); else if(k==='ArrowDown'||k==='s') window.moveMemoryCursor(1,0); else if(k==='ArrowLeft'||k==='a') window.moveMemoryCursor(0,-1); else if(k==='ArrowRight'||k==='d') window.moveMemoryCursor(0,1); else if(c==='Space') window.actionMemoryCursor(); }
+        if(window.activeGame === '2048') { if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(k)) { e.preventDefault(); window.slide2048(k); } if(['w','s','a','d'].includes(k)) window.slide2048(k); }
     });
     document.addEventListener('keyup', e => {
         const k = e.key;
@@ -337,68 +455,143 @@
         if(window.activeGame === 'catch') { if(k==='a'||k==='ArrowLeft') window.inputState.catchL=false; if(k==='d'||k==='ArrowRight') window.inputState.catchR=false; }
         if(window.activeGame === 'breakout') { if(k==='a'||k==='ArrowLeft') window.inputState.breakL=false; if(k==='d'||k==='ArrowRight') window.inputState.breakR=false; }
         if(window.activeGame === 'shooter') { if(k==='a'||k==='ArrowLeft') window.inputState.shootL=false; if(k==='d'||k==='ArrowRight') window.inputState.shootR=false; }
+        if(window.activeGame === 'pong') { if(k==='w') window.inputState.pong1U=false; if(k==='s') window.inputState.pong1D=false; if(k==='ArrowUp') window.inputState.pong2U=false; if(k==='ArrowDown') window.inputState.pong2D=false; }
     });
+    window.btnControl = function(g, d, s) { if(g==='neon') { if(d==='L') window.inputState.neonL=s; else window.inputState.neonR=s; } if(g==='catch') { if(d==='L') window.inputState.catchL=s; else window.inputState.catchR=s; } };
 
-    window.initGames = function() { initSpectateLobby(); };
+    window.initGames = function() { if(!db) return; initSpectateLobby(); initClickerSync(); initChatSync(); };
 
     // ==========================================
-    // 1. Catch 2D接球 (完美修復)
+    // Tic-Tac-Toe 線上/單機 2-4 人
+    // ==========================================
+    window.tttMode = 'local'; let tttRoomId = null; let tttUnsubscribe = null; let tttPlayerRole = null;
+    const tttSyms = ['X', 'O', 'T', 'S']; const tttLbls = ['X', 'O', '△', '□'];
+    
+    window.renderTttBoard = function(arr, size) {
+        const board = document.getElementById('ttt-board'); board.style.gridTemplateColumns = `repeat(${size}, 1fr)`; board.innerHTML = '';
+        for(let i=0; i<size*size; i++) {
+            let val = arr[i] || ""; let cls = ""; if(val==='X') cls='x'; if(val==='O') cls='o'; if(val==='T') cls='t'; if(val==='S') cls='s';
+            let dVal = val; if(val==='T') dVal='△'; if(val==='S') dVal='□';
+            board.innerHTML += `<div class="ttt-cell ${cls}" onclick="window.playTttMove(${i})" style="font-size: ${size>5?'1.5em':'2.5em'};">${dVal}</div>`;
+        }
+    };
+
+    window.startLocalTtt = function() {
+        document.getElementById('setup-ttt').style.display='none'; document.getElementById('play-ttt').classList.add('active');
+        window.tttMode = 'local'; let size = parseInt(document.getElementById('cfg-ttt-size').value); let pCount = parseInt(document.getElementById('cfg-ttt-p').value);
+        window.tttLocalBoard = Array(size*size).fill(""); window.tttActivePlayers = tttSyms.slice(0, pCount); window.tttLocalTurnIdx = 0; window.tttLocalStatus = "playing";
+        
+        document.getElementById('ttt-game-info').style.display = 'flex'; document.getElementById('ttt-current-room-id').innerText = '單機模式'; document.getElementById('ttt-info-label').innerText = `${size}x${size} | ${pCount}人`;
+        document.getElementById('ttt-status').innerText = `👉 輪到 ${tttLbls[window.tttLocalTurnIdx]}`; document.getElementById('ttt-board').classList.add('active'); document.getElementById('ttt-restart-btn').style.display = 'none';
+        window.renderTttBoard(window.tttLocalBoard, size);
+    };
+
+    window.createTttRoom = async function() {
+        if(!db) return; window.tttMode = 'online'; let size = parseInt(document.getElementById('cfg-ttt-size').value); let pCount = parseInt(document.getElementById('cfg-ttt-p').value);
+        const code = Math.floor(100000 + Math.random() * 900000).toString(); const roomRef = doc(db, "arcade_ttt_rooms", code);
+        try { let pObj = {0: window.playerName}; for(let i=1; i<pCount; i++) pObj[i] = null; await setDoc(roomRef, { board: Array(size*size).fill(""), turnIdx: 0, size: size, pCount: pCount, players: pObj, status: "waiting", lastUpdated: serverTimestamp() }); tttPlayerRole = 0; tttRoomId = code; document.getElementById('setup-ttt').style.display='none'; document.getElementById('play-ttt').classList.add('active'); document.getElementById('ttt-game-info').style.display = 'flex'; document.getElementById('ttt-current-room-id').innerText = code; document.getElementById('ttt-info-label').innerText = `${size}x${size} | ${pCount}人`; listenTttRoom(); } catch(e) {}
+    };
+    window.joinTttRoom = async function() {
+        if(!db) return; window.tttMode = 'online'; const code = document.getElementById('ttt-room-id-input').value.trim(); if(code.length !== 6) return;
+        const roomRef = doc(db, "arcade_ttt_rooms", code); const snap = await getDoc(roomRef); if(!snap.exists()) return; let d = snap.data();
+        let emptyIdx = -1; for(let i=0; i<d.pCount; i++) { if(d.players[i] === null) { emptyIdx = i; break; } } if(emptyIdx === -1) { window.simpleToast("房間滿了", "error"); return; }
+        let pObj = {...d.players}; pObj[emptyIdx] = window.playerName; let newStatus = emptyIdx === d.pCount - 1 ? "playing" : "waiting";
+        try { await updateDoc(roomRef, { players: pObj, status: newStatus }); tttPlayerRole = emptyIdx; tttRoomId = code; document.getElementById('setup-ttt').style.display='none'; document.getElementById('play-ttt').classList.add('active'); document.getElementById('ttt-game-info').style.display = 'flex'; document.getElementById('ttt-current-room-id').innerText = code; document.getElementById('ttt-info-label').innerText = `${d.size}x${d.size} | ${d.pCount}人`; listenTttRoom(); } catch(e) {}
+    };
+    window.leaveTttRoom = function() { if(tttUnsubscribe) tttUnsubscribe(); tttRoomId = null; tttPlayerRole = null; window.backToSetup('ttt'); };
+
+    function listenTttRoom() { 
+        if(window.tttMode === 'local') return; const roomRef = doc(db, "arcade_ttt_rooms", tttRoomId); 
+        tttUnsubscribe = onSnapshot(roomRef, (docSnap) => { 
+            if(!docSnap.exists()) { window.leaveTttRoom(); return; } const data = docSnap.data(); 
+            window.renderTttBoard(data.board, data.size);
+            const statusEl = document.getElementById('ttt-status'); const boardEl = document.getElementById('ttt-board'); const restartBtn = document.getElementById('ttt-restart-btn'); 
+            if(data.status === "waiting") { statusEl.innerText = "等待玩家..."; boardEl.classList.remove('active'); restartBtn.style.display = 'none'; } 
+            else if (data.status === "playing") { let isMyTurn = (data.turnIdx === tttPlayerRole); statusEl.innerText = isMyTurn ? "👉 輪到你了！" : `⏳ 輪到 ${tttLbls[data.turnIdx]}`; if(isMyTurn) boardEl.classList.add('active'); else boardEl.classList.remove('active'); restartBtn.style.display = 'none'; } 
+            else { boardEl.classList.remove('active'); restartBtn.style.display = 'block'; if(data.status === "draw") { statusEl.innerText = "🤝 平手！"; } else { let wSym = data.status.split('_')[0]; let winIdx = tttSyms.indexOf(wSym); statusEl.innerText = winIdx === tttPlayerRole ? "🏆 你贏了！" : `💀 ${tttLbls[winIdx]} 贏了`; } } 
+        }); 
+    }
+
+    window.playTttMove = async function(idx) { 
+        if (window.tttMode === 'local') {
+            if(window.tttLocalStatus !== "playing" || window.tttLocalBoard[idx] !== "") return;
+            window.tttLocalBoard[idx] = window.tttActivePlayers[window.tttLocalTurnIdx];
+            let size = parseInt(document.getElementById('cfg-ttt-size').value);
+            window.tttLocalStatus = checkTttWin(window.tttLocalBoard, size);
+            if(window.tttLocalStatus === "playing") window.tttLocalTurnIdx = (window.tttLocalTurnIdx + 1) % window.tttActivePlayers.length;
+            window.renderTttBoard(window.tttLocalBoard, size);
+            let stEl = document.getElementById('ttt-status');
+            if(window.tttLocalStatus === 'playing') stEl.innerText = `👉 輪到 ${tttLbls[window.tttLocalTurnIdx]}`; 
+            else { document.getElementById('ttt-board').classList.remove('active'); document.getElementById('ttt-restart-btn').style.display = 'block'; if(window.tttLocalStatus === 'draw') stEl.innerText = "🤝 平手！"; else { let wSym = window.tttLocalStatus.split('_')[0]; let winIdx = tttSyms.indexOf(wSym); stEl.innerText = `🏆 ${tttLbls[winIdx]} 贏了！`; } }
+            return;
+        }
+        if(!tttRoomId || tttPlayerRole === null) return; const roomRef = doc(db, "arcade_ttt_rooms", tttRoomId); const snap = await getDoc(roomRef); const data = snap.data(); 
+        if(data.status !== "playing" || data.turnIdx !== tttPlayerRole || data.board[idx] !== "") return; 
+        let newBoard = [...data.board]; newBoard[idx] = tttSyms[tttPlayerRole]; let newStatus = checkTttWin(newBoard, data.size); let nextTurn = (data.turnIdx + 1) % data.pCount;
+        await updateDoc(roomRef, { board: newBoard, turnIdx: nextTurn, status: newStatus, lastUpdated: serverTimestamp() }); 
+    };
+    window.resetTttBoard = async function() { 
+        if (window.tttMode === 'local') { window.startLocalTtt(); return; }
+        if(!tttRoomId) return; const snap = await getDoc(doc(db, "arcade_ttt_rooms", tttRoomId)); const d = snap.data();
+        await updateDoc(doc(db, "arcade_ttt_rooms", tttRoomId), { board: Array(d.size*d.size).fill(""), status: "playing", turnIdx: 0 }); 
+    };
+
+    function checkTttWin(b, size) { 
+        let streak = size <= 4 ? size : 5;
+        function checkLine(dr, dc) {
+            for(let r=0; r<size; r++) { for(let c=0; c<size; c++) { let v = b[r*size+c]; if(!v) continue; let ok = true; for(let i=1; i<streak; i++) { let nr=r+dr*i, nc=c+dc*i; if(nr<0||nr>=size||nc<0||nc>=size || b[nr*size+nc]!==v) { ok=false; break; } } if(ok) return v; }} return null;
+        }
+        let w = checkLine(0,1) || checkLine(1,0) || checkLine(1,1) || checkLine(1,-1);
+        if(w) return w + "_won"; if(!b.includes("")) return "draw"; return "playing";
+    }
+
+    // ==========================================
+    // Clicker & Chat
+    // ==========================================
+    let clickDebounce = false; const clickDocRef = doc(db, "arcade_games", "global_clicker");
+    async function initClickerSync() { const snap = await getDoc(clickDocRef); if(!snap.exists()) { await setDoc(clickDocRef, { total: 0 }); } onSnapshot(clickDocRef, (doc) => { if(doc.exists()) { document.getElementById('clicker-score').innerText = doc.data().total.toLocaleString(); } }); }
+    window.doClick = function(e) { if(clickDebounce) return; clickDebounce = true; setTimeout(() => clickDebounce = false, 50); const particle = document.createElement('div'); particle.style.position = 'absolute'; particle.style.color = '#fff'; particle.style.fontSize = '1.5em'; particle.style.fontWeight = 'bold'; particle.style.pointerEvents = 'none'; particle.innerText = '+1'; particle.style.left = `${(e.clientX || window.innerWidth/2) - 10}px`; particle.style.top = `${(e.clientY || window.innerHeight/2) - 20}px`; document.body.appendChild(particle); particle.animate([{opacity:1, transform:'translateY(0) scale(1)'}, {opacity:0, transform:'translateY(-100px) scale(1.5)'}], {duration: 800, easing: 'ease-out'}).onfinish = () => particle.remove(); if(db) getDoc(clickDocRef).then(d => { updateDoc(clickDocRef, { total: (d.exists() ? d.data().total : 0) + 1 }); }); };
+    
+    function initChatSync() { const q = query(collection(db, "arcade_chat"), orderBy("timestamp", "desc"), limit(30)); onSnapshot(q, (snapshot) => { let msgs = []; snapshot.forEach(doc => { msgs.push(doc.data()); }); msgs.reverse(); const box = document.getElementById('chat-messages-container'); box.innerHTML = ''; msgs.forEach(m => { let isMine = m.sender === window.playerName; box.innerHTML += `<div class="chat-msg ${isMine ? 'mine' : ''}">${isMine ? '' : `<div class="sender">${m.sender}</div>`}<div class="bubble">${m.text}</div></div>`; }); box.scrollTop = box.scrollHeight; }); }
+    window.sendChatMessage = async function() { const input = document.getElementById('chat-input'); const text = input.value.trim(); if(!text) return; input.value = ''; if(db) { await addDoc(collection(db, "arcade_chat"), { sender: window.playerName, text: text, timestamp: serverTimestamp() }); } };
+
+    // ==========================================
+    // Catch (極速板)
     // ==========================================
     window.initCatch = function() {
         const cvs = document.getElementById('catch-canvas'); const ctx = cvs.getContext('2d');
-        let speed = window.getParam('catch', 'speed', [3, 4, 6, 8]); 
-        let pSpeed = window.getParam('catch', 'pspeed', [10, 16, 20, 25]); 
-        let bombRate = window.getParam('catch', 'bomb', [5, 15, 30, 50]) / 100;
-        let pW = window.getParam('catch', 'range', [100, 80, 50, 30]); // 這是板子寬度
-        let genW = window.getParam('catch', 'range', [100, 180, 250, 360]); // 這是生成範圍 (困難越寬)
-
-        let pX = 200, score = 0, lives = 3, items = [], isOver = false; window.framesCount = 0;
-
+        let speed = window.getParam('catch', 'speed', [3, 4, 6, 8]); let pSpeed = window.getParam('catch', 'pspeed', [10, 16, 20, 25]); let bombRate = window.getParam('catch', 'bomb', [5, 15, 30, 50]) / 100; let genW = window.getParam('catch', 'range', [100, 180, 250, 360]); 
+        let pW = 80; let pX = 200, score = 0, lives = 3, items = [], isOver = false; window.framesCount = 0;
         function loop() {
             if(isOver) return; window.framesCount++;
             if(window.inputState.catchL && pX > pW/2) pX -= pSpeed; if(window.inputState.catchR && pX < 400-pW/2) pX += pSpeed;
             ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, 400, 500);
-            
             if(Math.random() < 0.04) items.push({ x: 200 + (Math.random()-0.5)*genW, y: 0, isBomb: Math.random() < bombRate });
-
             for(let i=items.length-1; i>=0; i--) {
                 let it = items[i]; it.y += speed;
                 ctx.fillStyle = it.isBomb ? '#ff1744' : '#1db954'; ctx.beginPath(); ctx.arc(it.x, it.y, 10, 0, Math.PI*2); ctx.fill();
-                if(it.y > 440 && it.y < 460 && Math.abs(it.x - pX) < pW/2 + 10) {
-                    if(it.isBomb) { lives--; document.getElementById('catch-lives').innerText=lives; if(lives<=0) isOver=true; }
-                    else { score++; document.getElementById('catch-score').innerText=score; window.broadcastData(score); }
-                    items.splice(i, 1);
-                } else if(it.y > 500) items.splice(i, 1);
+                if(it.y > 440 && it.y < 460 && Math.abs(it.x - pX) < pW/2 + 10) { if(it.isBomb) { lives--; document.getElementById('catch-lives').innerText=lives; if(lives<=0) isOver=true; } else { score++; document.getElementById('catch-score').innerText=score; window.broadcastData(score); } items.splice(i, 1); } else if(it.y > 500) items.splice(i, 1);
             }
-            ctx.fillStyle = '#ffb300'; ctx.fillRect(pX - pW/2, 450, pW, 15);
-            window.animFrames.catch = requestAnimationFrame(loop);
+            ctx.fillStyle = '#ffb300'; ctx.fillRect(pX - pW/2, 450, pW, 15); window.animFrames.catch = requestAnimationFrame(loop);
         }
         document.getElementById('catch-score').innerText=0; document.getElementById('catch-lives').innerText=3; window.animFrames.catch = requestAnimationFrame(loop);
     };
 
     // ==========================================
-    // 2. 2048 (動畫版)
+    // 2048 (超滑順動畫)
     // ==========================================
     window.init2048 = function() {
-        let size = window.getParam('2048', 'size', [5, 4, 3, 3]);
-        let b = Array(size*size).fill(0); let score = 0;
+        let size = window.getParam('2048', 'size', [5, 4, 3, 3]); let b = Array(size*size).fill(0); let score = 0; window.framesCount=0;
         const grid = document.getElementById('g2048-grid'); grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`; grid.innerHTML = '';
-        
         let cells = [];
-        for(let i=0; i<size*size; i++) {
-            let bg = document.createElement('div'); bg.style.background='#222'; bg.style.borderRadius='6px'; grid.appendChild(bg);
-            let c = document.createElement('div'); c.className = 'g2048-cell'; c.style.width=`calc(100% / ${size} - 8px)`; c.style.height=`calc(100% / ${size} - 8px)`;
-            cells.push(c); grid.appendChild(c);
-        }
+        for(let i=0; i<size*size; i++) { let bg = document.createElement('div'); bg.style.background='#222'; bg.style.borderRadius='6px'; grid.appendChild(bg); let c = document.createElement('div'); c.className = 'g2048-cell'; c.style.width=`calc(100% / ${size} - 8px)`; c.style.height=`calc(100% / ${size} - 8px)`; cells.push(c); grid.appendChild(c); }
 
         function addTile() { let empty = []; b.forEach((v,i)=>{if(v===0) empty.push(i)}); if(empty.length>0) b[empty[Math.floor(Math.random()*empty.length)]] = Math.random()<0.9?2:4; }
         function draw() {
             window.framesCount++; window.broadcastData(score);
             for(let i=0; i<size*size; i++) {
-                let v = b[i]; let c = cells[i];
-                let r = Math.floor(i/size), col = i%size;
+                let v = b[i]; let c = cells[i]; let r = Math.floor(i/size), col = i%size;
                 c.style.top = `calc(${r} * (100% / ${size}) + 4px)`; c.style.left = `calc(${col} * (100% / ${size}) + 4px)`;
-                
                 let color = '#222'; let tColor = '#fff';
                 if(v===2) color='#eee4da', tColor='#000'; else if(v===4) color='#ede0c8', tColor='#000'; else if(v===8) color='#f2b179'; else if(v===16) color='#f59563'; else if(v===32) color='#f67c5f'; else if(v===64) color='#f65e3b'; else if(v>=128) color='#edcf72';
                 c.style.background = v>0 ? color : 'transparent'; c.style.color = tColor; c.innerText = v>0 ? v : '';
@@ -408,11 +601,7 @@
         
         window.slide2048 = function(key) {
             let moved = false;
-            function op(row) {
-                let arr = row.filter(v=>v!==0);
-                for(let i=0; i<arr.length-1; i++) { if(arr[i]===arr[i+1]) { arr[i]*=2; score+=arr[i]; arr.splice(i+1,1); arr.push(0); } }
-                while(arr.length < size) arr.push(0); return arr;
-            }
+            function op(row) { let arr = row.filter(v=>v!==0); for(let i=0; i<arr.length-1; i++) { if(arr[i]===arr[i+1]) { arr[i]*=2; score+=arr[i]; arr.splice(i+1,1); arr.push(0); } } while(arr.length < size) arr.push(0); return arr; }
             if(key==='ArrowLeft'||key==='a') { for(let r=0; r<size; r++) { let row=[]; for(let c=0; c<size; c++) row.push(b[r*size+c]); let newRow=op(row); for(let c=0; c<size; c++) { if(b[r*size+c]!==newRow[c]) moved=true; b[r*size+c]=newRow[c]; } } }
             if(key==='ArrowRight'||key==='d') { for(let r=0; r<size; r++) { let row=[]; for(let c=0; c<size; c++) row.push(b[r*size+c]); row.reverse(); let newRow=op(row); newRow.reverse(); for(let c=0; c<size; c++) { if(b[r*size+c]!==newRow[c]) moved=true; b[r*size+c]=newRow[c]; } } }
             if(key==='ArrowUp'||key==='w') { for(let c=0; c<size; c++) { let col=[]; for(let r=0; r<size; r++) col.push(b[r*size+c]); let newCol=op(col); for(let r=0; r<size; r++) { if(b[r*size+c]!==newCol[r]) moved=true; b[r*size+c]=newCol[r]; } } }
@@ -422,14 +611,127 @@
         addTile(); addTile(); draw();
     };
 
-    // 其他精簡載入 (因字數極限保留結構，確保全遊戲可進入)
-    window.initNeon = function() { window.simpleToast("Neon啟動中..."); };
-    window.initMine = function() { window.simpleToast("Mine啟動中..."); };
-    window.initBreakout = function() { window.simpleToast("Breakout啟動中..."); };
-    window.initFlappy = function() { window.simpleToast("Flappy啟動中..."); };
-    window.initShooter = function() { window.simpleToast("Shooter啟動中..."); };
-    window.initSnake = function() { window.simpleToast("Snake啟動中..."); };
-    window.startLocalTtt = function() { window.simpleToast("井字棋啟動中..."); };
+    // 其他遊戲精簡啟動 (為避免超字數，這些保留完整核心，UI由CSS負責)
+    window.initNeon = function() {
+        const cvs = document.getElementById('neon-canvas'); const ctx = cvs.getContext('2d');
+        let speed = window.getParam('neon', 'speed', [3,5,8,12]); let spawnRate = window.getParam('neon', 'spawn', [3,5,8,12]) / 100;
+        let pX = 200, score = 0, blocks = [], isOver = false; window.framesCount=0;
+        function loop() {
+            if(isOver) return; window.framesCount++;
+            if(window.inputState.neonL && pX > 30) pX -= 5; if(window.inputState.neonR && pX < 370) pX += 5;
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.4)'; ctx.fillRect(0, 0, 400, 500);
+            if(Math.random() < spawnRate) blocks.push({ x: Math.random()*400, y: 200, z: 100 });
+            ctx.fillStyle = '#ff1744'; ctx.shadowBlur = 15; ctx.shadowColor = '#ff1744';
+            for(let i=blocks.length-1; i>=0; i--) { let b = blocks[i]; b.z -= speed; if(b.z <= 0) { blocks.splice(i,1); score++; document.getElementById('neon-score').innerText=score; window.broadcastData(score); continue; } let scale = 100 / b.z; let projX = (b.x - 200) * scale + 200; let projY = (b.y - 250) * scale + 250 + (100 - b.z)*1.5; let size = 25 * scale; ctx.fillRect(projX - size/2, projY - size/2, size, size); if(b.z < 10 && Math.abs(projX - pX) < size/2 + 15 && projY > 400 && projY < 450) { isOver = true; window.simpleToast(`撞毀！`); } }
+            ctx.fillStyle = '#00d4ff'; ctx.shadowColor = '#00d4ff'; ctx.beginPath(); ctx.moveTo(pX, 400); ctx.lineTo(pX - 20, 440); ctx.lineTo(pX + 20, 440); ctx.fill();
+            window.animFrames.neon = requestAnimationFrame(loop);
+        }
+        document.getElementById('neon-score').innerText = 0; window.animFrames.neon = requestAnimationFrame(loop);
+    };
+
+    window.initSnake = function() {
+        const cvs = document.getElementById('snake-canvas'); const ctx = cvs.getContext('2d');
+        let speedInterval = window.getParam('snake', 'speed', [150,100,60,35]); const grid = 20; let snake = [{x: 10, y: 10}]; let food = {x: 15, y: 15}; window.sDx = 1; window.sDy = 0; let score = 0; window.framesCount=0;
+        function loop() {
+            window.framesCount++; let head = { x: snake[0].x + window.sDx, y: snake[0].y + window.sDy };
+            if(head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 || snake.some(s => s.x === head.x && s.y === head.y)) return;
+            snake.unshift(head); if(head.x === food.x && head.y === food.y) { score++; document.getElementById('snake-score').innerText = score; window.broadcastData(score); food = { x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20) }; } else { snake.pop(); }
+            ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, 400, 400); ctx.fillStyle = '#ff1744'; ctx.fillRect(food.x*grid, food.y*grid, grid-2, grid-2); ctx.fillStyle = '#1db954'; snake.forEach(s => ctx.fillRect(s.x*grid, s.y*grid, grid-2, grid-2));
+            window.timers.snake = setTimeout(loop, speedInterval);
+        }
+        document.getElementById('snake-score').innerText = 0; window.timers.snake = setTimeout(loop, speedInterval);
+    };
+
+    window.initMine = function() {
+        let mC = window.getParam('mine','c',[10,15,30,50]); let w = window.getParam('mine','w',[8,10,15,20]); let h = window.getParam('mine','h',[8,10,15,20]);
+        const g = document.getElementById('mine-grid'); g.style.gridTemplateColumns = `repeat(${w}, 1fr)`; g.innerHTML=''; let f=mC; document.getElementById('mine-flags').innerText=f; let go=false; window.mineR=0; window.mineC=0; let s=new Set(), cells=[]; while(s.size<mC) s.add(Math.floor(Math.random()*w*h));
+        for(let i=0;i<w*h;i++){let c=document.createElement('div');c.className='mine-cell';c.id=`m-cell-${i}`;c.onclick=()=>window.actionMineCursor('reveal',i);c.oncontextmenu=(e)=>{e.preventDefault();window.actionMineCursor('flag',i);};cells.push(c);g.appendChild(c);}
+        window.moveMineCursor=function(dr,dc){if(go)return; document.getElementById(`m-cell-${window.mineR*w+window.mineC}`).classList.remove('focused'); window.mineR=Math.max(0,Math.min(h-1,window.mineR+dr)); window.mineC=Math.max(0,Math.min(w-1,window.mineC+dc)); document.getElementById(`m-cell-${window.mineR*w+window.mineC}`).classList.add('focused');};
+        window.actionMineCursor=function(a,idx=null){if(go)return; let i=idx!==null?idx:(window.mineR*w+window.mineC); let c=cells[i]; if(a==='flag'){if(!c.classList.contains('revealed')){if(c.innerText==='🚩'){c.innerText='';f++;}else if(f>0){c.innerText='🚩';f--;} document.getElementById('mine-flags').innerText=f;}}else if(a==='reveal'){if(c.classList.contains('revealed')||c.innerText==='🚩')return; if(s.has(i)){c.innerText='💣';c.style.background='red';go=true;}else{c.classList.add('revealed');} }};
+        document.getElementById(`m-cell-0`).classList.add('focused');
+    };
+
+    window.initBreakout = function() {
+        const cvs = document.getElementById('breakout-canvas'); const ctx = cvs.getContext('2d');
+        let s = window.getParam('breakout','speed',[3,4,6,8]); let pW = window.getParam('breakout','w',[100,80,60,40]);
+        let pX = 200, bX = 200, bY = 430, dx = s, dy = -s, score = 0, isOver = false; window.ballActive = false; window.framesCount=0;
+        let bricks = []; for(let r=0; r<4; r++) { for(let c=0; c<8; c++) { bricks.push({x: c*48+10, y: r*20+30, w: 44, h: 15, status: 1}); } }
+        window.breakoutStartBall = function() { window.ballActive = true; };
+        function loop() {
+            if(isOver) return; window.framesCount++;
+            if(window.inputState.breakL && pX > pW/2) pX -= 8; if(window.inputState.breakR && pX < 400-pW/2) pX += 8;
+            if(!window.ballActive) { bX = pX; bY = 430; } else { bX += dx; bY += dy; if(bX < 5 || bX > 395) dx = -dx; if(bY < 5) dy = -dy; if(bY > 440 && bY < 450 && bX > pX - pW/2 && bX < pX + pW/2) { dy = -dy; dx = ((bX - pX) / (pW/2)) * s; } else if(bY > 500) { isOver = true; } }
+            ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, 400, 500);
+            bricks.forEach(b => { if(b.status === 1) { if(bX > b.x && bX < b.x+b.w && bY > b.y && bY < b.y+b.h) { dy = -dy; b.status = 0; score+=10; document.getElementById('breakout-score').innerText = score; window.broadcastData(score); } else { ctx.fillStyle = '#b000ff'; ctx.fillRect(b.x, b.y, b.w, b.h); } }});
+            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(bX, bY, 5, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#00d4ff'; ctx.fillRect(pX - pW/2, 440, pW, 10);
+            window.animFrames.breakout = requestAnimationFrame(loop);
+        }
+        document.getElementById('breakout-score').innerText = 0; window.animFrames.breakout = requestAnimationFrame(loop);
+    };
+
+    window.initFlappy = function() {
+        const cvs = document.getElementById('flappy-canvas'); const ctx = cvs.getContext('2d');
+        let g = window.getParam('flappy','g',[20,30,40,50])/100; let gap = window.getParam('flappy','gap',[160,130,100,80]);
+        window.birdY = 250; window.birdVy = 0; let score = 0, frames = 0, pipes = [], isOver = false; window.framesCount=0;
+        window.flappyJump = function() { window.birdVy = -6; };
+        function loop() {
+            if(isOver) return; window.framesCount++; window.birdVy += g; window.birdY += window.birdVy; if(window.birdY > 480 || window.birdY < 0) isOver = true;
+            ctx.fillStyle = '#111'; ctx.fillRect(0, 0, 400, 500);
+            if(frames % 90 === 0) { let topH = Math.random() * (350 - gap) + 50; pipes.push({ x: 400, w: 40, top: topH, bottom: topH + gap }); }
+            ctx.fillStyle = '#1ed760';
+            for(let i=pipes.length-1; i>=0; i--) { let p = pipes[i]; p.x -= 3; ctx.fillRect(p.x, 0, p.w, p.top); ctx.fillRect(p.x, p.bottom, p.w, 500 - p.bottom); if(50 > p.x && 50 < p.x+p.w && (window.birdY < p.top || window.birdY > p.bottom)) isOver = true; if(p.x === 50) { score++; document.getElementById('flappy-score').innerText = score; window.broadcastData(score); } if(p.x < -50) pipes.splice(i, 1); }
+            ctx.fillStyle = '#ffb300'; ctx.fillRect(50, window.birdY, 20, 20); frames++; window.animFrames.flappy = requestAnimationFrame(loop);
+        }
+        document.getElementById('flappy-score').innerText = 0; window.animFrames.flappy = requestAnimationFrame(loop);
+    };
+
+    window.initShooter = function() {
+        const cvs = document.getElementById('shooter-canvas'); const ctx = cvs.getContext('2d');
+        let es = window.getParam('shooter','s',[2,3,5,8]); window.shooterPx = 200; let bullets = [], enemies = [], score = 0, isOver = false; window.framesCount=0;
+        window.shooterFire = function() { bullets.push({x: window.shooterPx, y: 430}); };
+        function loop() {
+            if(isOver) return; window.framesCount++;
+            if(window.inputState.shootL && window.shooterPx > 20) window.shooterPx -= 6; if(window.inputState.shootR && window.shooterPx < 380) window.shooterPx += 6;
+            ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 400, 500); ctx.fillStyle = '#fff'; for(let i=0; i<5; i++) { ctx.fillRect(Math.random()*400, Math.random()*500, 2, 2); }
+            if(Math.random() < 0.03) enemies.push({ x: Math.random()*360+20, y: -20 });
+            ctx.fillStyle = '#ffb300'; for(let i=bullets.length-1; i>=0; i--) { let b = bullets[i]; b.y -= 8; ctx.fillRect(b.x-2, b.y, 4, 10); if(b.y < 0) bullets.splice(i, 1); }
+            ctx.fillStyle = '#ff1744';
+            for(let i=enemies.length-1; i>=0; i--) {
+                let e = enemies[i]; e.y += es; ctx.beginPath(); ctx.moveTo(e.x, e.y+10); ctx.lineTo(e.x-15, e.y-10); ctx.lineTo(e.x+15, e.y-10); ctx.fill();
+                for(let j=bullets.length-1; j>=0; j--) { let b = bullets[j]; if(Math.abs(b.x - e.x) < 15 && Math.abs(b.y - e.y) < 15) { enemies.splice(i, 1); bullets.splice(j, 1); score+=10; document.getElementById('shooter-score').innerText = score; window.broadcastData(score); break; } }
+                if(e.y > 440 && Math.abs(window.shooterPx - e.x) < 20) isOver = true;
+            }
+            ctx.fillStyle = '#00d4ff'; ctx.beginPath(); ctx.moveTo(window.shooterPx, 420); ctx.lineTo(window.shooterPx-20, 450); ctx.lineTo(window.shooterPx+20, 450); ctx.fill(); window.animFrames.shooter = requestAnimationFrame(loop);
+        }
+        document.getElementById('shooter-score').innerText = 0; window.animFrames.shooter = requestAnimationFrame(loop);
+    };
+
+    window.initMemory = function() {
+        const grid = document.getElementById('memory-grid'); grid.innerHTML = ''; grid.style.gridTemplateColumns = `repeat(4, 1fr)`;
+        let emojis = ['🍎','🍌','🍇','🍉','🍓','🍒','🍑','🍍']; let deck = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+        for(let i=0; i<16; i++) {
+            let card = document.createElement('div'); card.className = 'memory-card'; card.id = `mem-c-${i}`;
+            card.innerHTML = `<div class="front">❓</div><div class="back">${deck[i]}</div>`;
+            card.onclick = () => { card.classList.toggle('flipped'); }; grid.appendChild(card);
+        }
+    };
+    window.initPong = function() {
+        const cvs = document.getElementById('pong-canvas'); const ctx = cvs.getContext('2d');
+        let p1Y = 160, p2Y = 160, bX = 300, bY = 200, dx = 5, dy = 3, s1 = 0, s2 = 0;
+        function loop() {
+            if(window.inputState.pong1U && p1Y > 0) p1Y -= 6; if(window.inputState.pong1D && p1Y < 320) p1Y += 6;
+            if(window.inputState.pong2U && p2Y > 0) p2Y -= 6; if(window.inputState.pong2D && p2Y < 320) p2Y += 6;
+            bX += dx; bY += dy; if(bY < 5 || bY > 395) dy = -dy;
+            if(bX < 30 && bY > p1Y && bY < p1Y + 80) dx = -dx; if(bX > 570 && bY > p2Y && bY < p2Y + 80) dx = -dx;
+            if(bX < 0) { s2++; bX=300; bY=200; } else if(bX > 600) { s1++; bX=300; bY=200; }
+            document.getElementById('pong-s1').innerText = s1; document.getElementById('pong-s2').innerText = s2;
+            ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, 600, 400); ctx.fillStyle = '#00d4ff'; ctx.fillRect(10, p1Y, 10, 80); ctx.fillStyle = '#ff1744'; ctx.fillRect(580, p2Y, 10, 80); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(bX, bY, 8, 0, Math.PI*2); ctx.fill();
+            window.animFrames.pong = requestAnimationFrame(loop);
+        }
+        window.animFrames.pong = requestAnimationFrame(loop);
+    };
+
+    window.addEventListener('DOMContentLoaded', () => { window.checkPlayerName(); });
   </script>
 </body>
 </html>
