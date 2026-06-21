@@ -1,1 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dogfish Sandbox | 自由沙盒破壞王</title>
+  <style>
+    :root { --primary: #1db954; --game-blue: #00d4ff; --accent: #ff1744; --font-main: 'Microsoft JhengHei', sans-serif; }
+    * { font-family: var(--font-main); box-sizing: border-box; user-select: none; }
+    body { background: #050505; color: #fff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow: hidden; }
+    
+    .header { text-align: center; margin-bottom: 15px; }
+    .title { color: var(--game-blue); font-size: 2em; font-weight: 900; margin: 0 0 5px 0; text-shadow: 0 0 10px rgba(0,212,255,0.4); }
+    
+    /* 遊戲工具列 */
+    .toolbar { display: flex; gap: 10px; margin-bottom: 15px; background: #111; padding: 10px 20px; border-radius: 8px; border: 1px solid #333; flex-wrap: wrap; justify-content: center;}
+    .tool-btn { background: #222; border: 2px solid #444; color: #fff; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.1s; }
+    .tool-btn:hover { background: #333; }
+    .tool-btn.active { border-color: var(--game-blue); background: rgba(0,212,255,0.2); color: var(--game-blue); }
+    
+    /* 大絕招按鈕 */
+    .action-btn { background: var(--primary); color: #000; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 900; cursor: pointer; transition: 0.1s; text-transform: uppercase; }
+    .action-btn.play { background: var(--game-yellow); }
+    .action-btn:active { transform: scale(0.95); }
 
+    /* 遊戲畫布 */
+    .game-container { position: relative; border: 3px solid #333; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); background: #1a1a1a; overflow: hidden; }
+    canvas { display: block; image-rendering: pixelated; touch-action: none; }
+    
+    /* 代碼輸入區 */
+    .code-panel { margin-top: 15px; display: flex; gap: 10px; width: 100%; max-width: 800px; }
+    .code-input { flex: 1; background: #000; border: 1px solid #333; color: #00d4ff; padding: 10px; border-radius: 6px; font-family: monospace; }
+    
+    #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
+    .toast { background: #fff; color: #000; padding: 12px 20px; border-radius: 8px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); animation: slideIn 0.3s ease; }
+    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+      <h1 class="title">Dogfish 沙盒關卡破壞王</h1>
+  </div>
+
+  <div class="toolbar" id="toolbar">
+      <button class="tool-btn active" onclick="selectTool(1)">🧱 地板</button>
+      <button class="tool-btn" onclick="selectTool(2)">☠️ 致命地刺</button>
+      <button class="tool-btn" onclick="selectTool(3)">🍄 超級彈簧</button>
+      <button class="tool-btn" onclick="selectTool(4)">🚩 過關終點</button>
+      <button class="tool-btn" onclick="selectTool(5)">🧍 出生點</button>
+      <button class="tool-btn" onclick="selectTool(0)">🧽 橡皮擦</button>
+      
+      <div style="width: 2px; background: #333; margin: 0 10px;"></div>
+      
+      <button class="action-btn play" id="btn-toggle-mode" onclick="toggleMode()">▶️ 切換為遊玩模式</button>
+      <button class="action-btn" style="background:#ff1744; color:#fff;" onclick="clearMap()">🗑️ 清空地圖</button>
+  </div>
+
+  <div class="game-container">
+      <canvas id="gameCanvas" width="800" height="480"></canvas>
+  </div>
+
+  <div class="code-panel">
+      <input type="text" id="level-code" class="code-input" placeholder="關卡代碼會顯示在這裡，或是貼上別人的代碼...">
+      <button class="action-btn" onclick="exportLevel()">匯出關卡</button>
+      <button class="action-btn" style="background:var(--game-blue);" onclick="importLevel()">載入關卡</button>
+  </div>
+  
+  <div id="toast-container"></div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // 系統變數
+    const TILE_SIZE = 40; // 每個網格 40x40 像素
+    const COLS = canvas.width / TILE_SIZE;  // 20 列
+    const ROWS = canvas.height / TILE_SIZE; // 12 行
+    
+    let isEditMode = true;
+    let currentTool = 1; // 預設畫地板
+    let isDrawing = false;
+    let gameLoop = null;
+
+    // 地圖資料 (0=空, 1=牆, 2=刺, 3=彈簧, 4=終點, 5=出生點)
+    let mapGrid = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+    
+    // 玩家物理屬性
+    let player = { x: 50, y: 50, w: 24, h: 32, vx: 0, vy: 0, speed: 5, jump: -12, grounded: false, isDead: false, isWin: false };
+    let keys = { w: false, a: false, s: false, d: false, space: false };
+
+    window.simpleToast = function(msg) {
+        const c = document.getElementById('toast-container');
+        const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg;
+        c.appendChild(t); setTimeout(() => t.remove(), 3000);
+    };
+
+    // ==========================================
+    // 🛠️ 編輯器邏輯 (繪製地圖)
+    // ==========================================
+    window.selectTool = function(toolId) {
+        currentTool = toolId;
+        document.querySelectorAll('.tool-btn').forEach((btn, idx) => {
+            if(idx === toolId || (toolId === 0 && idx === 5)) btn.classList.add('active'); // 處理橡皮擦高亮
+            else btn.classList.remove('active');
+        });
+        // 修正橡皮擦的高亮位置
+        if(toolId === 0) {
+             document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+             document.querySelectorAll('.tool-btn')[5].classList.add('active');
+        }
+    };
+
+    function handleDraw(e) {
+        if (!isEditMode || !isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        // 計算點擊位置屬於哪個網格
+        const col = Math.floor((e.clientX - rect.left) / TILE_SIZE);
+        const row = Math.floor((e.clientY - rect.top) / TILE_SIZE);
+        
+        if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
+            // 出生點(5) 和 終點(4) 只能有一個，畫之前先清掉舊的
+            if (currentTool === 5 || currentTool === 4) {
+                for(let r=0; r<ROWS; r++) {
+                    for(let c=0; c<COLS; c++) {
+                        if(mapGrid[r][c] === currentTool) mapGrid[r][c] = 0;
+                    }
+                }
+            }
+            mapGrid[row][col] = currentTool;
+            drawMap();
+        }
+    }
+
+    canvas.addEventListener('mousedown', e => { isDrawing = true; handleDraw(e); });
+    canvas.addEventListener('mousemove', e => handleDraw(e); );
+    window.addEventListener('mouseup', () => isDrawing = false);
+
+    window.clearMap = function() {
+        if(!confirm("確定要清空整張地圖嗎？")) return;
+        mapGrid = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+        drawMap();
+    };
+
+    // ==========================================
+    // 🎮 遊戲引擎 (物理與碰撞)
+    // ==========================================
+    window.toggleMode = function() {
+        isEditMode = !isEditMode;
+        const btn = document.getElementById('btn-toggle-mode');
+        const toolbar = document.getElementById('toolbar');
+        
+        if (!isEditMode) {
+            // 進入遊玩模式
+            btn.innerText = "🛠️ 返回編輯模式";
+            btn.classList.remove('play');
+            toolbar.style.opacity = "0.5"; // 暗化工具列
+            toolbar.style.pointerEvents = "none";
+            startGame();
+        } else {
+            // 進入編輯模式
+            btn.innerText = "▶️ 切換為遊玩模式";
+            btn.classList.add('play');
+            toolbar.style.opacity = "1";
+            toolbar.style.pointerEvents = "auto";
+            if(gameLoop) cancelAnimationFrame(gameLoop);
+            drawMap(); // 重置畫面
+        }
+    };
+
+    function startGame() {
+        // 尋找出生點，沒有就預設左上角
+        let foundStart = false;
+        for(let r=0; r<ROWS; r++) {
+            for(let c=0; c<COLS; c++) {
+                if(mapGrid[r][c] === 5) {
+                    player.x = c * TILE_SIZE + (TILE_SIZE - player.w) / 2;
+                    player.y = r * TILE_SIZE + (TILE_SIZE - player.h);
+                    foundStart = true;
+                }
+            }
+        }
+        if(!foundStart) { player.x = 20; player.y = 20; }
+        
+        player.vx = 0; player.vy = 0;
+        player.isDead = false; player.isWin = false;
+        
+        if(gameLoop) cancelAnimationFrame(gameLoop);
+        gameLoop = requestAnimationFrame(updateGame);
+    }
+
+    function updateGame() {
+        if(isEditMode) return; // 安全鎖
+        
+        if(player.isDead) {
+            ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#fff"; ctx.font = "40px sans-serif"; ctx.textAlign = "center";
+            ctx.fillText("YOU DIED", canvas.width/2, canvas.height/2);
+            return; // 停止運算
+        }
+        
+        if(player.isWin) {
+            ctx.fillStyle = "rgba(29, 185, 84, 0.5)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#fff"; ctx.font = "40px sans-serif"; ctx.textAlign = "center";
+            ctx.fillText("LEVEL CLEARED!", canvas.width/2, canvas.height/2);
+            return;
+        }
+
+        // 1. 套用物理重力與移動
+        player.vy += 0.6; // 加上重力 (Gravity)
+        
+        if (keys.a) player.vx = -player.speed;
+        else if (keys.d) player.vx = player.speed;
+        else player.vx *= 0.8; // 摩擦力減速
+
+        if ((keys.w || keys.space) && player.grounded) {
+            player.vy = player.jump;
+            player.grounded = false;
+        }
+
+        player.x += player.vx;
+        checkCollision('x');
+        
+        player.y += player.vy;
+        player.grounded = false;
+        checkCollision('y');
+
+        // 死亡邊界
+        if (player.y > canvas.height) player.isDead = true;
+
+        // 2. 渲染畫面
+        drawMap();
+        
+        // 畫玩家
+        ctx.fillStyle = "#00d4ff";
+        ctx.fillRect(player.x, player.y, player.w, player.h);
+        // 畫眼睛
+        ctx.fillStyle = "#000";
+        let eyeDir = keys.a ? 4 : (keys.d ? 16 : 10);
+        ctx.fillRect(player.x + eyeDir, player.y + 8, 4, 4);
+
+        gameLoop = requestAnimationFrame(updateGame);
+    }
+
+    // AABB 碰撞檢測黑科技
+    function checkCollision(axis) {
+        // 將玩家當前座標換算成會摸到的網格範圍
+        let startCol = Math.floor(player.x / TILE_SIZE);
+        let endCol = Math.floor((player.x + player.w) / TILE_SIZE);
+        let startRow = Math.floor(player.y / TILE_SIZE);
+        let endRow = Math.floor((player.y + player.h) / TILE_SIZE);
+
+        for (let r = startRow; r <= endRow; r++) {
+            for (let c = startCol; c <= endCol; c++) {
+                if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
+                    let block = mapGrid[r][c];
+                    if (block === 0 || block === 5) continue; // 空氣或出生點無實體
+
+                    // 遇到終點(4)
+                    if (block === 4) { player.isWin = true; return; }
+                    // 遇到地刺(2)
+                    if (block === 2) { player.isDead = true; return; }
+                    
+                    // 遇到牆(1)或彈簧(3) 進行物理阻擋
+                    if (block === 1 || block === 3) {
+                        let bX = c * TILE_SIZE; let bY = r * TILE_SIZE;
+                        
+                        if (axis === 'x') {
+                            if (player.vx > 0) player.x = bX - player.w; // 往右撞
+                            else if (player.vx < 0) player.x = bX + TILE_SIZE; // 往左撞
+                            player.vx = 0;
+                        }
+                        
+                        if (axis === 'y') {
+                            if (player.vy > 0) { // 往下掉碰到地板
+                                player.y = bY - player.h;
+                                player.grounded = true;
+                                player.vy = 0;
+                                // 踩到超級彈簧！
+                                if(block === 3) player.vy = -18; 
+                            }
+                            else if (player.vy < 0) { // 往上跳撞到天花板
+                                player.y = bY + TILE_SIZE;
+                                player.vy = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // 鍵盤監聽
+    document.addEventListener('keydown', e => {
+        let k = e.key.toLowerCase();
+        if (k === 'w' || k === 'arrowup') keys.w = true;
+        if (k === 'a' || k === 'arrowleft') keys.a = true;
+        if (k === 's' || k === 'arrowdown') keys.s = true;
+        if (k === 'd' || k === 'arrowright') keys.d = true;
+        if (e.code === 'Space') { keys.space = true; e.preventDefault(); }
+    });
+    document.addEventListener('keyup', e => {
+        let k = e.key.toLowerCase();
+        if (k === 'w' || k === 'arrowup') keys.w = false;
+        if (k === 'a' || k === 'arrowleft') keys.a = false;
+        if (k === 's' || k === 'arrowdown') keys.s = false;
+        if (k === 'd' || k === 'arrowright') keys.d = false;
+        if (e.code === 'Space') keys.space = false;
+    });
+
+    // ==========================================
+    // 🎨 渲染地圖
+    // ==========================================
+    function drawMap() {
+        ctx.fillStyle = "#1a1a1a";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 畫格線 (僅編輯模式顯示)
+        if(isEditMode) {
+            ctx.strokeStyle = "#222"; ctx.lineWidth = 1;
+            for(let i=0; i<=canvas.width; i+=TILE_SIZE) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
+            for(let i=0; i<=canvas.height; i+=TILE_SIZE) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width,i); ctx.stroke(); }
+        }
+
+        // 繪製方塊
+        for(let r=0; r<ROWS; r++) {
+            for(let c=0; c<COLS; c++) {
+                let val = mapGrid[r][c];
+                let x = c * TILE_SIZE; let y = r * TILE_SIZE;
+                
+                if(val === 1) { // 牆壁
+                    ctx.fillStyle = "#555"; ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+                    ctx.strokeStyle = "#333"; ctx.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
+                } else if(val === 2) { // 致命地刺
+                    ctx.fillStyle = "#ff1744";
+                    ctx.beginPath(); ctx.moveTo(x+TILE_SIZE/2, y); ctx.lineTo(x+TILE_SIZE, y+TILE_SIZE); ctx.lineTo(x, y+TILE_SIZE); ctx.fill();
+                } else if(val === 3) { // 彈簧
+                    ctx.fillStyle = "#1db954"; ctx.fillRect(x, y + TILE_SIZE/2, TILE_SIZE, TILE_SIZE/2);
+                    ctx.fillStyle = "#1ed760"; ctx.fillRect(x, y + TILE_SIZE/2, TILE_SIZE, 5);
+                } else if(val === 4) { // 終點
+                    ctx.fillStyle = "#ffb300"; ctx.fillRect(x+16, y, 8, TILE_SIZE); // 旗桿
+                    ctx.fillStyle = "#ff1744"; ctx.fillRect(x+20, y, 20, 15); // 旗幟
+                } else if(val === 5 && isEditMode) { // 出生點 (遊玩時隱藏)
+                    ctx.fillStyle = "rgba(0, 212, 255, 0.4)"; ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+                    ctx.fillStyle = "#fff"; ctx.font = "20px Arial"; ctx.textAlign="center"; ctx.fillText("🧍", x+TILE_SIZE/2, y+28);
+                }
+            }
+        }
+    }
+
+    // ==========================================
+    // 💾 關卡序列化 (轉代碼)
+    // ==========================================
+    window.exportLevel = function() {
+        // 將二維陣列轉為精簡字串再用 Base64 編碼
+        const str = mapGrid.map(row => row.join('')).join('-');
+        const code = btoa(str);
+        document.getElementById('level-code').value = code;
+        navigator.clipboard.writeText(code);
+        window.simpleToast("✅ 關卡代碼已產生並複製！");
+    };
+
+    window.importLevel = function() {
+        const code = document.getElementById('level-code').value.trim();
+        if(!code) { window.simpleToast("請輸入代碼！"); return; }
+        try {
+            const str = atob(code);
+            const rows = str.split('-');
+            if(rows.length !== ROWS) throw new Error("代碼格式不符");
+            for(let r=0; r<ROWS; r++) {
+                let chars = rows[r].split('');
+                for(let c=0; c<COLS; c++) {
+                    mapGrid[r][c] = parseInt(chars[c]) || 0;
+                }
+            }
+            if(!isEditMode) toggleMode(); // 強制切回編輯模式
+            drawMap();
+            window.simpleToast("🚀 關卡載入成功！");
+        } catch(e) {
+            window.simpleToast("❌ 無效的關卡代碼！");
+        }
+    };
+
+    // 初始渲染
+    drawMap();
+  </script>
+</body>
+</html>
