@@ -45,7 +45,6 @@
     .version-badge { background: linear-gradient(135deg, #1db954, #0088ff); color: #000; font-size: 0.5em; padding: 3px 8px; border-radius: 12px; font-weight: 900; }
     .nav-links { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     
-    /* 漢堡選單按鈕 (電腦版隱藏) */
     .hamburger-btn { display: none; background: transparent; border: none; color: white; font-size: 1.8em; padding: 5px; cursor: pointer; }
 
     .btn-nav { background: transparent; color: #b3b3b3; border: none; padding: 6px 12px; font-size: 0.95em; font-weight: 700; border-radius: 8px; transition: 0.2s; } .btn-nav:hover { color: white; background: rgba(255,255,255,0.1); } .btn-nav.active { background: rgba(255,255,255,0.15); color: white; }
@@ -128,25 +127,31 @@
     .fs-content { flex: 1; display: flex; flex-direction: column; padding: 30px; max-width: 1600px; margin: 0 auto; width: 100%; box-sizing: border-box; }
 
     /* =========================================================
-       📱 RWD 手機與平板響應式設計
+       📱 RWD 手機與平板響應式設計 (完美雙層架構)
     ========================================================= */
-    @media (max-width: 768px) {
+    
+    /* 第一層：平板與高解析度手機 (橫向/直向) 隱藏頂部擁擠按鈕，改為側滑選單 */
+    @media (max-width: 1250px) {
         .navbar { padding: 0 15px; }
         .logo { font-size: 1.1em; }
-        .hamburger-btn { display: block; }
+        .logo-text { font-size: 0.9em; }
+        .version-badge { font-size: 0.5em; padding: 2px 6px; }
+        .hamburger-btn { display: block; margin-right: 10px; }
         
-        /* 手機版導覽選單變為側邊抽屜 */
         .nav-links { 
-            position: fixed; top: 60px; left: -100%; width: 250px; height: calc(100vh - 60px); 
+            position: fixed; top: 60px; left: -100%; width: 280px; height: calc(100vh - 60px); 
             background: rgba(15, 15, 15, 0.98); flex-direction: column; align-items: flex-start; 
             padding: 20px; transition: left 0.3s ease; box-shadow: 2px 0 15px rgba(0,0,0,0.8);
-            border-right: 1px solid #333; overflow-y: auto;
+            border-right: 1px solid #333; overflow-y: auto; flex-wrap: nowrap;
         }
         .nav-links.show { left: 0; }
-        .btn-nav, .os-toggle-btn { width: 100%; text-align: left; padding: 12px 15px; font-size: 1.1em; }
-        #top-right-profile { width: 100%; justify-content: flex-start; margin-top: 10px; }
-        .btn-login { width: 100%; padding: 12px; margin-top: 10px; }
+        .btn-nav, .os-toggle-btn { width: 100%; text-align: left; padding: 12px 15px; font-size: 1.1em; display: block; margin-bottom: 5px; }
+        #top-right-profile { width: 100%; justify-content: flex-start; margin-top: 10px; flex-wrap: wrap; }
+        .btn-login { width: 100%; padding: 12px; margin-top: 10px; display: block; }
+    }
 
+    /* 第二層：純手機螢幕 (小螢幕卡片變為單欄、視窗全螢幕) */
+    @media (max-width: 768px) {
         .main-container { width: 100%; margin-top: 70px; padding: 0 10px; }
         .page-panel { padding: 15px; }
         .page-title { font-size: 1.8em; margin-bottom: 15px; }
@@ -618,7 +623,7 @@
   <div class="navbar">
     <div class="logo">
         <button class="hamburger-btn" onclick="window.toggleMobileMenu()">☰</button>
-        <span class="logo-text">Dogfish Studio</span><span class="version-badge">v38.0 RWD版</span>
+        <span class="logo-text">Dogfish Studio</span><span class="version-badge">v39.0 平板響應版</span>
     </div>
     <div class="nav-links" id="nav-links">
       <a href="games.html" class="btn-nav" style="color: #ff1744; font-weight: 900; text-decoration: none;">🎮 遊戲大廳</a>
@@ -1134,7 +1139,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         const bootScreen = document.getElementById('boot-screen'); const logBox = document.getElementById('boot-log');
-        const logs = ["> INITIALIZING DOGFISH CORE...", "> SYSTEM DEPLOYED... [OK]", "> WELCOME TO DOGFISH STUDIO V38.0"];
+        const logs = ["> INITIALIZING DOGFISH CORE...", "> SYSTEM DEPLOYED... [OK]", "> WELCOME TO DOGFISH STUDIO V39.0"];
         let i = 0; function showLog() { if (i < logs.length) { let p = document.createElement('div'); p.className = 'boot-text'; p.innerText = logs[i]; logBox.appendChild(p); i++; setTimeout(showLog, 150 + Math.random() * 100); } else { setTimeout(() => { bootScreen.style.opacity = 0; setTimeout(() => bootScreen.style.display = 'none', 500); }, 400); } }
         showLog(); initDataListener();
     });
