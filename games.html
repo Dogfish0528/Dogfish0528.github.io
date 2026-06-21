@@ -23,15 +23,17 @@
     ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #111; } ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
     
     /* 頂部導覽列 */
-    .game-navbar { height: 60px; background: rgba(10, 10, 10, 0.9); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; backdrop-filter: blur(10px); flex-shrink: 0; }
+    .game-navbar { height: 60px; background: rgba(10, 10, 10, 0.9); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; backdrop-filter: blur(10px); flex-shrink: 0; z-index: 1001; }
+    .logo-area { display: flex; align-items: center; gap: 15px; }
+    .mobile-menu-btn { display: none; background: transparent; border: none; color: white; font-size: 1.8em; cursor: pointer; padding: 0; line-height: 1; }
     .logo { font-size: 1.2em; font-weight: 900; background: linear-gradient(90deg, #ff1744, #ffb300); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .btn-home { background: transparent; color: #aaa; border: 1px solid #555; padding: 6px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; transition: 0.2s; } .btn-home:hover { background: #fff; color: #000; }
+    .btn-home { background: transparent; color: #aaa; border: 1px solid #555; padding: 6px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; transition: 0.2s; font-size: 0.9em; } .btn-home:hover { background: #fff; color: #000; }
 
     /* 遊戲主版面配置 */
-    .lobby-container { display: flex; flex: 1; overflow: hidden; }
+    .lobby-container { display: flex; flex: 1; overflow: hidden; position: relative; }
     
     /* 左側選單與難度控制器 */
-    .sidebar { width: 280px; background: #111; border-right: 1px solid #333; display: flex; flex-direction: column; padding: 20px 0; overflow-y: auto; flex-shrink: 0; }
+    .sidebar { width: 280px; background: #111; border-right: 1px solid #333; display: flex; flex-direction: column; padding: 20px 0; overflow-y: auto; flex-shrink: 0; z-index: 1000; transition: left 0.3s ease; }
     .player-profile { padding: 0 20px 20px; border-bottom: 1px solid #333; margin-bottom: 15px; text-align: center; }
     .player-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; font-weight: bold; color: #000; box-shadow: 0 0 15px rgba(29, 185, 84, 0.5); }
     .player-name { font-size: 1.2em; font-weight: 900; color: #fff; word-break: break-all;}
@@ -52,6 +54,21 @@
     .game-panel.active { display: flex; flex-direction: column; }
     @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* 手機版遮罩 */
+    .sidebar-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 999; backdrop-filter: blur(3px); }
+    .sidebar-overlay.show { display: block; }
+
+    /* =========================================================
+       響應式設計 (手機/平板相容)
+    ========================================================= */
+    @media (max-width: 768px) {
+        .mobile-menu-btn { display: block; }
+        .logo { font-size: 1em; }
+        .sidebar { position: absolute; top: 0; left: -100%; height: 100%; width: 260px; background: rgba(15,15,15,0.95); backdrop-filter: blur(15px); }
+        .sidebar.open { left: 0; }
+        .game-area { padding: 15px; }
+    }
+
     /* 元件 */
     .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 900; font-size: 1em; cursor: pointer; transition: 0.2s; text-transform: uppercase; } .btn:active { transform: scale(0.95); }
     .btn-green { background: var(--primary); color: #000; box-shadow: 0 4px 15px rgba(29, 185, 84, 0.4); } .btn-green:hover { background: var(--secondary); }
@@ -60,7 +77,7 @@
     .input-box { background: #000; border: 2px solid #333; color: #fff; padding: 12px; font-size: 1.1em; border-radius: 8px; outline: none; width: 100%; box-sizing: border-box; } .input-box:focus { border-color: var(--game-blue); }
     
     /* 強制登入遮罩 */
-    #name-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+    #name-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 99999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
     .name-box { background: #111; border: 2px solid #333; padding: 40px; border-radius: 16px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
     .name-box h2 { margin: 0 0 20px; color: var(--game-yellow); font-family: var(--font-pixel); line-height: 1.5; font-size: 1.2em; }
 
@@ -68,20 +85,22 @@
     .game-header { text-align: center; margin-bottom: 20px; }
     .game-title { font-family: var(--font-pixel); color: var(--game-blue); margin: 0 0 5px; font-size: 1.5em; }
     .game-subtitle { color: #888; font-size: 0.9em; font-weight: bold; }
-    .game-canvas { background: #050505; border: 2px solid #333; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 212, 255, 0.1); width: 100%; max-width: 600px; margin: 0 auto; display: block; }
-    .game-score-board { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-pixel); margin-bottom: 10px; color: var(--game-yellow); width: 100%; max-width: 600px; margin: 0 auto 10px; }
+    .game-canvas { background: #050505; border: 2px solid #333; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 212, 255, 0.1); width: 100%; max-width: 600px; margin: 0 auto; display: block; touch-action: none; }
+    .game-score-board { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-pixel); margin-bottom: 10px; color: var(--game-yellow); width: 100%; max-width: 600px; margin: 0 auto 10px; font-size: 0.9em; }
     
     /* 手機虛擬按鍵 */
-    .mobile-controls { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px; }
+    .mobile-controls { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px; }
     .mobile-row { display: flex; gap: 10px; }
     .m-btn { background: #222; border: 2px solid #444; border-radius: 12px; font-size: 1.5em; width: 60px; height: 60px; color: white; display: flex; align-items: center; justify-content: center; user-select: none; touch-action: manipulation; box-shadow: 0 5px 0 #111; transition: 0.1s; }
     .m-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #111; background: #333; }
 
     /* 遊戲特製樣式 */
     .clicker-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; position: relative; }
-    .global-score { font-size: 5vw; font-weight: 900; color: #ffb300; text-shadow: 0 0 30px rgba(255, 179, 0, 0.5); font-family: var(--font-pixel); margin-bottom: 40px; }
-    .big-click-btn { width: 250px; height: 250px; border-radius: 50%; background: radial-gradient(circle, #ff1744, #8a001a); border: 8px solid #fff; box-shadow: 0 15px 50px rgba(255, 23, 68, 0.6), inset 0 -10px 20px rgba(0,0,0,0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 2.5em; font-weight: 900; color: white; user-select: none; transition: 0.1s ease; position: relative; }
+    .global-score { font-size: 8vw; font-weight: 900; color: #ffb300; text-shadow: 0 0 30px rgba(255, 179, 0, 0.5); font-family: var(--font-pixel); margin-bottom: 40px; }
+    @media (min-width: 768px) { .global-score { font-size: 5vw; } }
+    .big-click-btn { width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, #ff1744, #8a001a); border: 8px solid #fff; box-shadow: 0 15px 50px rgba(255, 23, 68, 0.6), inset 0 -10px 20px rgba(0,0,0,0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 2em; font-weight: 900; color: white; user-select: none; transition: 0.1s ease; position: relative; }
     .big-click-btn:active { transform: scale(0.9) !important; box-shadow: 0 5px 20px rgba(255, 23, 68, 0.6), inset 0 10px 20px rgba(0,0,0,0.8); }
+    @media (min-width: 768px) { .big-click-btn { width: 250px; height: 250px; font-size: 2.5em; } }
 
     .ttt-board { display: grid; gap: 10px; width: 100%; max-width: 400px; aspect-ratio: 1/1; margin: 0 auto; pointer-events: none; opacity: 0.5; transition: 0.3s; }
     .ttt-board.active { pointer-events: auto; opacity: 1; }
@@ -91,14 +110,14 @@
     .chat-wrapper { display: flex; flex-direction: column; flex: 1; background: #111; border: 1px solid #333; border-radius: 12px; overflow: hidden; }
     .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
     .chat-msg .sender { font-size: 0.8em; color: #888; margin-bottom: 4px; font-weight: bold; }
-    .chat-msg .bubble { background: #222; padding: 10px 15px; border-radius: 12px; width: fit-content; max-width: 80%; border-left: 3px solid var(--primary); }
+    .chat-msg .bubble { background: #222; padding: 10px 15px; border-radius: 12px; width: fit-content; max-width: 80%; border-left: 3px solid var(--primary); word-break: break-word; }
     .chat-msg.mine { align-items: flex-end; } .chat-msg.mine .bubble { background: rgba(29, 185, 84, 0.15); border-left: none; border-right: 3px solid var(--primary); }
 
     .mine-grid { display: grid; gap: 2px; background: #333; padding: 2px; width: fit-content; margin: 0 auto; border-radius: 4px; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
-    .mine-cell { width: 30px; height: 30px; background: #666; display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: monospace; cursor: pointer; user-select: none; transition: 0.1s; }
+    .mine-cell { width: 25px; height: 25px; background: #666; display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: monospace; cursor: pointer; user-select: none; transition: 0.1s; font-size: 0.9em; }
+    @media (min-width: 768px) { .mine-cell { width: 30px; height: 30px; font-size: 1em; } }
     .mine-cell:hover { background: #777; }
     .mine-cell.revealed { background: #222; box-shadow: inset 0 0 5px #000; cursor: default; }
-    /* 鍵盤操作的發光游標 */
     .mine-cell.focused { outline: 3px solid var(--game-blue); outline-offset: -3px; z-index: 10; background: #888; }
     .mine-c-1 { color: #00d4ff; } .mine-c-2 { color: #1db954; } .mine-c-3 { color: #ff1744; } .mine-c-4 { color: #b000ff; }
 
@@ -110,30 +129,50 @@
 </head>
 <body>
 
+  <!-- 強制命名遮罩 (含 Google 登入) -->
   <div id="name-modal">
       <div class="name-box">
           <h2>Dogfish Arcade</h2>
-          <p style="color:#aaa; margin-bottom: 25px;">請輸入您的顯示名稱以進入終極大廳</p>
-          <input type="text" id="player-name-input" class="input-box" placeholder="例如: 神級玩家 dogfish" maxlength="15" autocomplete="off" onkeypress="if(event.key === 'Enter') window.savePlayerName()">
-          <button class="btn btn-green" style="width: 100%; margin-top: 15px; font-size: 1.2em; padding: 15px;" onclick="window.savePlayerName()">啟動引擎</button>
+          <p style="color:#aaa; margin-bottom: 25px; font-size: 0.9em;">請選擇登入方式以連線多重遊戲大廳</p>
+          
+          <button class="btn" style="width: 100%; background: white; color: black; font-size: 1.1em; padding: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="window.gameGoogleLogin()">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="width:20px;"> 使用 Google 帳號快速登入
+          </button>
+          
+          <div style="display:flex; align-items:center; color:#555; margin-bottom:20px;">
+              <hr style="flex:1; border-color:#333;"><span style="padding:0 10px; font-size:0.8em;">或手動輸入名稱</span><hr style="flex:1; border-color:#333;">
+          </div>
+          
+          <input type="text" id="player-name-input" class="input-box" placeholder="訪客顯示名稱" maxlength="15" autocomplete="off" onkeypress="if(event.key === 'Enter') window.savePlayerName()">
+          <button class="btn btn-green" style="width: 100%; margin-top: 15px; font-size: 1em; padding: 12px;" onclick="window.savePlayerName()">訪客身分進入</button>
       </div>
   </div>
 
   <div id="toast-container"></div>
 
+  <!-- 導覽列 -->
   <div class="game-navbar">
-      <div class="logo">DOGFISH ARCADE 終極版</div>
-      <a href="index.html" class="btn-home">🔙 回到網站主頁</a>
+      <div class="logo-area">
+          <button class="mobile-menu-btn" onclick="window.toggleSidebar()">☰</button>
+          <div class="logo">ARCADE 終極大廳</div>
+      </div>
+      <a href="index.html" class="btn-home">🔙 返回</a>
   </div>
 
+  <!-- 遊戲大廳主體 -->
   <div class="lobby-container">
       
-      <div class="sidebar">
+      <!-- 手機版選單遮罩 -->
+      <div id="sidebar-overlay" class="sidebar-overlay" onclick="window.closeSidebar()"></div>
+
+      <!-- 側邊欄 -->
+      <div class="sidebar" id="mobile-sidebar">
           <div class="player-profile">
               <div class="player-avatar" id="ui-avatar">?</div>
               <div class="player-name" id="ui-name">載入中...</div>
           </div>
           
+          <!-- 🔥 全域難度控制器 🔥 -->
           <div class="difficulty-selector">
               <label>⚙️ 全局遊戲難度設定</label>
               <select id="global-difficulty" class="difficulty-select" onchange="window.changeDifficulty(this.value)">
@@ -159,8 +198,10 @@
           <div class="menu-item" onclick="window.switchGame(event, 'shooter')">🛸 宇宙戰機</div>
       </div>
 
+      <!-- 遊戲區域 -->
       <div class="game-area">
           
+          <!-- 遊戲 1: 全球連擊大戰 -->
           <div id="game-clicker" class="game-panel active">
               <div class="game-header">
                   <h2 class="game-title">GLOBAL CLICKER</h2>
@@ -168,10 +209,11 @@
               </div>
               <div class="clicker-wrapper">
                   <div class="global-score" id="clicker-score">0</div>
-                  <div class="big-click-btn" id="main-click-btn" onmousedown="window.doClick(event)" ontouchstart="window.doClick(event.touches[0])">PUSH</div>
+                  <div class="big-click-btn" id="main-click-btn" onmousedown="window.doClick(event)" ontouchstart="window.doClick(event.touches[0] || event)">PUSH</div>
               </div>
           </div>
 
+          <!-- 遊戲 2: 多人井字棋 -->
           <div id="game-tictactoe" class="game-panel">
               <div class="game-header">
                   <h2 class="game-title">TIC-TAC-TOE</h2>
@@ -190,11 +232,11 @@
               </div>
               <div style="font-size: 1.5em; font-weight: 900; margin-bottom: 10px; text-align: center; color: var(--game-yellow);" id="ttt-status">等待加入...</div>
               <div style="font-size: 1.2em; font-weight: 900; margin-bottom: 20px; text-align: center; color: #ff1744; display:none;" id="ttt-timer">倒數: ∞</div>
-              <div class="ttt-board" id="ttt-board" style="grid-template-columns: repeat(3, 1fr);">
-                  </div>
+              <div class="ttt-board" id="ttt-board" style="grid-template-columns: repeat(3, 1fr);"></div>
               <button class="btn btn-green" id="ttt-restart-btn" style="margin: 20px auto 0; display: none; width: 100%; max-width: 400px;" onclick="window.resetTttBoard()">🔄 再來一局</button>
           </div>
 
+          <!-- 遊戲 3: 世界廣播 -->
           <div id="game-chat" class="game-panel">
               <div class="game-header"><h2 class="game-title">GLOBAL CHAT</h2><div class="game-subtitle">與大廳玩家即時對話</div></div>
               <div class="chat-wrapper">
@@ -206,22 +248,25 @@
               </div>
           </div>
 
+          <!-- 遊戲 4: 3D 霓虹閃避 -->
           <div id="game-neon" class="game-panel">
-              <div class="game-header"><h2 class="game-title">NEON DODGE 3D</h2><div class="game-subtitle">難度加成：障礙物速度與生成率提升 (鍵盤：A/D 或 左右)</div></div>
+              <div class="game-header"><h2 class="game-title">NEON DODGE 3D</h2><div class="game-subtitle">難度：障礙物速度與生成率提升 (鍵盤：A/D 或 左右)</div></div>
               <div class="game-score-board"><span>SCORE: <span id="neon-score">0</span></span><button class="btn btn-blue" style="padding:4px 10px; font-size:0.7em;" onclick="window.initNeon()">RESTART</button></div>
               <canvas id="neon-canvas" class="game-canvas" width="400" height="500"></canvas>
               <div class="mobile-controls"><div class="mobile-row"><button class="m-btn" onmousedown="window.btnControl('neon','L',true)" onmouseup="window.btnControl('neon','L',false)" ontouchstart="window.btnControl('neon','L',true); event.preventDefault();" ontouchend="window.btnControl('neon','L',false); event.preventDefault();">⬅️</button><button class="m-btn" onmousedown="window.btnControl('neon','R',true)" onmouseup="window.btnControl('neon','R',false)" ontouchstart="window.btnControl('neon','R',true); event.preventDefault();" ontouchend="window.btnControl('neon','R',false); event.preventDefault();">➡️</button></div></div>
           </div>
 
+          <!-- 遊戲 5: 2D 像素接球 -->
           <div id="game-catch" class="game-panel">
-              <div class="game-header"><h2 class="game-title">PIXEL CATCH</h2><div class="game-subtitle">難度加成：下落速度加快、炸彈變多、接板縮小 (鍵盤：左右)</div></div>
+              <div class="game-header"><h2 class="game-title">PIXEL CATCH</h2><div class="game-subtitle">難度：下落加快、炸彈變多、接板縮小 (鍵盤：左右)</div></div>
               <div class="game-score-board"><span>SCORE: <span id="catch-score">0</span></span><span>LIVES: <span id="catch-lives">3</span></span></div>
               <canvas id="catch-canvas" class="game-canvas" width="400" height="500"></canvas>
               <div class="mobile-controls"><div class="mobile-row"><button class="m-btn" onmousedown="window.btnControl('catch','L',true)" onmouseup="window.btnControl('catch','L',false)" ontouchstart="window.btnControl('catch','L',true); event.preventDefault();" ontouchend="window.btnControl('catch','L',false); event.preventDefault();">⬅️</button><button class="m-btn" onmousedown="window.btnControl('catch','R',true)" onmouseup="window.btnControl('catch','R',false)" ontouchstart="window.btnControl('catch','R',true); event.preventDefault();" ontouchend="window.btnControl('catch','R',false); event.preventDefault();">➡️</button></div></div>
           </div>
 
+          <!-- 遊戲 6: 經典貪吃蛇 -->
           <div id="game-snake" class="game-panel">
-              <div class="game-header"><h2 class="game-title">CLASSIC SNAKE</h2><div class="game-subtitle">難度加成：移動速度巨幅提升 (鍵盤：上下左右)</div></div>
+              <div class="game-header"><h2 class="game-title">CLASSIC SNAKE</h2><div class="game-subtitle">難度加成：移動速度巨幅提升 (鍵盤：上下左右或WASD)</div></div>
               <div class="game-score-board"><span>SCORE: <span id="snake-score">0</span></span><button class="btn btn-green" style="padding:4px 10px; font-size:0.7em;" onclick="window.initSnake()">RESTART</button></div>
               <canvas id="snake-canvas" class="game-canvas" width="400" height="400"></canvas>
               <div class="mobile-controls">
@@ -230,6 +275,7 @@
               </div>
           </div>
 
+          <!-- 遊戲 7: 經典踩地雷 -->
           <div id="game-mine" class="game-panel">
               <div class="game-header"><h2 class="game-title">MINESWEEPER</h2><div class="game-subtitle">難度加成：擴大地圖與地雷數量 (鍵盤：WASD移動, Space挖開, F插旗)</div></div>
               <div class="game-score-board"><span>🚩 <span id="mine-flags">10</span></span><button class="btn btn-red" style="padding:4px 10px; font-size:0.7em;" onclick="window.initMine()">RESTART</button></div>
@@ -237,22 +283,25 @@
               <p style="text-align: center; color: #888; margin-top: 20px; font-size: 0.9em;">滑鼠：左鍵挖開 / 右鍵插旗</p>
           </div>
 
+          <!-- 遊戲 8: 磚塊破壞者 -->
           <div id="game-breakout" class="game-panel">
-              <div class="game-header"><h2 class="game-title">BRICK BREAKER</h2><div class="game-subtitle">難度加成：球速加快、板子變窄、磚塊增加 (鍵盤：左右, Space發球)</div></div>
+              <div class="game-header"><h2 class="game-title">BRICK BREAKER</h2><div class="game-subtitle">難度：球速加快、板子變窄、磚塊增加 (鍵盤：左右, Space發球)</div></div>
               <div class="game-score-board"><span>SCORE: <span id="breakout-score">0</span></span><button class="btn btn-blue" style="padding:4px 10px; font-size:0.7em;" onclick="window.initBreakout()">RESTART</button></div>
               <canvas id="breakout-canvas" class="game-canvas" width="400" height="500"></canvas>
               <div class="mobile-controls"><div class="mobile-row"><button class="m-btn" onmousedown="window.btnControl('breakout','L',true)" onmouseup="window.btnControl('breakout','L',false)" ontouchstart="window.btnControl('breakout','L',true); event.preventDefault();" ontouchend="window.btnControl('breakout','L',false); event.preventDefault();">⬅️</button><button class="m-btn" style="background:var(--primary); color:black;" onclick="window.breakoutStartBall()">🚀</button><button class="m-btn" onmousedown="window.btnControl('breakout','R',true)" onmouseup="window.btnControl('breakout','R',false)" ontouchstart="window.btnControl('breakout','R',true); event.preventDefault();" ontouchend="window.btnControl('breakout','R',false); event.preventDefault();">➡️</button></div></div>
           </div>
 
+          <!-- 遊戲 9: 像素飛鳥 -->
           <div id="game-flappy" class="game-panel">
-              <div class="game-header"><h2 class="game-title">FLAPPY BIRD</h2><div class="game-subtitle">難度加成：重力增加、水管間距縮小 (鍵盤：Space跳躍)</div></div>
-              <div class="game-score-board"><span>SCORE: <span id="flappy-score">0</span></span><button class="btn btn-yellow" style="padding:4px 10px; font-size:0.7em; background:var(--game-yellow); border:none; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="window.initFlappy()">RESTART</button></div>
+              <div class="game-header"><h2 class="game-title">FLAPPY BIRD</h2><div class="game-subtitle">難度：重力增加、水管間距縮小 (鍵盤：Space跳躍)</div></div>
+              <div class="game-score-board"><span>SCORE: <span id="flappy-score">0</span></span><button class="btn btn-green" style="padding:4px 10px; font-size:0.7em;" onclick="window.initFlappy()">RESTART</button></div>
               <canvas id="flappy-canvas" class="game-canvas" width="400" height="500" style="background: #111;"></canvas>
               <div class="mobile-controls"><button class="m-btn" style="width: 150px; background:var(--game-blue); color:black;" onmousedown="window.flappyJump()" ontouchstart="window.flappyJump(); event.preventDefault();">JUMP</button></div>
           </div>
 
+          <!-- 遊戲 10: 宇宙戰機 -->
           <div id="game-shooter" class="game-panel">
-              <div class="game-header"><h2 class="game-title">SPACE SHOOTER</h2><div class="game-subtitle">難度加成：敵機生成速度極快 (鍵盤：左右移動, Space射擊)</div></div>
+              <div class="game-header"><h2 class="game-title">SPACE SHOOTER</h2><div class="game-subtitle">難度：敵機生成速度極快 (鍵盤：左右移動, Space射擊)</div></div>
               <div class="game-score-board"><span>SCORE: <span id="shooter-score">0</span></span><button class="btn btn-red" style="padding:4px 10px; font-size:0.7em;" onclick="window.initShooter()">RESTART</button></div>
               <canvas id="shooter-canvas" class="game-canvas" width="400" height="500" style="background: #000;"></canvas>
               <div class="mobile-controls"><div class="mobile-row"><button class="m-btn" onmousedown="window.btnControl('shooter','L',true)" onmouseup="window.btnControl('shooter','L',false)" ontouchstart="window.btnControl('shooter','L',true); event.preventDefault();" ontouchend="window.btnControl('shooter','L',false); event.preventDefault();">⬅️</button><button class="m-btn" style="background:var(--accent); color:white;" onmousedown="window.shooterFire()" ontouchstart="window.shooterFire(); event.preventDefault();">🔥</button><button class="m-btn" onmousedown="window.btnControl('shooter','R',true)" onmouseup="window.btnControl('shooter','R',false)" ontouchstart="window.btnControl('shooter','R',true); event.preventDefault();" ontouchend="window.btnControl('shooter','R',false); event.preventDefault();">➡️</button></div></div>
@@ -264,9 +313,17 @@
   <script type="module">
     // 🔥 Firebase 初始化 🔥
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"; 
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"; 
     import { getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+    
     const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website" }; 
-    let app, db; try { app = initializeApp(firebaseConfig); db = getFirestore(app); } catch(e) { console.error("Firebase", e); }
+    let app, auth, db, provider;
+    try { 
+        app = initializeApp(firebaseConfig); 
+        auth = getAuth(app); 
+        db = getFirestore(app); 
+        provider = new GoogleAuthProvider(); 
+    } catch(e) { console.error("Firebase", e); }
 
     // 🌟 全域引擎變數 🌟
     window.playerName = "";
@@ -274,7 +331,6 @@
     window.activeGame = 'clicker';
     window.inputState = { neonL: false, neonR: false, catchL: false, catchR: false, breakL: false, breakR: false, shootL: false, shootR: false };
     
-    // 遊戲迴圈 ID 紀錄 (用於切換時停止)
     window.animFrames = { neon: null, catch: null, breakout: null, flappy: null, shooter: null };
     window.timers = { snake: null, ttt: null };
 
@@ -284,24 +340,50 @@
         c.appendChild(t); setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 3000);
     };
 
-    // 登入與難度
+    // 📱 手機版選單切換
+    window.toggleSidebar = function() {
+        document.getElementById('mobile-sidebar').classList.toggle('open');
+        document.getElementById('sidebar-overlay').classList.toggle('show');
+    };
+    window.closeSidebar = function() {
+        document.getElementById('mobile-sidebar').classList.remove('open');
+        document.getElementById('sidebar-overlay').classList.remove('show');
+    };
+
+    // 登入系統 (手動 + Google)
     window.checkPlayerName = function() {
         let savedName = localStorage.getItem('dogfish_game_name');
         if (savedName) { window.playerName = savedName; document.getElementById('name-modal').style.display = 'none'; window.updateProfileUI(); window.initGames(); }
     };
     window.savePlayerName = function() {
         let input = document.getElementById('player-name-input').value.trim();
-        if (!input) return; window.playerName = input; localStorage.setItem('dogfish_game_name', input);
+        if (!input) { window.simpleToast("請輸入名稱或使用Google登入！", "error"); return; }
+        window.playerName = input; localStorage.setItem('dogfish_game_name', input);
         document.getElementById('name-modal').style.display = 'none'; window.updateProfileUI(); window.initGames();
     };
+    window.gameGoogleLogin = function() {
+        if(!auth) return;
+        signInWithPopup(auth, provider).then((result) => {
+            let name = result.user.displayName || result.user.email.split('@')[0];
+            window.playerName = name;
+            localStorage.setItem('dogfish_game_name', name);
+            document.getElementById('name-modal').style.display = 'none';
+            window.updateProfileUI();
+            window.simpleToast(`Google 登入成功，歡迎 ${name}！`);
+            window.initGames();
+        }).catch(err => {
+            window.simpleToast("Google 登入失敗", "error");
+        });
+    };
+
     window.updateProfileUI = function() {
         document.getElementById('ui-name').innerText = window.playerName; document.getElementById('ui-avatar').innerText = window.playerName.charAt(0).toUpperCase();
     };
     window.changeDifficulty = function(val) {
         window.gameDifficulty = parseInt(val);
         window.simpleToast(`難度已切換至 Level ${val}`);
-        // 重新啟動當前遊戲以套用難度
         if(window.activeGame !== 'chat') window.switchGame(null, window.activeGame, true);
+        window.closeSidebar(); // 手機版切換難度後自動收起
     };
 
     window.stopAllGames = function() {
@@ -319,6 +401,7 @@
         document.getElementById(`game-${gameId}`).classList.add('active');
         window.activeGame = gameId;
         window.stopAllGames();
+        window.closeSidebar(); // 手機版選擇遊戲後自動收起
 
         if(gameId === 'chat') { let box = document.getElementById('chat-messages-container'); box.scrollTop = box.scrollHeight; }
         else if (gameId === 'neon') window.initNeon();
@@ -336,35 +419,26 @@
     // 🌟 全局鍵盤路由器 (Keyboard Router) 🌟
     document.addEventListener('keydown', e => {
         const key = e.key; const code = e.code;
-        // 1. Clicker
         if (window.activeGame === 'clicker' && code === 'Space') { e.preventDefault(); window.doClick({clientX: window.innerWidth/2, clientY: window.innerHeight/2}); }
-        // 2. TicTacToe (NumPad 1-9 mapped to bottom-left -> top-right like standard numpad, or 123 top row. Let's do 1-9 top-left to bottom-right for simplicity)
         if (window.activeGame === 'tictactoe' && key >= '1' && key <= '9') { window.playTttMove(parseInt(key) - 1); }
-        // 4. Neon
         if (window.activeGame === 'neon') { if(key==='ArrowLeft'||key==='a') window.inputState.neonL=true; if(key==='ArrowRight'||key==='d') window.inputState.neonR=true; }
-        // 5. Catch
         if (window.activeGame === 'catch') { if(key==='ArrowLeft'||key==='a') window.inputState.catchL=true; if(key==='ArrowRight'||key==='d') window.inputState.catchR=true; }
-        // 6. Snake
         if (window.activeGame === 'snake') {
             if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(key)) e.preventDefault();
             if(key==='ArrowUp'||key==='w') window.changeSnakeDir(0, -1); else if(key==='ArrowDown'||key==='s') window.changeSnakeDir(0, 1);
             else if(key==='ArrowLeft'||key==='a') window.changeSnakeDir(-1, 0); else if(key==='ArrowRight'||key==='d') window.changeSnakeDir(1, 0);
         }
-        // 7. Mine
         if (window.activeGame === 'mine') {
             if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(code)) e.preventDefault();
             if(key==='ArrowUp'||key==='w') window.moveMineCursor(-1, 0); else if(key==='ArrowDown'||key==='s') window.moveMineCursor(1, 0);
             else if(key==='ArrowLeft'||key==='a') window.moveMineCursor(0, -1); else if(key==='ArrowRight'||key==='d') window.moveMineCursor(0, 1);
             else if(code === 'Space') window.actionMineCursor('reveal'); else if(key === 'f' || key === 'F') window.actionMineCursor('flag');
         }
-        // 8. Breakout
         if (window.activeGame === 'breakout') {
             if(key==='ArrowLeft'||key==='a') window.inputState.breakL=true; if(key==='ArrowRight'||key==='d') window.inputState.breakR=true;
             if(code==='Space') { e.preventDefault(); window.breakoutStartBall(); }
         }
-        // 9. Flappy
         if (window.activeGame === 'flappy' && code === 'Space') { e.preventDefault(); window.flappyJump(); }
-        // 10. Shooter
         if (window.activeGame === 'shooter') {
             if(key==='ArrowLeft'||key==='a') window.inputState.shootL=true; if(key==='ArrowRight'||key==='d') window.inputState.shootR=true;
             if(code==='Space') { e.preventDefault(); window.shooterFire(); }
@@ -379,7 +453,6 @@
         if (window.activeGame === 'shooter') { if(key==='ArrowLeft'||key==='a') window.inputState.shootL=false; if(key==='ArrowRight'||key==='d') window.inputState.shootR=false; }
     });
 
-    // 觸控按鈕共用
     window.btnControl = function(game, dir, state) {
         if(game==='neon') { if(dir==='L') window.inputState.neonL=state; else window.inputState.neonR=state; }
         if(game==='catch') { if(dir==='L') window.inputState.catchL=state; else window.inputState.catchR=state; }
@@ -387,10 +460,7 @@
         if(game==='shooter') { if(dir==='L') window.inputState.shootL=state; else window.inputState.shootR=state; }
     };
 
-    // ==========================================
-    // 1. 全球連擊大戰 (Global Clicker)
-    // 難度加成：按鈕縮小並亂跑
-    // ==========================================
+    // 1. 全球連擊大戰
     let clickDebounce = false; const clickDocRef = doc(db, "arcade_games", "global_clicker");
     async function initClickerSync() {
         const snap = await getDoc(clickDocRef); if(!snap.exists()) { await setDoc(clickDocRef, { total: 0 }); }
@@ -399,15 +469,10 @@
     window.doClick = function(e) {
         if(clickDebounce) return; clickDebounce = true; setTimeout(() => clickDebounce = false, 50); 
         const btn = document.getElementById('main-click-btn');
-        
-        // 難度特效：Hard / Insane 時，按鈕會位移
         if (window.gameDifficulty >= 3) {
-            let maxDist = window.gameDifficulty === 4 ? 150 : 50;
-            let scale = window.gameDifficulty === 4 ? 0.6 : 0.8;
+            let maxDist = window.gameDifficulty === 4 ? 150 : 50; let scale = window.gameDifficulty === 4 ? 0.6 : 0.8;
             btn.style.transform = `translate(${(Math.random()-0.5)*maxDist}px, ${(Math.random()-0.5)*maxDist}px) scale(${scale})`;
-        } else {
-            btn.style.transform = `scale(1)`;
-        }
+        } else { btn.style.transform = `scale(1)`; }
 
         const particle = document.createElement('div'); particle.style.position = 'absolute'; particle.style.color = '#fff'; particle.style.fontSize = '1.5em'; particle.style.fontWeight = 'bold'; particle.style.pointerEvents = 'none'; particle.style.textShadow = '0 0 5px #000'; particle.innerText = '+' + window.gameDifficulty; particle.style.left = `${(e.clientX || window.innerWidth/2) - 10}px`; particle.style.top = `${(e.clientY || window.innerHeight/2) - 20}px`; document.body.appendChild(particle);
         let anim = particle.animate([{opacity:1, transform:'translateY(0) scale(1)'}, {opacity:0, transform:'translateY(-100px) scale(1.5)'}], {duration: 800, easing: 'ease-out'}); anim.onfinish = () => particle.remove();
@@ -415,18 +480,12 @@
         if(db) getDoc(clickDocRef).then(d => { updateDoc(clickDocRef, { total: (d.exists() ? d.data().total : 0) + window.gameDifficulty }); });
     };
 
-    // ==========================================
-    // 2. 多人井字棋 (Tic-Tac-Toe)
-    // 難度加成：限制單步思考時間 (Client-side)
-    // ==========================================
+    // 2. 多人井字棋
     let tttRoomId = null; let tttUnsubscribe = null; let tttPlayerRole = null; let tttTimeLeft = 0;
-    
     window.renderTttBoard = function() {
-        const board = document.getElementById('ttt-board');
-        board.innerHTML = '';
+        const board = document.getElementById('ttt-board'); board.innerHTML = '';
         for(let i=0; i<9; i++) { board.innerHTML += `<div class="ttt-cell" id="ttt-c-${i}" onclick="window.playTttMove(${i})"></div>`; }
     };
-
     window.createTttRoom = async function() {
         if(!db) return; const code = Math.floor(100000 + Math.random() * 900000).toString(); const roomRef = doc(db, "arcade_ttt_rooms", code);
         try { await setDoc(roomRef, { board: ["", "", "", "", "", "", "", "", ""], turn: "X", playerX: window.playerName, playerO: null, status: "waiting", difficulty: window.gameDifficulty, lastUpdated: serverTimestamp() }); tttPlayerRole = "X"; tttRoomId = code; enterTttRoomUI(); listenTttRoom(); window.simpleToast("建立成功！"); } catch(e) {}
@@ -461,26 +520,21 @@
                 if(isMyTurn) boardEl.classList.add('active'); else boardEl.classList.remove('active'); 
                 restartBtn.style.display = 'none';
                 
-                // 處理難度計時器
-                let diffMap = {1: 999, 2: 15, 3: 8, 4: 4}; // 難度對應秒數
+                let diffMap = {1: 999, 2: 15, 3: 8, 4: 4}; 
                 let timeLimit = diffMap[data.difficulty || 2];
                 clearInterval(window.timers.ttt);
                 
                 if (timeLimit < 900) {
-                    document.getElementById('ttt-timer').style.display = 'block';
-                    tttTimeLeft = timeLimit;
-                    document.getElementById('ttt-timer').innerText = `倒數: ${tttTimeLeft}s`;
+                    document.getElementById('ttt-timer').style.display = 'block'; tttTimeLeft = timeLimit; document.getElementById('ttt-timer').innerText = `倒數: ${tttTimeLeft}s`;
                     window.timers.ttt = setInterval(() => {
                         tttTimeLeft--; document.getElementById('ttt-timer').innerText = `倒數: ${tttTimeLeft}s`;
                         if (tttTimeLeft <= 0 && isMyTurn) {
-                            clearInterval(window.timers.ttt);
-                            window.simpleToast("時間到！自動隨機下棋", "error");
+                            clearInterval(window.timers.ttt); window.simpleToast("時間到！自動隨機下棋", "error");
                             let emptySpots = []; data.board.forEach((v,i)=> {if(v==="") emptySpots.push(i)});
                             if(emptySpots.length > 0) { let rand = emptySpots[Math.floor(Math.random()*emptySpots.length)]; window.playTttMove(rand); }
                         }
                     }, 1000);
                 } else { document.getElementById('ttt-timer').style.display = 'none'; }
-
             } else { 
                 clearInterval(window.timers.ttt); document.getElementById('ttt-timer').style.display = 'none';
                 boardEl.classList.remove('active'); restartBtn.style.display = 'block'; 
@@ -490,31 +544,22 @@
             } 
         }); 
     }
-    
     window.playTttMove = async function(index) { 
         if(!tttRoomId || !tttPlayerRole) return; const roomRef = doc(db, "arcade_ttt_rooms", tttRoomId); const snap = await getDoc(roomRef); const data = snap.data(); 
         if(data.status !== "playing" || data.turn !== tttPlayerRole || data.board[index] !== "") return; 
-        clearInterval(window.timers.ttt);
-        let newBoard = [...data.board]; newBoard[index] = tttPlayerRole; 
-        const lines = [ [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6] ];
-        let newStatus = "playing";
+        clearInterval(window.timers.ttt); let newBoard = [...data.board]; newBoard[index] = tttPlayerRole; 
+        const lines = [ [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6] ]; let newStatus = "playing";
         for(let l of lines) { if(newBoard[l[0]] && newBoard[l[0]] === newBoard[l[1]] && newBoard[l[0]] === newBoard[l[2]]) newStatus = newBoard[l[0]] + "_won"; }
         if(newStatus === "playing" && !newBoard.includes("")) newStatus = "draw";
-        let nextTurn = tttPlayerRole === "X" ? "O" : "X"; 
-        await updateDoc(roomRef, { board: newBoard, turn: nextTurn, status: newStatus, lastUpdated: serverTimestamp() }); 
+        let nextTurn = tttPlayerRole === "X" ? "O" : "X"; await updateDoc(roomRef, { board: newBoard, turn: nextTurn, status: newStatus, lastUpdated: serverTimestamp() }); 
     };
     window.resetTttBoard = async function() { if(!tttRoomId) return; await updateDoc(doc(db, "arcade_ttt_rooms", tttRoomId), { board: ["", "", "", "", "", "", "", "", ""], status: "playing", turn: "X", difficulty: window.gameDifficulty }); };
 
-    // ==========================================
     // 3. 世界廣播聊天
-    // ==========================================
     function initChatSync() { const q = query(collection(db, "arcade_chat"), orderBy("timestamp", "desc"), limit(30)); onSnapshot(q, (snapshot) => { let msgs = []; snapshot.forEach(doc => { msgs.push(doc.data()); }); msgs.reverse(); const box = document.getElementById('chat-messages-container'); box.innerHTML = ''; msgs.forEach(m => { let isMine = m.sender === window.playerName; box.innerHTML += `<div class="chat-msg ${isMine ? 'mine' : ''}">${isMine ? '' : `<div class="sender">${m.sender}</div>`}<div class="bubble">${m.text}</div></div>`; }); box.scrollTop = box.scrollHeight; }); }
     window.sendChatMessage = async function() { const input = document.getElementById('chat-input'); const text = input.value.trim(); if(!text) return; input.value = ''; if(db) { await addDoc(collection(db, "arcade_chat"), { sender: window.playerName, text: text, timestamp: serverTimestamp() }); } };
 
-    // ==========================================
-    // 4. 3D 霓虹閃避 (Neon Dodge)
-    // 難度：物件生成速度、掉落速度
-    // ==========================================
+    // 4. 3D 霓虹閃避 
     window.initNeon = function() {
         const cvs = document.getElementById('neon-canvas'); const ctx = cvs.getContext('2d');
         let diffMult = {1: 0.7, 2: 1.0, 3: 1.5, 4: 2.2}[window.gameDifficulty];
@@ -526,7 +571,6 @@
             if(window.inputState.neonR && pX < 370) pX += 5;
             
             ctx.fillStyle = 'rgba(5, 5, 5, 0.4)'; ctx.fillRect(0, 0, 400, 500);
-            
             if(Math.random() < 0.04 * diffMult) blocks.push({ x: 100 + Math.random()*200, y: 200, z: 100 });
             
             ctx.fillStyle = '#ff1744'; ctx.shadowBlur = 15; ctx.shadowColor = '#ff1744';
@@ -535,24 +579,16 @@
                 if(b.z <= 0) { blocks.splice(i,1); score++; document.getElementById('neon-score').innerText=score; continue; }
                 let scale = 100 / b.z; let projX = (b.x - 200) * scale + 200; let projY = (b.y - 250) * scale + 250 + (100 - b.z)*1.5; let size = 20 * scale;
                 ctx.fillRect(projX - size/2, projY - size/2, size, size);
-                // Hitbox
                 if(b.z < 10 && Math.abs(projX - pX) < size/2 + 15 && projY > 400 && projY < 450) { isOver = true; window.simpleToast(`撞毀！分數: ${score}`, 'error'); }
             }
 
-            ctx.fillStyle = '#00d4ff'; ctx.shadowColor = '#00d4ff';
-            ctx.beginPath(); ctx.moveTo(pX, 400); ctx.lineTo(pX - 20, 440); ctx.lineTo(pX + 20, 440); ctx.fill();
-            
-            speed += 0.001; 
-            window.animFrames.neon = requestAnimationFrame(loop);
+            ctx.fillStyle = '#00d4ff'; ctx.shadowColor = '#00d4ff'; ctx.beginPath(); ctx.moveTo(pX, 400); ctx.lineTo(pX - 20, 440); ctx.lineTo(pX + 20, 440); ctx.fill();
+            speed += 0.001; window.animFrames.neon = requestAnimationFrame(loop);
         }
-        document.getElementById('neon-score').innerText = 0;
-        window.animFrames.neon = requestAnimationFrame(loop);
+        document.getElementById('neon-score').innerText = 0; window.animFrames.neon = requestAnimationFrame(loop);
     };
 
-    // ==========================================
-    // 5. 2D 像素接球 (Catch)
-    // 難度：下落速度、炸彈機率、板子寬度
-    // ==========================================
+    // 5. 2D 像素接球 
     window.initCatch = function() {
         const cvs = document.getElementById('catch-canvas'); const ctx = cvs.getContext('2d');
         let diffMult = {1: 0.8, 2: 1.0, 3: 1.5, 4: 2.0}[window.gameDifficulty];
@@ -565,7 +601,6 @@
             if(window.inputState.catchR && pX < 400-paddleW/2) pX += 6;
 
             ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, 400, 500);
-            
             if(Math.random() < 0.03 * diffMult) items.push({ x: Math.random()*(400-20)+10, y: 0, isBomb: Math.random() < (0.2 * diffMult) });
 
             for(let i=items.length-1; i>=0; i--) {
@@ -583,20 +618,14 @@
                 }
             }
 
-            ctx.fillStyle = '#ffb300'; ctx.shadowBlur = 15; ctx.shadowColor = '#ffb300';
-            ctx.fillRect(pX - paddleW/2, 450, paddleW, 15);
-            
-            speed += 0.001;
-            window.animFrames.catch = requestAnimationFrame(loop);
+            ctx.fillStyle = '#ffb300'; ctx.shadowBlur = 15; ctx.shadowColor = '#ffb300'; ctx.fillRect(pX - paddleW/2, 450, paddleW, 15);
+            speed += 0.001; window.animFrames.catch = requestAnimationFrame(loop);
         }
         document.getElementById('catch-score').innerText = 0; document.getElementById('catch-lives').innerText = 3;
         window.animFrames.catch = requestAnimationFrame(loop);
     };
 
-    // ==========================================
-    // 6. 經典貪吃蛇 (Snake)
-    // 難度：更新頻率 (速度)
-    // ==========================================
+    // 6. 經典貪吃蛇
     let sDx = 1, sDy = 0; 
     window.changeSnakeDir = function(x, y) { if(sDx === -x || sDy === -y) return; sDx = x; sDy = y; };
     window.initSnake = function() {
@@ -620,14 +649,10 @@
             
             window.timers.snake = setTimeout(loop, speedInterval);
         }
-        document.getElementById('snake-score').innerText = 0;
-        window.timers.snake = setTimeout(loop, speedInterval);
+        document.getElementById('snake-score').innerText = 0; window.timers.snake = setTimeout(loop, speedInterval);
     };
 
-    // ==========================================
-    // 7. 經典踩地雷 (Minesweeper) - 全面支援鍵盤
-    // 難度：格數與地雷數
-    // ==========================================
+    // 7. 經典踩地雷
     let mineR = 0, mineC = 0, mineRows = 10, mineCols = 10;
     window.initMine = function() {
         let conf = {1: [8,8,10], 2: [10,10,15], 3: [12,12,25], 4: [15,15,45]}[window.gameDifficulty];
@@ -635,8 +660,7 @@
         const grid = document.getElementById('mine-grid');
         grid.innerHTML = ''; grid.style.gridTemplateColumns = `repeat(${mineCols}, 1fr)`;
         let cells = [], minePositions = new Set(), flags = mineCount, gameOver = false, revealedCount = 0;
-        mineR = 0; mineC = 0; // 重置游標
-        document.getElementById('mine-flags').innerText = flags;
+        mineR = 0; mineC = 0; document.getElementById('mine-flags').innerText = flags;
 
         while(minePositions.size < mineCount) { minePositions.add(Math.floor(Math.random() * (mineRows*mineCols))); }
 
@@ -647,33 +671,24 @@
             let count = 0;
             if(!minePositions.has(i)) {
                 let r = Math.floor(i/mineCols), c = i%mineCols;
-                for(let dr=-1; dr<=1; dr++) { for(let dc=-1; dc<=1; dc++) {
-                    let nr = r+dr, nc = c+dc;
-                    if(nr>=0 && nr<mineRows && nc>=0 && nc<mineCols && minePositions.has(nr*mineCols+nc)) count++;
-                }}
+                for(let dr=-1; dr<=1; dr++) { for(let dc=-1; dc<=1; dc++) { let nr = r+dr, nc = c+dc; if(nr>=0 && nr<mineRows && nc>=0 && nc<mineCols && minePositions.has(nr*mineCols+nc)) count++; }}
             }
             cell.dataset.count = count;
-
-            // 左鍵或空白鍵
             cell.onclick = () => window.actionMineCursor('reveal', i);
-            // 右鍵或 F 鍵
             cell.oncontextmenu = (e) => { e.preventDefault(); window.actionMineCursor('flag', i); };
-
             cells.push(cell); grid.appendChild(cell);
         }
 
         window.moveMineCursor = function(dr, dc) {
             if(gameOver) return;
             document.getElementById(`m-cell-${mineR*mineCols + mineC}`).classList.remove('focused');
-            mineR = Math.max(0, Math.min(mineRows-1, mineR + dr));
-            mineC = Math.max(0, Math.min(mineCols-1, mineC + dc));
+            mineR = Math.max(0, Math.min(mineRows-1, mineR + dr)); mineC = Math.max(0, Math.min(mineCols-1, mineC + dc));
             document.getElementById(`m-cell-${mineR*mineCols + mineC}`).classList.add('focused');
         };
 
         window.actionMineCursor = function(action, forceIdx = null) {
             if(gameOver) return;
-            let idx = forceIdx !== null ? forceIdx : (mineR * mineCols + mineC);
-            let c = cells[idx];
+            let idx = forceIdx !== null ? forceIdx : (mineR * mineCols + mineC); let c = cells[idx];
             if(action === 'flag') {
                 if(c.classList.contains('revealed')) return;
                 if(c.innerText === '🚩') { c.innerText = ''; flags++; } else if(flags > 0) { c.innerText = '🚩'; flags--; }
@@ -689,27 +704,19 @@
 
         function revealRec(idx) {
             let c = cells[idx]; if(c.classList.contains('revealed') || c.innerText === '🚩') return;
-            c.classList.add('revealed'); revealedCount++;
-            let count = parseInt(c.dataset.count);
+            c.classList.add('revealed'); revealedCount++; let count = parseInt(c.dataset.count);
             if(count > 0) { c.innerText = count; c.classList.add(`mine-c-${count}`); }
             if(revealedCount === (mineRows*mineCols - mineCount)) { gameOver = true; window.simpleToast("🎉 恭喜掃雷成功！"); }
             if(count === 0) {
                 let r = Math.floor(idx/mineCols), col = idx%mineCols;
-                for(let dr=-1; dr<=1; dr++) { for(let dc=-1; dc<=1; dc++) {
-                    let nr = r+dr, nc = col+dc;
-                    if(nr>=0 && nr<mineRows && nc>=0 && nc<mineCols) revealRec(nr*mineCols+nc);
-                }}
+                for(let dr=-1; dr<=1; dr++) { for(let dc=-1; dc<=1; dc++) { let nr = r+dr, nc = col+dc; if(nr>=0 && nr<mineRows && nc>=0 && nc<mineCols) revealRec(nr*mineCols+nc); }}
             }
         }
-        // 初始化游標顯示
         document.getElementById(`m-cell-0`).classList.add('focused');
     };
 
-    // ==========================================
-    // 8. 磚塊破壞者 (Breakout)
-    // ==========================================
-    let ballActive = false;
-    window.breakoutStartBall = function() { ballActive = true; };
+    // 8. 磚塊破壞者 
+    let ballActive = false; window.breakoutStartBall = function() { ballActive = true; };
     window.initBreakout = function() {
         const cvs = document.getElementById('breakout-canvas'); const ctx = cvs.getContext('2d');
         let diffMult = {1: 0.8, 2: 1.0, 3: 1.5, 4: 2.0}[window.gameDifficulty];
@@ -730,37 +737,25 @@
                 bX += dx; bY += dy;
                 if(bX < 5 || bX > 395) dx = -dx;
                 if(bY < 5) dy = -dy;
-                if(bY > 440 && bY < 450 && bX > pX - paddleW/2 && bX < pX + paddleW/2) {
-                    dy = -dy; dx = ((bX - pX) / (paddleW/2)) * 4 * diffMult; 
-                }
+                if(bY > 440 && bY < 450 && bX > pX - paddleW/2 && bX < pX + paddleW/2) { dy = -dy; dx = ((bX - pX) / (paddleW/2)) * 4 * diffMult; }
                 else if(bY > 500) { isOver = true; window.simpleToast(`漏接了！分數: ${score}`, 'error'); }
             }
 
             ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, 400, 500);
-            
-            // 畫磚塊
-            bricks.forEach(b => {
-                if(b.status === 1) {
+            bricks.forEach(b => { if(b.status === 1) {
                     if(bX > b.x && bX < b.x+b.w && bY > b.y && bY < b.y+b.h) { dy = -dy; b.status = 0; score+=10; document.getElementById('breakout-score').innerText = score; }
                     else { ctx.fillStyle = '#b000ff'; ctx.fillRect(b.x, b.y, b.w, b.h); }
-                }
-            });
-
-            // 畫球與板
+            }});
             ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(bX, bY, 5, 0, Math.PI*2); ctx.fill();
             ctx.fillStyle = '#00d4ff'; ctx.fillRect(pX - paddleW/2, 440, paddleW, 10);
             
             window.animFrames.breakout = requestAnimationFrame(loop);
         }
-        document.getElementById('breakout-score').innerText = 0;
-        window.animFrames.breakout = requestAnimationFrame(loop);
+        document.getElementById('breakout-score').innerText = 0; window.animFrames.breakout = requestAnimationFrame(loop);
     };
 
-    // ==========================================
-    // 9. 像素飛鳥 (Flappy Bird)
-    // ==========================================
-    let birdY = 250, birdVy = 0;
-    window.flappyJump = function() { birdVy = -6; };
+    // 9. 像素飛鳥 
+    let birdY = 250, birdVy = 0; window.flappyJump = function() { birdVy = -6; };
     window.initFlappy = function() {
         const cvs = document.getElementById('flappy-canvas'); const ctx = cvs.getContext('2d');
         let diffMult = {1: 0.8, 2: 1.0, 3: 1.3, 4: 1.8}[window.gameDifficulty];
@@ -775,17 +770,13 @@
             ctx.fillStyle = '#111'; ctx.fillRect(0, 0, 400, 500);
 
             if(frames % Math.floor(100/diffMult) === 0) {
-                let topH = Math.random() * (400 - gapSize - 50) + 50;
-                pipes.push({ x: 400, w: 40, top: topH, bottom: topH + gapSize });
+                let topH = Math.random() * (400 - gapSize - 50) + 50; pipes.push({ x: 400, w: 40, top: topH, bottom: topH + gapSize });
             }
 
             ctx.fillStyle = '#1ed760';
             for(let i=pipes.length-1; i>=0; i--) {
                 let p = pipes[i]; p.x -= 3 * diffMult;
-                ctx.fillRect(p.x, 0, p.w, p.top);
-                ctx.fillRect(p.x, p.bottom, p.w, 500 - p.bottom);
-
-                // 碰撞
+                ctx.fillRect(p.x, 0, p.w, p.top); ctx.fillRect(p.x, p.bottom, p.w, 500 - p.bottom);
                 if(50 > p.x && 50 < p.x+p.w && (birdY < p.top || birdY > p.bottom)) { isOver = true; window.simpleToast(`撞管子！分數: ${score}`, 'error'); }
                 if(p.x === 50) { score++; document.getElementById('flappy-score').innerText = score; }
                 if(p.x < -50) pipes.splice(i, 1);
@@ -794,15 +785,11 @@
             ctx.fillStyle = '#ffb300'; ctx.fillRect(50, birdY, 20, 20);
             frames++; window.animFrames.flappy = requestAnimationFrame(loop);
         }
-        document.getElementById('flappy-score').innerText = 0;
-        window.animFrames.flappy = requestAnimationFrame(loop);
+        document.getElementById('flappy-score').innerText = 0; window.animFrames.flappy = requestAnimationFrame(loop);
     };
 
-    // ==========================================
-    // 10. 宇宙戰機 (Space Shooter)
-    // ==========================================
-    let shootBullets = [];
-    window.shooterFire = function() { shootBullets.push({x: window.shooterPx, y: 430}); };
+    // 10. 宇宙戰機 
+    let shootBullets = []; window.shooterFire = function() { shootBullets.push({x: window.shooterPx, y: 430}); };
     window.initShooter = function() {
         const cvs = document.getElementById('shooter-canvas'); const ctx = cvs.getContext('2d');
         let diffMult = {1: 0.5, 2: 1.0, 3: 2.0, 4: 3.5}[window.gameDifficulty];
@@ -814,45 +801,32 @@
             if(window.inputState.shootR && window.shooterPx < 380) window.shooterPx += 5;
 
             ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 400, 500);
-
-            // 畫星星背景
             ctx.fillStyle = '#fff'; for(let i=0; i<5; i++) { ctx.fillRect(Math.random()*400, Math.random()*500, 2, 2); }
 
             if(Math.random() < 0.02 * diffMult) enemies.push({ x: Math.random()*360+20, y: -20, hp: 1 });
 
-            // 子彈
             ctx.fillStyle = '#ffb300';
-            for(let i=shootBullets.length-1; i>=0; i--) {
-                let b = shootBullets[i]; b.y -= 8; ctx.fillRect(b.x-2, b.y, 4, 10);
-                if(b.y < 0) shootBullets.splice(i, 1);
-            }
+            for(let i=shootBullets.length-1; i>=0; i--) { let b = shootBullets[i]; b.y -= 8; ctx.fillRect(b.x-2, b.y, 4, 10); if(b.y < 0) shootBullets.splice(i, 1); }
 
-            // 敵機
             ctx.fillStyle = '#ff1744';
             for(let i=enemies.length-1; i>=0; i--) {
                 let e = enemies[i]; e.y += 2 * diffMult;
                 ctx.beginPath(); ctx.moveTo(e.x, e.y+10); ctx.lineTo(e.x-15, e.y-10); ctx.lineTo(e.x+15, e.y-10); ctx.fill();
                 
-                // 碰撞子彈
                 for(let j=shootBullets.length-1; j>=0; j--) {
                     let b = shootBullets[j];
-                    if(Math.abs(b.x - e.x) < 15 && Math.abs(b.y - e.y) < 15) {
-                        enemies.splice(i, 1); shootBullets.splice(j, 1); score+=10; document.getElementById('shooter-score').innerText = score; break;
-                    }
+                    if(Math.abs(b.x - e.x) < 15 && Math.abs(b.y - e.y) < 15) { enemies.splice(i, 1); shootBullets.splice(j, 1); score+=10; document.getElementById('shooter-score').innerText = score; break; }
                 }
                 if(e.y > 440 && Math.abs(window.shooterPx - e.x) < 20) { isOver = true; window.simpleToast(`被擊毀！分數: ${score}`, 'error'); }
             }
 
-            // 玩家
-            ctx.fillStyle = '#00d4ff';
-            ctx.beginPath(); ctx.moveTo(window.shooterPx, 420); ctx.lineTo(window.shooterPx-20, 450); ctx.lineTo(window.shooterPx+20, 450); ctx.fill();
-
+            ctx.fillStyle = '#00d4ff'; ctx.beginPath(); ctx.moveTo(window.shooterPx, 420); ctx.lineTo(window.shooterPx-20, 450); ctx.lineTo(window.shooterPx+20, 450); ctx.fill();
             window.animFrames.shooter = requestAnimationFrame(loop);
         }
-        document.getElementById('shooter-score').innerText = 0;
-        window.animFrames.shooter = requestAnimationFrame(loop);
+        document.getElementById('shooter-score').innerText = 0; window.animFrames.shooter = requestAnimationFrame(loop);
     };
 
+    window.addEventListener('DOMContentLoaded', () => { window.checkPlayerName(); });
   </script>
 </body>
 </html>
