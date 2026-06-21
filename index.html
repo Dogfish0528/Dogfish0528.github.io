@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Dogfish Studio</title>
   
   <link rel="manifest" href="manifest.json">
@@ -32,34 +32,22 @@
     .btn-copy { background: transparent; color: #b3b3b3; border: 1px solid #555; padding: 6px 14px; border-radius: 20px; font-weight: 700; transition: 0.2s; text-decoration: none; display: inline-block; } .btn-copy:hover { color: white; border-color: white; }
     .btn-edit { background: rgba(29, 185, 84, 0.1); color: var(--primary); border: 1px solid var(--primary); padding: 6px 14px; border-radius: 20px; font-weight: 800; transition: 0.2s; } .btn-edit:hover { background: var(--primary); color: #000; }
     .btn-hide { background: rgba(255, 179, 0, 0.1); color: #ffb300; border: 1px solid #ffb300; padding: 6px 14px; border-radius: 20px; font-weight: 800; transition: 0.2s; } .btn-hide:hover { background: #ffb300; color: #000; }
-    .btn-blue-dl { background: #0088ff; color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 800; font-size: 1.05em; transition: 0.2s; display: inline-block; text-decoration: none; box-shadow: 0 4px 15px rgba(0,136,255,0.4); } .btn-blue-dl:hover { background: #00aaff; transform: translateY(-2px); }
+    .btn-blue-dl { background: #0088ff; color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 800; font-size: 1.05em; transition: 0.2s; display: inline-block; text-decoration: none; box-shadow: 0 4px 15px rgba(0,136,255,0.4); text-align: center; } .btn-blue-dl:hover { background: #00aaff; transform: translateY(-2px); }
     
     .input-box { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px 16px; font-size: 1em; border-radius: 6px; outline: none; transition: 0.2s; box-sizing: border-box; } .input-box:focus { border-color: var(--primary); background: rgba(0,0,0,0.8); }
 
-    /* 🌟 新增：無邊框加大版輸入框 (專門給分類、按鈕文字使用) 🌟 */
-    .input-box-large {
-        background: rgba(255, 255, 255, 0.08);
-        border: none !important;
-        color: white;
-        padding: 16px 20px;
-        font-size: 1.15em;
-        border-radius: 8px;
-        outline: none;
-        transition: 0.2s;
-        box-sizing: border-box;
-        flex: 1;
-        min-width: 140px;
-    }
-    .input-box-large:focus {
-        background: rgba(255, 255, 255, 0.15);
-        box-shadow: 0 0 15px rgba(29, 185, 84, 0.3);
-    }
+    .input-box-large { background: rgba(255, 255, 255, 0.08); border: none !important; color: white; padding: 16px 20px; font-size: 1.15em; border-radius: 8px; outline: none; transition: 0.2s; box-sizing: border-box; flex: 1; min-width: 140px; }
+    .input-box-large:focus { background: rgba(255, 255, 255, 0.15); box-shadow: 0 0 15px rgba(29, 185, 84, 0.3); }
 
     /* 頂部導覽列 */
     .navbar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: rgba(10, 10, 10, 0.7); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 1000; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
     .logo { font-size: 1.2em; font-weight: 800; display: flex; align-items: center; gap: 10px; } .logo-text { background: linear-gradient(90deg, #1db954, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .version-badge { background: linear-gradient(135deg, #1db954, #0088ff); color: #000; font-size: 0.5em; padding: 3px 8px; border-radius: 12px; font-weight: 900; }
     .nav-links { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    
+    /* 漢堡選單按鈕 (電腦版隱藏) */
+    .hamburger-btn { display: none; background: transparent; border: none; color: white; font-size: 1.8em; padding: 5px; cursor: pointer; }
+
     .btn-nav { background: transparent; color: #b3b3b3; border: none; padding: 6px 12px; font-size: 0.95em; font-weight: 700; border-radius: 8px; transition: 0.2s; } .btn-nav:hover { color: white; background: rgba(255,255,255,0.1); } .btn-nav.active { background: rgba(255,255,255,0.15); color: white; }
     .btn-login { padding: 6px 16px; border-radius: 20px; font-weight: bold; background: white; color: black; border: none; transition: 0.2s; } .btn-login:hover { transform: scale(1.05); box-shadow: 0 0 10px rgba(255,255,255,0.5); }
     .btn-logout { background: transparent; color: #888; font-size: 0.8em; padding: 4px 12px; border-radius: 8px; border: 1px solid #444; transition: 0.2s; }
@@ -75,14 +63,14 @@
     .boot-text { margin: 5px 0; font-size: 1.2em; opacity: 0; animation: typeIn 0.1s forwards; text-shadow: 0 0 5px #0f0; } @keyframes typeIn { to { opacity: 1; } }
 
     /* Modals & UI */
-    #disclaimer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9999998; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+    #disclaimer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9999998; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); padding: 20px;}
     .spotify-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 2.5vh 2.5vw; } 
     .modal-content { background: rgba(20,20,20,0.95); border-radius: 16px; width: 100%; max-width: 1600px; height: 100%; max-height: 95vh; display: flex; flex-direction: column; border: 1px solid #333; overflow: hidden; position: relative; } 
     .modal-header { padding: 20px 30px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(15,15,15,0.95); flex-shrink: 0; } 
     .modal-header h2, .modal-header h1 { margin: 0; color: var(--primary); } 
     .modal-close-btn { font-size: 2.5em; color: #b3b3b3; cursor: pointer; transition: 0.2s; line-height: 0.8; } .modal-close-btn:hover { color: white; transform: rotate(90deg); } 
     .modal-body { flex: 1; overflow-y: auto; padding: 30px; scroll-behavior: smooth; position: relative; } 
-    .modal-footer { padding: 20px 30px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15,15,15,0.95); flex-shrink: 0; display: flex; justify-content: space-between; }
+    .modal-footer { padding: 20px 30px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15,15,15,0.95); flex-shrink: 0; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;}
     
     .controls-wrapper { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; flex-wrap: wrap; gap: 15px; } 
     .category-tabs { display: flex; flex-wrap: wrap; gap: 10px; } 
@@ -114,40 +102,91 @@
 
     body.god-mode { border: 2px solid var(--accent); } 
 
-    /* 🌟 編輯面板吸頂控制台 🌟 */
-    .sticky-editor-header { 
-        position: sticky; top: -30px; z-index: 100; background: rgba(20, 20, 20, 0.95); padding: 15px; border-radius: 8px; border: 1px solid #333; box-shadow: 0 10px 25px rgba(0,0,0,0.7); margin-bottom: 20px; backdrop-filter: blur(10px);
-    }
-    
+    /* 編輯面板吸頂控制台 */
+    .sticky-editor-header { position: sticky; top: -30px; z-index: 100; background: rgba(20, 20, 20, 0.95); padding: 15px; border-radius: 8px; border: 1px solid #333; box-shadow: 0 10px 25px rgba(0,0,0,0.7); margin-bottom: 20px; backdrop-filter: blur(10px); }
     .rich-editor-toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; } 
     .rich-editor-btn { background: #333; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; transition: 0.2s; display: flex; align-items: center; gap: 5px;} .rich-editor-btn:hover { background: var(--primary); color: black; }
     .color-picker-wrap { display: flex; align-items: center; background: #333; padding: 2px 8px; border-radius: 6px; gap: 5px; font-weight: bold; font-size: 0.9em; border: 1px solid #444; } .color-picker-wrap input { width: 25px; height: 25px; padding: 0; border: none; background: transparent; cursor: pointer; } 
     .size-picker { padding: 4px 8px; height: 32px; font-size: 0.85em; border-radius: 6px; background: #333; color: white; border: 1px solid #555; }
     
-    .rich-editor-content { background: rgba(0,0,0,0.3); min-height: 40vh; border: 1px solid #333; border-radius: 8px; padding: 20px; color: white; line-height: 1.8; outline: none; }
+    .rich-editor-content { background: rgba(0,0,0,0.3); min-height: 40vh; border: 1px solid #333; border-radius: 8px; padding: 20px; color: white; line-height: 1.8; outline: none; word-wrap: break-word;}
     .rich-editor-content img, .rich-editor-content iframe, .rich-editor-content video { max-width: 100%; border-radius: 8px; margin: 15px 0; cursor: pointer; transition: outline 0.2s;}
     
-    .btn-bookmark { background: transparent; border: 1px solid #ffb300; color: #ffb300; padding: 8px 15px; border-radius: 20px; font-weight: bold; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
+    .btn-bookmark { background: transparent; border: 1px solid #ffb300; color: #ffb300; padding: 8px 15px; border-radius: 20px; font-weight: bold; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
     .btn-bookmark:hover, .btn-bookmark.saved { background: #ffb300; color: black; }
 
     /* 獨立教學閱讀專頁 (Wiki 模式) */
     #wiki-page-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0a0a0a; z-index: 99999; flex-direction: column; overflow-y: auto; }
-    .wiki-header { background: rgba(20,20,20,0.9); padding: 20px 40px; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 20px; backdrop-filter: blur(10px); }
+    .wiki-header { background: rgba(20,20,20,0.9); padding: 20px 40px; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 20px; backdrop-filter: blur(10px); flex-wrap: wrap;}
     .wiki-content { max-width: 1200px; margin: 40px auto; padding: 0 20px; width: 100%; box-sizing: border-box; }
 
-    /* 安全藍字連結 */
     .inline-tutorial-link { color: #00d4ff !important; text-decoration: underline !important; font-weight: bold !important; cursor: pointer !important; padding: 2px 6px; border-radius: 4px; transition: 0.2s; }
     .inline-tutorial-link:hover { color: white !important; background: rgba(0, 212, 255, 0.2); }
 
-    /* 全螢幕大黑板用獨立樣式 */
     #fullscreen-tutorial-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #050505; z-index: 99999; flex-direction: column; overflow-y: auto; }
-    .fs-toolbar { position: sticky; top: 0; background: #111; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; z-index: 10; }
+    .fs-toolbar { position: sticky; top: 0; background: #111; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; z-index: 10; flex-wrap: wrap; gap: 10px;}
     .fs-content { flex: 1; display: flex; flex-direction: column; padding: 30px; max-width: 1600px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+
+    /* =========================================================
+       📱 RWD 手機與平板響應式設計
+    ========================================================= */
+    @media (max-width: 768px) {
+        .navbar { padding: 0 15px; }
+        .logo { font-size: 1.1em; }
+        .hamburger-btn { display: block; }
+        
+        /* 手機版導覽選單變為側邊抽屜 */
+        .nav-links { 
+            position: fixed; top: 60px; left: -100%; width: 250px; height: calc(100vh - 60px); 
+            background: rgba(15, 15, 15, 0.98); flex-direction: column; align-items: flex-start; 
+            padding: 20px; transition: left 0.3s ease; box-shadow: 2px 0 15px rgba(0,0,0,0.8);
+            border-right: 1px solid #333; overflow-y: auto;
+        }
+        .nav-links.show { left: 0; }
+        .btn-nav, .os-toggle-btn { width: 100%; text-align: left; padding: 12px 15px; font-size: 1.1em; }
+        #top-right-profile { width: 100%; justify-content: flex-start; margin-top: 10px; }
+        .btn-login { width: 100%; padding: 12px; margin-top: 10px; }
+
+        .main-container { width: 100%; margin-top: 70px; padding: 0 10px; }
+        .page-panel { padding: 15px; }
+        .page-title { font-size: 1.8em; margin-bottom: 15px; }
+        
+        /* 網格自動縮為單欄 */
+        .article-grid { grid-template-columns: 1fr; gap: 15px; }
+        .material-list { grid-template-columns: 1fr; gap: 15px; }
+        
+        /* 彈出視窗縮小內距 */
+        .spotify-modal { padding: 0; }
+        .modal-content { border-radius: 0; max-height: 100vh; height: 100vh; border: none; }
+        .modal-header { padding: 15px 20px; }
+        .modal-body { padding: 15px 20px; }
+        .modal-footer { padding: 15px 20px; flex-direction: column; }
+        
+        /* 按鈕與標題自適應 */
+        .btn-action, .btn-blue-dl, .btn-bookmark, .btn-copy { width: 100%; text-align: center; }
+        #article-title { font-size: 1.6em !important; }
+        
+        /* 編輯器工具列自適應 */
+        .sticky-editor-header { top: 0; border-radius: 0; padding: 10px; }
+        .rich-editor-toolbar { gap: 5px; }
+        .rich-editor-btn { font-size: 0.85em; padding: 5px 10px; }
+        
+        /* Wiki 教學頁調整 */
+        .wiki-header { padding: 15px; flex-direction: column; align-items: flex-start; }
+        .wiki-content { margin: 20px auto; }
+        .fs-toolbar { padding: 15px; }
+        .fs-content { padding: 15px; }
+    }
   </style>
   
   <script>
     window.tempTutorials = []; 
     window.currentArticleData = null;
+
+    // 🌟 手機版選單切換 🌟
+    window.toggleMobileMenu = function() {
+        document.getElementById('nav-links').classList.toggle('show');
+    };
 
     // 基礎防彈工具
     window.simpleToast = function(msg, type = 'success') {
@@ -155,8 +194,8 @@
         const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg; 
         c.appendChild(t); setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 4500);
     }
-    window.showModal = function(id) { document.getElementById(id).style.display = 'flex'; }
-    window.hideModal = function(id) { document.getElementById(id).style.display = 'none'; }
+    window.showModal = function(id) { document.getElementById(id).style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+    window.hideModal = function(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; }
     window.showToast = simpleToast;
 
     window.closeDisclaimer = function() {
@@ -189,7 +228,6 @@
         if(newWidth) { window.lastSelectedMedia.style.width = newWidth; window.lastSelectedMedia.style.outline = 'none'; window.lastSelectedMedia = null; window.simpleToast("✅ 大小修改成功！"); if(window.saveDraft) window.saveDraft(); }
     };
 
-    // 🌟 編輯器本機圖片與影片上傳引擎 🌟
     window.currentEditorForUpload = '';
     
     window.handleEditorLocalImg = function(event) {
@@ -230,7 +268,6 @@
         event.target.value = '';
     };
 
-    // 🌟 網址圖片與網址影片補回 🌟
     window.insertEditorContent = function(editorId, type) {
         let typeName = type === 'img' ? '圖片網址' : (type === 'yt' ? 'YouTube 網址' : '影片網址 (MP4)');
         let url = prompt(`請輸入 ${typeName}:`);
@@ -239,7 +276,7 @@
         else if (type === 'video') { let w = prompt("寬度:", "100%") || "100%"; document.execCommand('insertHTML', false, `<video src="${url}" style="width:${w}; max-width:100%; border-radius:8px; margin:15px 0; background:#000; box-shadow:0 4px 15px rgba(0,0,0,0.5);" controls playsinline></video><br>`); } 
         else {
             let ytId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
-            if (ytId && ytId[1]) { document.execCommand('insertHTML', false, `<iframe src="https://www.youtube.com/embed/${ytId[1]}" frameborder="0" allowfullscreen style="width:100%; aspect-ratio:16/9; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.5);"></iframe><br>`); }
+            if (ytId && ytId[1]) { document.execCommand('insertHTML', false, `<div style="position:relative; width:100%; padding-bottom:56.25%; height:0; margin:15px 0;"><iframe src="https://www.youtube.com/embed/${ytId[1]}" frameborder="0" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.5);"></iframe></div><br>`); }
             else { window.simpleToast("❌ 無效 YouTube 網址", "error"); }
         }
         if(window.saveDraft) window.saveDraft();
@@ -266,7 +303,6 @@
         if(window.saveDraft) window.saveDraft();
     };
 
-    // 🌟 多重教學管理器核心功能 🌟
     window.addTutorial = function(prefix) {
         let name = prompt("📝 請輸入新教學頁面的名稱 (例：點我看下載教學)：");
         if (!name || name.trim() === '') return;
@@ -288,8 +324,8 @@
         container.style.overflowY = 'auto';
         
         window.tempTutorials.forEach(tut => {
-            container.innerHTML += `<div style="display:flex; gap:8px; align-items:center; background:rgba(0,0,0,0.5); padding:8px 12px; border-radius:8px; border:1px solid #444; margin-bottom:5px;">
-                <span style="flex:1; color:#00d4ff; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📄 ${tut.name}</span>
+            container.innerHTML += `<div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; background:rgba(0,0,0,0.5); padding:8px 12px; border-radius:8px; border:1px solid #444; margin-bottom:5px;">
+                <span style="flex:1; color:#00d4ff; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width: 120px;">📄 ${tut.name}</span>
                 <button class="btn-action" style="padding:4px 12px; font-size:0.85em;" onclick="window.openFullscreenTutorialEditor('${prefix}', '${tut.id}')">✏️ 編輯</button>
                 <button class="btn-copy" style="padding:4px 12px; font-size:0.85em;" onclick="window.insertTutorialLink('${prefix}-rich-editor', '${tut.id}', '${tut.name}')">🔗 插入內文</button>
                 <button class="btn-del" style="padding:4px 12px; font-size:0.85em;" onclick="window.deleteTutorial('${prefix}', '${tut.id}')">🗑️</button>
@@ -309,15 +345,17 @@
         window.currentEditingTutId = tutId;
         let tut = window.tempTutorials.find(t => t.id === tutId);
         if(!tut) return;
-        document.getElementById('fs-tutorial-title').innerText = `正在編輯教學：[${tut.name}]`;
+        document.getElementById('fs-tutorial-title').innerText = `正在編輯：[${tut.name}]`;
         document.getElementById('fs-rich-editor').innerHTML = tut.html || '';
         document.getElementById('fullscreen-tutorial-overlay').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
     };
 
     window.saveAndCloseTutorialEditor = function() {
         let tut = window.tempTutorials.find(t => t.id === window.currentEditingTutId);
         if(tut) { tut.html = document.getElementById('fs-rich-editor').innerHTML; }
         document.getElementById('fullscreen-tutorial-overlay').style.display = 'none';
+        document.body.style.overflow = 'auto';
         window.saveDraft();
         window.simpleToast('教學內容已暫存至面板，請記得按發布/儲存上傳！');
     };
@@ -329,7 +367,6 @@
         window.simpleToast(`已將 [${tutName}] 插入文章中！`);
     };
 
-    // 🌟 前台閱讀文章攔截與跳轉 Wiki 🌟
     window.handleArticleClick = function(event) {
         let target = event.target;
         if(target.tagName === 'A' && target.classList.contains('inline-tutorial-link')) {
@@ -357,7 +394,6 @@
         document.getElementById('article-modal').style.display = 'flex';
     };
 
-    // 收藏系統
     window.myBookmarks = [];
     window.loadBookmarks = function() {
         let b = localStorage.getItem('dogfish_bookmarks');
@@ -381,7 +417,7 @@
   <div id="toast-container"></div>
   
   <div id="disclaimer-overlay">
-    <div class="disclaimer-box solid-panel" style="padding: 40px; margin: 20px; text-align: center;">
+    <div class="disclaimer-box solid-panel" style="padding: 40px; text-align: center; max-width: 90%;">
       <h2 style="color:var(--accent); margin-top:0;">⚠️ 智慧財產權與免責聲明</h2>
       <div style="color:#ccc; line-height:1.7; margin-bottom:20px;">本站收錄之創作素材版權屬於原創作者，僅供個人交流與學習研究，嚴禁一切商業營利行為。</div>
       <button class="btn-action" style="width: 100%; padding: 14px;" onclick="window.closeDisclaimer()">我已閱讀並完全同意，進入網站</button>
@@ -432,9 +468,9 @@
         <div id="mat-dynamic-fields"></div>
         <img id="mat-preview-img" style="display:none; width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #555; background: rgba(0,0,0,0.5);">
         
-        <div id="mat-url-container" style="display:flex; gap:10px; margin-bottom: 15px;">
-            <input type="url" id="mat-url" class="input-box" placeholder="主要直連 / 跳轉下載連結" style="flex:1;" oninput="window.saveDraft()">
-            <button class="btn-copy" style="padding: 12px 15px;" onclick="document.getElementById('mat-file-upload-general').click()">📤 上傳本機檔案</button>
+        <div id="mat-url-container" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 15px;">
+            <input type="url" id="mat-url" class="input-box" placeholder="主要直連 / 跳轉下載連結" style="flex:1; min-width:200px;" oninput="window.saveDraft()">
+            <button class="btn-copy" style="padding: 12px 15px; flex-shrink:0;" onclick="document.getElementById('mat-file-upload-general').click()">📤 上傳本機檔案</button>
             <input type="file" id="mat-file-upload-general" style="display:none;" onchange="window.handleGeneralFileUpload(event, 'mat-url')">
         </div>
         
@@ -442,7 +478,7 @@
           
           <div class="sticky-editor-header">
               <div id="mat-tutorial-manager">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
                       <label style="color:#00d4ff; font-weight:bold; margin:0;">📚 專屬教學頁面管理</label>
                       <button class="btn-action" style="padding:4px 12px; font-size:0.85em; background:#00d4ff; color:#000;" onclick="window.addTutorial('mat')">➕ 新增教學頁</button>
                   </div>
@@ -468,7 +504,7 @@
           <div id="mat-rich-editor" class="rich-editor-content" contenteditable="true" oninput="window.saveDraft()" style="margin-top: 10px;"></div>
         </div>
       </div>
-      <div class="modal-footer"><button id="add-mat-btn" class="btn-action" style="width: 100%; max-width: 600px; font-size: 1.2em; padding: 15px;" onclick="window.submitMaterial()">🚀 即時發布上架</button></div>
+      <div class="modal-footer"><button id="add-mat-btn" class="btn-action" style="width: 100%; font-size: 1.2em; padding: 15px;" onclick="window.submitMaterial()">🚀 即時發布上架</button></div>
     </div>
   </div>
 
@@ -479,7 +515,7 @@
         <input type="hidden" id="edit-id"><input type="hidden" id="edit-category">
         <div style="display:flex; flex-direction:column; gap:10px;"><input type="text" id="edit-name" class="input-box"><input type="url" id="edit-url" class="input-box"></div>
         
-        <div id="edit-url-container" style="display:flex; gap:10px; margin-top: 10px;">
+        <div id="edit-url-container" style="display:flex; flex-wrap:wrap; gap:10px; margin-top: 10px;">
             <button class="btn-copy" style="padding: 12px 15px;" onclick="document.getElementById('edit-file-upload-general').click()">📤 上傳檔案</button>
             <input type="file" id="edit-file-upload-general" style="display:none;" onchange="window.handleGeneralFileUpload(event, 'edit-url')">
         </div>
@@ -491,7 +527,7 @@
           
           <div class="sticky-editor-header">
               <div id="edit-tutorial-manager">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
                       <label style="color:#00d4ff; font-weight:bold; margin:0;">📚 專屬教學頁面管理</label>
                       <button class="btn-action" style="padding:4px 12px; font-size:0.85em; background:#00d4ff; color:#000;" onclick="window.addTutorial('edit')">➕ 新增教學頁</button>
                   </div>
@@ -523,11 +559,11 @@
 
   <div id="fullscreen-tutorial-overlay">
       <div class="fs-toolbar">
-          <h2 id="fs-tutorial-title" style="color: white; margin: 0; text-shadow: 0 0 5px #00d4ff;">正在撰寫教學</h2>
-          <button class="btn-action" style="font-size: 1.1em;" onclick="window.saveAndCloseTutorialEditor()">💾 完成並儲存內容</button>
+          <h2 id="fs-tutorial-title" style="color: white; margin: 0; text-shadow: 0 0 5px #00d4ff; font-size:1.3em;">正在撰寫教學</h2>
+          <button class="btn-action" style="font-size: 1em; padding:8px 15px;" onclick="window.saveAndCloseTutorialEditor()">💾 儲存</button>
       </div>
       <div class="fs-content" style="overflow-y: auto;">
-          <div class="rich-editor-toolbar" style="position: sticky; top: -30px; border-radius: 8px; background: rgba(20,20,20,0.95); z-index: 100; margin-bottom: 20px;">
+          <div class="rich-editor-toolbar" style="position: sticky; top: -15px; border-radius: 8px; background: rgba(20,20,20,0.95); z-index: 100; margin-bottom: 20px; padding:10px;">
             <button class="rich-editor-btn" onclick="document.execCommand('bold')">B 粗體</button>
             <select onchange="document.execCommand('fontSize', false, this.value); this.selectedIndex=0;" class="size-picker"><option value="">字體大小</option><option value="2">小字</option><option value="3">標準</option><option value="5">大字</option><option value="7">特大</option></select>
             <div class="color-picker-wrap" title="更改文字顏色">🎨 <input type="color" onchange="document.execCommand('foreColor', false, this.value)"></div>
@@ -547,10 +583,10 @@
 
   <div id="article-modal" class="spotify-modal">
     <div class="modal-content">
-      <div class="modal-header">
-          <div style="display:flex; flex-direction:column; gap:5px;">
-              <h1 id="article-title" style="margin: 0; color: white; font-size: 2.2em; line-height: 1.2;">標題</h1>
-              <div id="article-meta" style="color: #888; font-size: 0.9em;"></div>
+      <div class="modal-header" style="align-items:flex-start;">
+          <div style="display:flex; flex-direction:column; gap:5px; flex:1; padding-right:15px;">
+              <h1 id="article-title" style="margin: 0; color: white; font-size: 2.2em; line-height: 1.2; word-break: break-word;">標題</h1>
+              <div id="article-meta" style="color: #888; font-size: 0.9em; word-break: break-word;"></div>
           </div>
           <span class="modal-close-btn" onclick="window.hideModal('article-modal')">×</span>
       </div>
@@ -558,11 +594,13 @@
         <div id="article-desc" class="rich-editor-content blog-content" style="border:none; padding:0; background:transparent;"></div>
       </div>
       <div class="modal-footer">
-          <div style="display:flex; gap:10px;">
-              <button id="article-bookmark-btn" class="btn-bookmark" onclick="window.toggleBookmark(this.dataset.id)">☆ 收藏</button>
-              <button id="article-share-btn" class="btn-copy" onclick="window.copyFullUrl('?go=' + this.dataset.code)">🔗 分享直連</button>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; width:100%; justify-content: space-between;">
+              <div style="display:flex; gap:10px; flex:1; min-width:200px;">
+                <button id="article-bookmark-btn" class="btn-bookmark" style="flex:1;" onclick="window.toggleBookmark(this.dataset.id)">☆ 收藏</button>
+                <button id="article-share-btn" class="btn-copy" style="flex:1;" onclick="window.copyFullUrl('?go=' + this.dataset.code)">🔗 分享直連</button>
+              </div>
+              <a id="article-dl-btn" href="#" target="_blank" class="btn-blue-dl" style="display:none; flex:1; min-width:200px;">🔗 前往下載</a>
           </div>
-          <a id="article-dl-btn" href="#" target="_blank" class="btn-blue-dl" style="display:none;">🔗 前往下載</a>
       </div>
     </div>
   </div>
@@ -570,19 +608,19 @@
   <div id="wiki-page-overlay">
       <div class="wiki-header">
           <button class="btn-copy" style="font-size: 1.1em; padding: 10px 20px; border-radius: 30px;" onclick="window.closeWikiPage()">🔙 返回文章</button>
-          <h1 id="wiki-page-title" style="margin: 0; color: var(--primary); font-size: 1.8em;">專屬教學</h1>
+          <h1 id="wiki-page-title" style="margin: 0; color: var(--primary); font-size: 1.5em; word-break: break-word;">專屬教學</h1>
       </div>
       <div class="wiki-content">
           <div id="wiki-page-content" class="rich-editor-content" style="border:none; background:transparent; font-size: 1.1em; padding:0;"></div>
       </div>
   </div>
 
-  <div id="album-modal" class="spotify-modal">
-    </div>
-
   <div class="navbar">
-    <div class="logo"><span class="logo-text">Dogfish Studio</span><span class="version-badge">v37.0 雙引擎版</span></div>
-    <div class="nav-links">
+    <div class="logo">
+        <button class="hamburger-btn" onclick="window.toggleMobileMenu()">☰</button>
+        <span class="logo-text">Dogfish Studio</span><span class="version-badge">v38.0 RWD版</span>
+    </div>
+    <div class="nav-links" id="nav-links">
       <a href="games.html" class="btn-nav" style="color: #ff1744; font-weight: 900; text-decoration: none;">🎮 遊戲大廳</a>
       <button class="btn-nav active" onclick="window.switchPage('blog')">大廳</button>
       <button class="btn-nav" onclick="window.switchPage('materials')">素材庫</button>
@@ -592,27 +630,27 @@
       <button class="btn-nav" onclick="window.switchPage('recovery')" style="color: #00d4ff; font-weight: 900;">🚑 急救指南</button>
       <button class="btn-nav" onclick="window.switchPage('bookmarks')" style="color: #ffb300; font-weight: 900;">⭐ 收藏</button>
 
-      <button id="nav-add-btn" class="btn-nav" style="display: none; color: #1ed760; font-weight: 900;" onclick="window.showUploadModal()">➕ 發布</button>
-      <button id="nav-edit-mode-btn" class="btn-nav" style="display: none; color: #ffb300; border: 1px solid #ffb300;" onclick="window.toggleEditMode()">🖌️ 編輯模式</button>
+      <button id="nav-add-btn" class="btn-nav" style="display: none; color: #1ed760; font-weight: 900;" onclick="window.showUploadModal(); window.toggleMobileMenu();">➕ 發布</button>
+      <button id="nav-edit-mode-btn" class="btn-nav" style="display: none; color: #ffb300; border: 1px solid #ffb300;" onclick="window.toggleEditMode(); window.toggleMobileMenu();">🖌️ 編輯模式</button>
       
-      <a href="os.html" class="os-toggle-btn">🖥️ OS 模式</a>
-      <button id="login-btn-modal" class="btn-login" onclick="window.showModal('login-modal')">登入</button>
+      <a href="os.html" class="os-toggle-btn btn-nav" style="color: #aaa; text-decoration:none;">🖥️ OS 模式</a>
+      <button id="login-btn-modal" class="btn-login" onclick="window.showModal('login-modal'); window.toggleMobileMenu();">登入</button>
       <div id="top-right-profile">
-        <span id="tr-name" style="font-weight: bold;">...</span>
+        <span id="tr-name" style="font-weight: bold; color:white;">...</span>
         <button id="nav-admin-btn" class="btn-logout" onclick="window.switchPage('admin')" style="display: none; color: var(--accent); border-color:var(--accent);">👑 控制台</button>
-        <button id="logout-btn" class="btn-logout" onclick="window.doLogout()">登出</button>
+        <button id="logout-btn" class="btn-logout" onclick="window.doLogout(); window.toggleMobileMenu();">登出</button>
       </div>
     </div>
   </div>
 
   <div class="main-container">
     <div id="page-blog" class="page-panel active">
-      <div style="text-align: center; padding: 60px 20px; background: rgba(20,20,20,0.6); border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
-        <h1 style="font-size: 3.5em; font-weight: 900; margin: 0 0 10px 0; background: linear-gradient(90deg, #1db954, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Dogfish Studio 核心大廳</h1>
-        <p style="color: #b3b3b3; font-size: 1.3em; margin-bottom: 40px;">全域資源庫・軟體推薦・疑難排解中心</p>
-        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-            <button class="btn-action" onclick="window.switchPage('materials')" style="padding: 15px 40px; font-size: 1.2em;">📂 探索素材庫</button>
-            <button class="btn-blue-dl" onclick="window.switchPage('software')" style="padding: 15px 40px; font-size: 1.2em; border-radius: 30px; box-shadow: none;">🧰 前往軟體區</button>
+      <div style="text-align: center; padding: 40px 20px; background: rgba(20,20,20,0.6); border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
+        <h1 style="font-size: clamp(2em, 5vw, 3.5em); font-weight: 900; margin: 0 0 10px 0; background: linear-gradient(90deg, #1db954, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height:1.2;">Dogfish Studio 核心大廳</h1>
+        <p style="color: #b3b3b3; font-size: 1.1em; margin-bottom: 40px;">全域資源庫・軟體推薦・疑難排解中心</p>
+        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+            <button class="btn-action" onclick="window.switchPage('materials')" style="padding: 15px 30px; font-size: 1.1em; flex:1; min-width:200px;">📂 探索素材庫</button>
+            <button class="btn-blue-dl" onclick="window.switchPage('software')" style="padding: 15px 30px; font-size: 1.1em; border-radius: 30px; box-shadow: none; flex:1; min-width:200px;">🧰 前往軟體區</button>
         </div>
       </div>
     </div>
@@ -648,7 +686,10 @@
     
     <div id="page-beautify" class="page-panel">
       <h2 class="page-title" style="color: var(--beautify-11); text-shadow: 0 0 10px rgba(255,0,255,0.5);">✨ 系統美化資源</h2>
-      <div style="display: flex; gap: 15px; margin-bottom: 30px;"><button class="btn-action" style="background: var(--beautify-10); color: white;" onclick="window.filterBeautify(this, 'Win10美化')">🟦 Windows 10 專區</button><button class="btn-action" style="background: var(--beautify-11); color: white;" onclick="window.filterBeautify(this, 'Win11美化')">🟪 Windows 11 專區</button></div>
+      <div style="display: flex; gap: 10px; margin-bottom: 30px; flex-wrap:wrap;">
+        <button class="btn-action" style="background: var(--beautify-10); color: white; flex:1; min-width:150px;" onclick="window.filterBeautify(this, 'Win10美化')">🟦 Windows 10</button>
+        <button class="btn-action" style="background: var(--beautify-11); color: white; flex:1; min-width:150px;" onclick="window.filterBeautify(this, 'Win11美化')">🟪 Windows 11</button>
+      </div>
       <div id="beautify-container" class="article-grid"><p style="color:#888; font-size:1.1em;">☝️ 請點擊上方按鈕選擇作業系統版本。</p></div>
     </div>
 
@@ -668,20 +709,20 @@
       
       <div class="solid-panel" style="padding: 25px; border-left: 5px solid #00d4ff; text-align: left; margin-bottom: 20px;">
           <h3 style="color: #00d4ff; margin-top:0;">🔑 建立秘密通行證帳號</h3>
-          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
-            <input type="text" id="secret-create-username" class="input-box" placeholder="設定帳號 (例: editor1)" style="width: 200px; padding:12px;">
-            <input type="password" id="secret-create-password" class="input-box" placeholder="設定密碼 (至少6碼)" style="width: 200px; padding:12px;">
-            <select id="secret-create-role" class="input-box" style="background:rgba(0,0,0,0.8); padding:12px;">
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <input type="text" id="secret-create-username" class="input-box" placeholder="設定帳號 (例: editor1)" style="width: 100%; padding:12px;">
+            <input type="password" id="secret-create-password" class="input-box" placeholder="設定密碼 (至少6碼)" style="width: 100%; padding:12px;">
+            <select id="secret-create-role" class="input-box" style="background:rgba(0,0,0,0.8); padding:12px; width:100%;">
                 <option value="contributor">✍️ 貢獻者 (可發布)</option>
                 <option value="admin">🔧 管理員 (全權限)</option>
             </select>
-            <button id="create-secret-btn" class="btn-blue-dl" style="padding:12px 25px; border-radius: 8px;" onclick="window.doCreateSecretUser()">發行通行證</button>
+            <button id="create-secret-btn" class="btn-blue-dl" style="padding:12px 25px; border-radius: 8px; width:100%;" onclick="window.doCreateSecretUser()">發行通行證</button>
           </div>
       </div>
 
       <div class="solid-panel" style="padding: 25px; border-left: 5px solid var(--accent); text-align: left;">
           <h3 style="color: var(--accent); margin-top:0;">☢️ 危險操作區：一鍵清空資料庫</h3>
-          <button class="btn-del" style="padding: 12px 25px; font-size: 1.1em;" onclick="window.nukeAllMaterials()">☢️ 刪除所有發布資料</button>
+          <button class="btn-del" style="padding: 12px 25px; font-size: 1.1em; width:100%;" onclick="window.nukeAllMaterials()">☢️ 刪除所有發布資料</button>
       </div>
     </div>
 
@@ -784,6 +825,9 @@
         document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active')); 
         const target = document.getElementById(`page-${pageId}`); if(target) target.classList.add('active'); 
         const activeNavBtn = Array.from(document.querySelectorAll('.btn-nav')).find(b => b.getAttribute('onclick')?.includes(pageId)); if (activeNavBtn) activeNavBtn.classList.add('active'); 
+        
+        // 切換頁面時自動收折選單
+        document.getElementById('nav-links').classList.remove('show');
     }
 
     window.copyFullUrl = function(suffix) {
@@ -853,7 +897,7 @@
     window.renderUploadFields = function(type, prefix) { 
         const df = document.getElementById(`${prefix}-dynamic-fields`); const previewId = `${prefix}-preview-img`; const rtc = document.getElementById(`${prefix}-rich-text-container`);
         if (["音樂", "背景音樂", "人聲", "MP4影片"].includes(type)) { 
-            df.innerHTML = `<input type="text" id="${prefix}-route-code" class="input-box" placeholder="🔗 直連代碼(英文)" style="width: 130px;" oninput="window.saveDraft()"><div style="display:flex; gap:5px; width:100%; margin-top:5px;"><input type="url" id="${prefix}-cover" class="input-box" placeholder="封面圖網址 或 點右側上傳" style="flex:1;" oninput="window.updateImagePreview(this.value, '${previewId}')"><button class="btn-action" style="padding: 8px 15px;" onclick="document.getElementById('${prefix}-file-input').click()">📤 上傳本機圖片</button></div><input type="file" id="${prefix}-file-input" style="display:none;" accept="image/*" onchange="window.handleLocalImageUpload(event, '${prefix}')">`; 
+            df.innerHTML = `<input type="text" id="${prefix}-route-code" class="input-box" placeholder="🔗 直連代碼(英文)" style="width: 130px;" oninput="window.saveDraft()"><div style="display:flex; flex-wrap:wrap; gap:5px; width:100%; margin-top:5px;"><input type="url" id="${prefix}-cover" class="input-box" placeholder="封面圖網址 或 點右側上傳" style="flex:1; min-width:200px;" oninput="window.updateImagePreview(this.value, '${previewId}')"><button class="btn-action" style="padding: 8px 15px;" onclick="document.getElementById('${prefix}-file-input').click()">📤 上傳本機圖片</button></div><input type="file" id="${prefix}-file-input" style="display:none;" accept="image/*" onchange="window.handleLocalImageUpload(event, '${prefix}')">`; 
             rtc.style.display = 'none'; 
         } 
         else if (type === "音效") { 
@@ -861,7 +905,6 @@
             document.getElementById(previewId).style.display = 'none'; rtc.style.display = 'none'; 
         } 
         else if (["軟體", "軟體介紹", "軟體收集", "指令", "Win10美化", "Win11美化", "急救資源"].includes(type)) { 
-            // 🌟 將輸入框改為新的 input-box-large 並排列 🌟
             let folderInput = (type === "軟體" || type === "軟體介紹" || type === "軟體收集") ? `<input type="text" id="${prefix}-folder" class="input-box-large" placeholder="📁 分類 (例: 影音剪輯)" oninput="window.saveDraft()">` : '';
             
             df.innerHTML = `
@@ -870,16 +913,16 @@
                 <input type="text" id="${prefix}-btn-text" class="input-box-large" placeholder="🔘 按鈕文字" oninput="window.saveDraft()">
                 <input type="text" id="${prefix}-route-code" class="input-box-large" placeholder="🔗 直連代碼(英文)" oninput="window.saveDraft()">
             </div>
-            <div style="display:flex; gap:5px; width:100%;">
-                <input type="url" id="${prefix}-cover" class="input-box" placeholder="🖼️ 卡片圖網址 或 按上傳" style="flex:1;" oninput="window.updateImagePreview(this.value, '${previewId}')">
+            <div style="display:flex; gap:5px; width:100%; flex-wrap:wrap;">
+                <input type="url" id="${prefix}-cover" class="input-box" placeholder="🖼️ 卡片圖網址 或 按上傳" style="flex:1; min-width:200px;" oninput="window.updateImagePreview(this.value, '${previewId}')">
                 <button class="btn-action" style="padding: 8px 15px;" onclick="document.getElementById('${prefix}-file-input').click()">📤 本機</button>
             </div>
-            <div style="display:flex; gap:5px; width:100%; margin-top:5px;">
-                <select id="${prefix}-cover-fit" class="input-box" style="flex:1; padding: 8px;" onchange="window.updatePreviewFit('${previewId}', this.value)">
+            <div style="display:flex; gap:5px; width:100%; margin-top:5px; flex-wrap:wrap;">
+                <select id="${prefix}-cover-fit" class="input-box" style="flex:1; padding: 8px; min-width:150px;" onchange="window.updatePreviewFit('${previewId}', this.value)">
                     <option value="cover">預覽: 填滿(Cover)</option>
                     <option value="contain">預覽: 完整保留(Contain)</option>
                 </select>
-                <select id="${prefix}-cover-pos" class="input-box" style="flex:1; padding: 8px;" onchange="window.updatePreviewPos('${previewId}', this.value)">
+                <select id="${prefix}-cover-pos" class="input-box" style="flex:1; padding: 8px; min-width:150px;" onchange="window.updatePreviewPos('${previewId}', this.value)">
                     <option value="center">對齊: 置中 (預設)</option>
                     <option value="top">對齊: 靠上</option>
                     <option value="bottom">對齊: 靠下</option>
@@ -892,7 +935,6 @@
         }
         else { df.innerHTML = ``; rtc.style.display = 'block'; } 
         
-        // 🌟 自動隱藏多餘功能邏輯 🌟
         const urlContainer = document.getElementById(`${prefix}-url-container`);
         const tutorialManager = document.getElementById(`${prefix}-tutorial-manager`);
         
@@ -1092,7 +1134,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         const bootScreen = document.getElementById('boot-screen'); const logBox = document.getElementById('boot-log');
-        const logs = ["> INITIALIZING DOGFISH CORE...", "> SYSTEM DEPLOYED... [OK]", "> WELCOME TO DOGFISH STUDIO V37.0"];
+        const logs = ["> INITIALIZING DOGFISH CORE...", "> SYSTEM DEPLOYED... [OK]", "> WELCOME TO DOGFISH STUDIO V38.0"];
         let i = 0; function showLog() { if (i < logs.length) { let p = document.createElement('div'); p.className = 'boot-text'; p.innerText = logs[i]; logBox.appendChild(p); i++; setTimeout(showLog, 150 + Math.random() * 100); } else { setTimeout(() => { bootScreen.style.opacity = 0; setTimeout(() => bootScreen.style.display = 'none', 500); }, 400); } }
         showLog(); initDataListener();
     });
