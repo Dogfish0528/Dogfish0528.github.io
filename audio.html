@@ -13,7 +13,7 @@
     
     .navbar { width: 100%; height: 60px; background: rgba(10,10,10,0.9); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-shrink: 0; backdrop-filter: blur(10px); }
     .logo { font-size: 1.2em; font-weight: 900; background: linear-gradient(90deg, #1db954, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .btn-nav-back { color: #aaa; text-decoration: none; font-weight: bold; border: 1px solid #555; padding: 6px 16px; border-radius: 20px; transition: 0.2s; font-size: 0.9em; } .btn-nav-back:hover { background: #fff; color: #000; }
+    .btn-nav-back { color: #aaa; text-decoration: none; font-weight: bold; border: 1px solid #555; padding: 6px 16px; border-radius: 20px; transition: 0.2s; font-size: 0.9em; cursor: pointer; background: transparent;} .btn-nav-back:hover { background: #fff; color: #000; }
     
     .main-panel { background: rgba(20,20,20,0.85); border: 1px solid #333; border-radius: 16px; padding: 30px; margin-top: 40px; width: 90%; max-width: 500px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); text-align: center; backdrop-filter: blur(10px); }
     .title { color: var(--game-blue); margin: 0 0 10px 0; font-size: 1.8em; font-weight: 900; text-shadow: 0 0 10px rgba(0,212,255,0.3); }
@@ -27,7 +27,7 @@
     .input-box { background: #000; border: 2px solid #333; color: #fff; padding: 12px; font-size: 1.3em; border-radius: 8px; width: 100%; text-align: center; margin-bottom: 15px; letter-spacing: 3px; font-weight: bold; transition: 0.2s; } .input-box:focus { border-color: var(--game-blue); }
 
     .status-panel { background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; }
-    .room-code-display { font-size: 2.8em; font-weight: 900; letter-spacing: 6px; color: #fff; margin: 10px 0; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+    .room-code-display { font-size: 3em; font-weight: 900; letter-spacing: 8px; color: #fff; margin: 10px 0; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
     
     .control-row { display: flex; justify-content: space-between; align-items: center; width: 100%; background: #000; border: 1px solid #333; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; }
     .control-row label { font-weight: bold; font-size: 0.95em; color: #ccc; }
@@ -46,7 +46,7 @@
 
   <div class="navbar">
       <div class="logo">AudioCast Pro</div>
-      <a href="index.html" class="btn-nav-back">🔙 返回網站大廳</a>
+      <button class="btn-nav-back" onclick="window.location.href='index.html'">🔙 返回網站大廳</button>
   </div>
 
   <div id="toast-container"></div>
@@ -96,7 +96,8 @@
     import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
     
     const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website" }; 
-    let app, db; try { app = initializeApp(firebaseConfig); db = getFirestore(app); } catch(e) {}
+    let app, db; 
+    try { app = initializeApp(firebaseConfig); db = getFirestore(app); } catch(e) { alert("Firebase 初始化失敗：" + e.message); }
 
     let peerConnection = null; let localStream = null; let roomId = null; let role = null; 
     let roomUnsubscribe = null; let iceUnsubscribe = null;
@@ -111,31 +112,37 @@
         c.appendChild(t); setTimeout(() => t.remove(), 3500);
     };
 
-    // 🌟 1. 建立房間 (麥克風端)
+    // 🌟 1. 建立房間 (麥克風端) - 增強除錯防護罩
     window.createAudioRoom = async function() {
-        if(!db) { window.simpleToast("資料庫連線失敗", true); return; }
-        
-        window.simpleToast("正在請求麥克風權限，請點擊「允許」...");
-
         try {
-            // 🌟 修正：先確認取得權限，再切換畫面
+            if(!db) throw new Error("Firebase 尚未連線，請檢查網路！");
+            
+            window.simpleToast("正在請求麥克風權限，請點擊「允許」...");
+
+            // 1. 先取得權限
             localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
             window.simpleToast("✅ 麥克風已就緒");
             
+            // 2. 切換 UI 面板
             role = 'mic';
             document.getElementById('setup-panel').style.display = 'none';
             document.getElementById('active-panel').style.display = 'block';
             document.getElementById('active-panel-title').innerText = '🎙️ 語音發送端 (麥克風)';
             document.getElementById('btn-mic-mute').style.display = 'block';
             document.getElementById('ctrl-volume-row').style.display = 'none';
-            document.getElementById('txt-connection-status').innerText = "等待接收端加入...";
+            document.getElementById('txt-connection-status').innerText = "正在建立房間...";
 
-            initAudioEngine(localStream, true); 
-
+            // 3. 確保房號產生 (防禦之前的雷點)
             roomId = Math.floor(100000 + Math.random() * 900000).toString();
-            document.getElementById('display-room-code').innerText = roomId;
-            const roomRef = doc(db, 'audio_rooms', roomId);
+            const codeDisplay = document.getElementById('display-room-code');
+            if(!codeDisplay) throw new Error("找不到房號顯示元素 (HTML ID錯誤)");
+            codeDisplay.innerText = roomId;
 
+            // 4. 啟動音訊引擎 (包裝起來防報錯)
+            try { initAudioEngine(localStream, true); } catch(err) { console.error("音訊特效引擎錯誤:", err); }
+
+            // 5. Firebase RTC 連線
+            const roomRef = doc(db, 'audio_rooms', roomId);
             peerConnection = new RTCPeerConnection(rtcConfig);
             localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
@@ -147,6 +154,9 @@
             await peerConnection.setLocalDescription(offer);
             await setDoc(roomRef, { offer: { type: offer.type, sdp: offer.sdp }, status: "waiting", timestamp: serverTimestamp() });
 
+            document.getElementById('txt-connection-status').innerText = "等待接收端加入...";
+
+            // 6. 監聽對方加入或掛斷
             roomUnsubscribe = onSnapshot(roomRef, async snap => {
                 if(!snap.exists()) return;
                 const data = snap.data();
@@ -163,56 +173,65 @@
             });
 
         } catch (err) {
-            window.simpleToast("❌ 存取麥克風失敗，請確認已允許權限！", true);
-            return;
+            alert("系統錯誤: " + err.message); // 極端防護：彈出原生警告視窗
+            window.simpleToast("❌ 建立失敗: " + err.message, true);
+            window.hangUp(false);
         }
     };
 
     // 🌟 2. 加入房間 (喇叭端)
     window.joinAudioRoom = async function() {
-        if(!db) return; 
-        roomId = document.getElementById('room-id-input').value.trim();
-        if(roomId.length !== 6) { window.simpleToast("請輸入完整的 6 碼房號", true); return; }
+        try {
+            if(!db) throw new Error("Firebase 尚未連線！");
+            roomId = document.getElementById('room-id-input').value.trim();
+            if(roomId.length !== 6) { window.simpleToast("請輸入完整的 6 碼房號", true); return; }
 
-        const roomRef = doc(db, 'audio_rooms', roomId);
-        const snap = await getDoc(roomRef);
-        if(!snap.exists()) { window.simpleToast("房間不存在，請重新檢查代碼！", true); return; }
+            const roomRef = doc(db, 'audio_rooms', roomId);
+            const snap = await getDoc(roomRef);
+            if(!snap.exists()) { window.simpleToast("房間不存在，請確認代碼！", true); return; }
 
-        role = 'speaker';
-        document.getElementById('setup-panel').style.display = 'none';
-        document.getElementById('active-panel').style.display = 'block';
-        document.getElementById('active-panel-title').innerText = '🔊 語音接收端 (喇叭)';
-        document.getElementById('ctrl-volume-row').style.display = 'flex';
-        document.getElementById('btn-mic-mute').style.display = 'none';
-        document.getElementById('display-room-code').innerText = roomId;
-        document.getElementById('txt-connection-status').innerText = "正在建立連線...";
+            role = 'speaker';
+            document.getElementById('setup-panel').style.display = 'none';
+            document.getElementById('active-panel').style.display = 'block';
+            document.getElementById('active-panel-title').innerText = '🔊 語音接收端 (喇叭)';
+            document.getElementById('ctrl-volume-row').style.display = 'flex';
+            document.getElementById('btn-mic-mute').style.display = 'none';
+            document.getElementById('display-room-code').innerText = roomId;
+            document.getElementById('txt-connection-status').innerText = "正在建立連線...";
 
-        peerConnection = new RTCPeerConnection(rtcConfig);
-        peerConnection.onicecandidate = event => {
-            if (event.candidate) addDoc(collection(roomRef, 'speakerCandidates'), event.candidate.toJSON());
-        };
+            peerConnection = new RTCPeerConnection(rtcConfig);
 
-        peerConnection.ontrack = event => {
-            document.getElementById('remote-audio').srcObject = event.streams[0];
-            document.getElementById('txt-connection-status').innerText = "🟢 連線成功！即時播放中";
-            document.getElementById('txt-connection-status').style.color = "var(--primary)";
-            window.simpleToast("✅ 已成功接通麥克風！");
-            initAudioEngine(event.streams[0], false); 
-        };
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) addDoc(collection(roomRef, 'speakerCandidates'), event.candidate.toJSON());
+            };
 
-        const offer = snap.data().offer;
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-        const answer = await peerConnection.createAnswer();
-        await peerConnection.setLocalDescription(answer);
-        await updateDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp }, status: "connected" });
+            peerConnection.ontrack = event => {
+                document.getElementById('remote-audio').srcObject = event.streams[0];
+                document.getElementById('txt-connection-status').innerText = "🟢 連線成功！即時播放中";
+                document.getElementById('txt-connection-status').style.color = "var(--primary)";
+                window.simpleToast("✅ 已成功接通麥克風！");
+                try { initAudioEngine(event.streams[0], false); } catch(e) {}
+            };
 
-        roomUnsubscribe = onSnapshot(roomRef, snap => {
-            if(snap.exists() && snap.data().status === "hungup") { window.simpleToast("👥 麥克風發送端已關閉！"); window.hangUp(false); }
-        });
+            const offer = snap.data().offer;
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            await updateDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp }, status: "connected" });
 
-        iceUnsubscribe = onSnapshot(collection(roomRef, 'micCandidates'), snap => {
-            snap.docChanges().forEach(async c => { if (c.type === 'added') await peerConnection.addIceCandidate(new RTCIceCandidate(c.doc.data())); });
-        });
+            roomUnsubscribe = onSnapshot(roomRef, snap => {
+                if(snap.exists() && snap.data().status === "hungup") { window.simpleToast("👥 麥克風發送端已關閉！"); window.hangUp(false); }
+            });
+
+            iceUnsubscribe = onSnapshot(collection(roomRef, 'micCandidates'), snap => {
+                snap.docChanges().forEach(async c => { if (c.type === 'added') await peerConnection.addIceCandidate(new RTCIceCandidate(c.doc.data())); });
+            });
+
+        } catch(err) {
+            alert("系統錯誤: " + err.message);
+            window.simpleToast("❌ 加入失敗: " + err.message, true);
+            window.hangUp(false);
+        }
     };
 
     // 🌟 3. 核心特效引擎
@@ -268,7 +287,6 @@
         document.getElementById('txt-connection-status').style.color = "var(--game-yellow)";
         document.getElementById('btn-fx-filter').style.background = "#222"; document.getElementById('btn-fx-filter').style.color = "#fff";
         
-        // 恢復重置設定
         const canvas = document.getElementById('canvas-visualizer');
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
