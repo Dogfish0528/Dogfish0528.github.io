@@ -6,18 +6,10 @@
   <title>Dogfish AudioCast | 遠端音訊廣播系統</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
-    /* =========================================================
-       底層全域美化樣式 (絕對禁止標楷體)
-    ========================================================= */
-    :root { 
-        --primary: #1db954; --game-blue: #00d4ff; --accent: #ff1744; 
-        --font-main: 'Noto Sans TC', 'Microsoft JhengHei', 'Segoe UI', sans-serif; 
-    }
-    
+    :root { --primary: #1db954; --game-blue: #00d4ff; --accent: #ff1744; --font-main: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; }
     * { font-family: var(--font-main) !important; box-sizing: border-box; }
-    
     body { background: radial-gradient(circle at top, #1a0b12, #050505); color: #fff; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
-    button, input, select { outline: none; }
+    button, input { outline: none; }
     
     .navbar { width: 100%; height: 60px; background: rgba(10,10,10,0.9); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-shrink: 0; backdrop-filter: blur(10px); }
     .logo { font-size: 1.2em; font-weight: 900; background: linear-gradient(90deg, #1db954, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -27,19 +19,16 @@
     .title { color: var(--game-blue); margin: 0 0 10px 0; font-size: 1.8em; font-weight: 900; text-shadow: 0 0 10px rgba(0,212,255,0.3); }
     .desc { color: #aaa; font-size: 0.9em; margin-bottom: 25px; line-height: 1.6; }
 
-    .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: 900; font-size: 1.1em; cursor: pointer; transition: 0.2s; width: 100%; margin-bottom: 15px; text-transform: uppercase; }
-    .btn:active { transform: scale(0.95); }
+    .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: 900; font-size: 1.1em; cursor: pointer; transition: 0.2s; width: 100%; margin-bottom: 15px; text-transform: uppercase; } .btn:active { transform: scale(0.95); }
     .btn-green { background: var(--primary); color: #000; box-shadow: 0 4px 15px rgba(29,185,84,0.4); } .btn-green:hover { background: #1ed760; }
     .btn-blue { background: var(--game-blue); color: #000; box-shadow: 0 4px 15px rgba(0,212,255,0.4); } .btn-blue:hover { background: #33e0ff; }
     .btn-red { background: var(--accent); color: #fff; box-shadow: 0 4px 15px rgba(255,23,68,0.4); } .btn-red:hover { background: #ff4060; }
     
-    .input-box { background: #000; border: 2px solid #333; color: #fff; padding: 12px; font-size: 1.3em; border-radius: 8px; width: 100%; text-align: center; margin-bottom: 15px; letter-spacing: 3px; font-weight: bold; transition: 0.2s; }
-    .input-box:focus { border-color: var(--game-blue); }
+    .input-box { background: #000; border: 2px solid #333; color: #fff; padding: 12px; font-size: 1.3em; border-radius: 8px; width: 100%; text-align: center; margin-bottom: 15px; letter-spacing: 3px; font-weight: bold; transition: 0.2s; } .input-box:focus { border-color: var(--game-blue); }
 
     .status-panel { background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; }
     .room-code-display { font-size: 2.8em; font-weight: 900; letter-spacing: 6px; color: #fff; margin: 10px 0; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
     
-    /* 🌟 特效與音量控制面板樣式 🌟 */
     .control-row { display: flex; justify-content: space-between; align-items: center; width: 100%; background: #000; border: 1px solid #333; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; }
     .control-row label { font-weight: bold; font-size: 0.95em; color: #ccc; }
     .control-row input[type="range"] { width: 55%; accent-color: var(--game-blue); cursor: pointer; }
@@ -56,7 +45,7 @@
 <body>
 
   <div class="navbar">
-      <div class="logo">Dogfish AudioCast Pro</div>
+      <div class="logo">AudioCast Pro</div>
       <a href="index.html" class="btn-nav-back">🔙 返回網站大廳</a>
   </div>
 
@@ -90,112 +79,98 @@
 
       <div style="width:100%; margin-bottom: 20px;">
           <div class="control-row" id="ctrl-volume-row" style="display:none;">
-              <label>🔊 喇叭端音量調整</label>
+              <label>🔊 喇叭音量</label>
               <input type="range" id="volume-slider" min="0" max="200" value="100" oninput="window.changeVolume(this.value)">
               <span class="val-lbl" id="lbl-vol-val">100%</span>
           </div>
-
           <button class="btn btn-blue" id="btn-mic-mute" style="display:none; margin-bottom:12px;" onclick="window.toggleMicMute()">🎙️ 麥克風發音中：點擊靜音</button>
-
           <button class="btn" id="btn-fx-filter" style="background:#222; color:#fff; border:1px solid #444;" onclick="window.toggleVoiceFilter()">📻 無線電變音特效：已關閉</button>
       </div>
 
       <audio id="remote-audio" autoplay playsinline muted style="display:none;"></audio>
-
       <button class="btn btn-red" onclick="window.hangUp(true)">❌ 結束並掛斷通話</button>
   </div>
 
   <script type="module">
-    // 🔥 Firebase V9 核心架構
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"; 
     import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
     
     const firebaseConfig = { apiKey: "AIzaSyCPNG7FZNOXn-ZmbkysKmAaAeoqr5EImEI", authDomain: "dogfish-website.firebaseapp.com", projectId: "dogfish-website" }; 
     let app, db; try { app = initializeApp(firebaseConfig); db = getFirestore(app); } catch(e) {}
 
-    // WebRTC 與音訊脈絡變數
-    let peerConnection = null;
-    let localStream = null;
-    let roomId = null;
-    let role = null; // 'mic' 或 'speaker'
-    
-    // Firebase 取消監聽器
-    let roomUnsubscribe = null;
-    let iceUnsubscribe = null;
-
-    // Web Audio API 數據鏈鎖 (音量放大與變音核心)
-    let audioCtx = null;
-    let audioSource = null;
-    let gainNode = null;
-    let filterNode = null;
-    let analyserNode = null;
-    let isFilterActive = false;
+    let peerConnection = null; let localStream = null; let roomId = null; let role = null; 
+    let roomUnsubscribe = null; let iceUnsubscribe = null;
+    let audioCtx = null; let audioSource = null; let gainNode = null; let filterNode = null; let analyserNode = null; let isFilterActive = false;
+    let animationId = null;
 
     const rtcConfig = { iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }] };
 
-    // ==========================================
-    // 🎙️ 建立廣播房間 (麥克風端)
-    // ==========================================
-    window.createAudioRoom = async function() {
-        if(!db) return; role = 'mic';
-        document.getElementById('setup-panel').style.display = 'none';
-        document.getElementById('active-panel').style.display = 'block';
-        document.getElementById('active-panel-title').innerText = '🎙️ 語音發送端 (麥克風)';
-        document.getElementById('btn-mic-mute').style.display = 'block';
-        document.getElementById('ctrl-volume-row').style.display = 'none';
-
-        try {
-            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-            window.simpleToast("🎙️ 麥克風音軌串流已就緒");
-            initAudioEngine(localStream, true); // 啟動在地波形圖
-        } catch (err) {
-            window.simpleToast("❌ 存取麥克風失敗，請確認網址開頭為 HTTPS 且已允許權限！", true);
-            window.hangUp(false); return;
-        }
-
-        roomId = Math.floor(100000 + Math.random() * 900000).toString();
-        document.getElementById('display-room-code').innerText = roomId;
-        const roomRef = doc(db, 'audio_rooms', roomId);
-
-        peerConnection = new RTCPeerConnection(rtcConfig);
-        localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
-        peerConnection.onicecandidate = event => {
-            if (event.candidate) addDoc(collection(roomRef, 'micCandidates'), event.candidate.toJSON());
-        };
-
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-        await setDoc(roomRef, { offer: { type: offer.type, sdp: offer.sdp }, status: "waiting", timestamp: serverTimestamp() });
-
-        // 🌟 核心：監聽雲端房間狀態，若對方掛斷或加入 🌟
-        roomUnsubscribe = onSnapshot(roomRef, async snap => {
-            if(!snap.exists()) return;
-            const data = snap.data();
-            
-            // 雙向中斷連鎖機制
-            if(data.status === "hungup") {
-                window.simpleToast("👥 對方已切斷連線，通話結束！");
-                window.hangUp(false); return;
-            }
-
-            if (!peerConnection.currentRemoteDescription && data.answer) {
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-                document.getElementById('txt-connection-status').innerText = "🟢 廣播中！遠端喇叭正在收聽";
-                document.getElementById('txt-connection-status').style.color = "var(--primary)";
-            }
-        });
-
-        iceUnsubscribe = onSnapshot(collection(roomRef, 'speakerCandidates'), snap => {
-            snap.docChanges().forEach(async c => { if (c.type === 'added') await peerConnection.addIceCandidate(new RTCIceCandidate(c.doc.data())); });
-        });
+    window.simpleToast = function(msg, isError = false) {
+        const c = document.getElementById('toast-container');
+        const t = document.createElement('div'); t.className = isError ? 'toast error' : 'toast'; t.innerText = msg; 
+        c.appendChild(t); setTimeout(() => t.remove(), 3500);
     };
 
-    // ==========================================
-    // 🔊 加入廣播房間 (喇叭端)
-    // ==========================================
+    // 🌟 1. 建立房間 (麥克風端)
+    window.createAudioRoom = async function() {
+        if(!db) { window.simpleToast("資料庫連線失敗", true); return; }
+        
+        window.simpleToast("正在請求麥克風權限，請點擊「允許」...");
+
+        try {
+            // 🌟 修正：先確認取得權限，再切換畫面
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+            window.simpleToast("✅ 麥克風已就緒");
+            
+            role = 'mic';
+            document.getElementById('setup-panel').style.display = 'none';
+            document.getElementById('active-panel').style.display = 'block';
+            document.getElementById('active-panel-title').innerText = '🎙️ 語音發送端 (麥克風)';
+            document.getElementById('btn-mic-mute').style.display = 'block';
+            document.getElementById('ctrl-volume-row').style.display = 'none';
+            document.getElementById('txt-connection-status').innerText = "等待接收端加入...";
+
+            initAudioEngine(localStream, true); 
+
+            roomId = Math.floor(100000 + Math.random() * 900000).toString();
+            document.getElementById('display-room-code').innerText = roomId;
+            const roomRef = doc(db, 'audio_rooms', roomId);
+
+            peerConnection = new RTCPeerConnection(rtcConfig);
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) addDoc(collection(roomRef, 'micCandidates'), event.candidate.toJSON());
+            };
+
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            await setDoc(roomRef, { offer: { type: offer.type, sdp: offer.sdp }, status: "waiting", timestamp: serverTimestamp() });
+
+            roomUnsubscribe = onSnapshot(roomRef, async snap => {
+                if(!snap.exists()) return;
+                const data = snap.data();
+                if(data.status === "hungup") { window.simpleToast("👥 對方已切斷連線！"); window.hangUp(false); return; }
+                if (!peerConnection.currentRemoteDescription && data.answer) {
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                    document.getElementById('txt-connection-status').innerText = "🟢 廣播中！遠端喇叭正在收聽";
+                    document.getElementById('txt-connection-status').style.color = "var(--primary)";
+                }
+            });
+
+            iceUnsubscribe = onSnapshot(collection(roomRef, 'speakerCandidates'), snap => {
+                snap.docChanges().forEach(async c => { if (c.type === 'added') await peerConnection.addIceCandidate(new RTCIceCandidate(c.doc.data())); });
+            });
+
+        } catch (err) {
+            window.simpleToast("❌ 存取麥克風失敗，請確認已允許權限！", true);
+            return;
+        }
+    };
+
+    // 🌟 2. 加入房間 (喇叭端)
     window.joinAudioRoom = async function() {
-        if(!db) return; role = 'speaker';
+        if(!db) return; 
         roomId = document.getElementById('room-id-input').value.trim();
         if(roomId.length !== 6) { window.simpleToast("請輸入完整的 6 碼房號", true); return; }
 
@@ -203,42 +178,36 @@
         const snap = await getDoc(roomRef);
         if(!snap.exists()) { window.simpleToast("房間不存在，請重新檢查代碼！", true); return; }
 
+        role = 'speaker';
         document.getElementById('setup-panel').style.display = 'none';
         document.getElementById('active-panel').style.display = 'block';
         document.getElementById('active-panel-title').innerText = '🔊 語音接收端 (喇叭)';
         document.getElementById('ctrl-volume-row').style.display = 'flex';
         document.getElementById('btn-mic-mute').style.display = 'none';
         document.getElementById('display-room-code').innerText = roomId;
-        document.getElementById('txt-connection-status').innerText = "正在穿透內網建立連線...";
+        document.getElementById('txt-connection-status').innerText = "正在建立連線...";
 
         peerConnection = new RTCPeerConnection(rtcConfig);
-
         peerConnection.onicecandidate = event => {
             if (event.candidate) addDoc(collection(roomRef, 'speakerCandidates'), event.candidate.toJSON());
         };
 
-        // 接收發送端音軌
         peerConnection.ontrack = event => {
             document.getElementById('remote-audio').srcObject = event.streams[0];
-            document.getElementById('txt-connection-status').innerText = "🟢 連線成功！即時播放音訊中";
+            document.getElementById('txt-connection-status').innerText = "🟢 連線成功！即時播放中";
             document.getElementById('txt-connection-status').style.color = "var(--primary)";
-            window.simpleToast("✅ 已成功接通麥克風廣播！");
-            initAudioEngine(event.streams[0], false); // 喇叭端接通播放
+            window.simpleToast("✅ 已成功接通麥克風！");
+            initAudioEngine(event.streams[0], false); 
         };
 
         const offer = snap.data().offer;
         await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-        
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
         await updateDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp }, status: "connected" });
 
-        // 監聽房主是否掛斷
         roomUnsubscribe = onSnapshot(roomRef, snap => {
-            if(snap.exists() && snap.data().status === "hungup") {
-                window.simpleToast("👥 麥克風發送端已關閉房間！");
-                window.hangUp(false);
-            }
+            if(snap.exists() && snap.data().status === "hungup") { window.simpleToast("👥 麥克風發送端已關閉！"); window.hangUp(false); }
         });
 
         iceUnsubscribe = onSnapshot(collection(roomRef, 'micCandidates'), snap => {
@@ -246,111 +215,67 @@
         });
     };
 
-    // ==========================================
-    // 🎛️ Web Audio API 核心擴充鏈
-    // ==========================================
+    // 🌟 3. 核心特效引擎
     function initAudioEngine(stream, isLocal) {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         audioCtx.resume();
-
         audioSource = audioCtx.createMediaStreamSource(stream);
-        analyserNode = audioCtx.createAnalyser();
-        analyserNode.fftSize = 256;
+        analyserNode = audioCtx.createAnalyser(); analyserNode.fftSize = 256;
+        gainNode = audioCtx.createGain(); gainNode.gain.value = 1.0;
+        filterNode = audioCtx.createBiquadFilter(); filterNode.type = 'lowpass'; filterNode.frequency.value = 850;
 
-        gainNode = audioCtx.createGain();
-        gainNode.gain.value = 1.0; // 預設 100% 音量
-
-        filterNode = audioCtx.createBiquadFilter();
-        filterNode.type = 'lowpass';
-        filterNode.frequency.value = 850; // 模擬對講機沙啞頻率
-
-        // 初始數據鏈配置：繞過變音特效 (Bypass)
         audioSource.connect(gainNode);
         gainNode.connect(analyserNode);
-
-        if (!isLocal) {
-            // 只有接收端（喇叭）需要把聲音輸出到裝置揚聲器，發送端不需要（防回授咆哮聲）
-            analyserNode.connect(audioCtx.destination);
-        }
-
+        if (!isLocal) analyserNode.connect(audioCtx.destination);
         startVisualizer();
     }
 
-    // 即時音量放大調節
     window.changeVolume = function(val) {
         if (gainNode) gainNode.gain.value = val / 100;
         document.getElementById('lbl-vol-val').innerText = val + '%';
     };
 
-    // 麥克風一鍵靜音
     window.toggleMicMute = function() {
         if (!localStream) return;
-        let track = localStream.getAudioTracks()[0];
-        track.enabled = !track.enabled;
-        
+        let track = localStream.getAudioTracks()[0]; track.enabled = !track.enabled;
         let btn = document.getElementById('btn-mic-mute');
-        if (track.enabled) {
-            btn.innerText = "🎙️ 麥克風發音中：點擊靜音";
-            btn.style.background = "var(--primary)";
-        } else {
-            btn.innerText = "🔇 麥克風已靜音：點擊發音";
-            btn.style.background = "var(--accent)";
-        }
+        if (track.enabled) { btn.innerText = "🎙️ 麥克風發音中：點擊靜音"; btn.style.background = "var(--primary)"; } 
+        else { btn.innerText = "🔇 麥克風已靜音：點擊發音"; btn.style.background = "var(--accent)"; }
     };
 
-    // 📻 特殊功能：對講機變音濾波器節點切換
     window.toggleVoiceFilter = function() {
         if (!audioSource || !gainNode || !filterNode || !analyserNode) return;
         isFilterActive = !isFilterActive;
         let btn = document.getElementById('btn-fx-filter');
-
-        audioSource.disconnect();
-        filterNode.disconnect();
-
-        if (isFilterActive) {
-            // 串接濾波器節點：Source -> Filter -> Gain -> Analyser
-            audioSource.connect(filterNode);
-            filterNode.connect(gainNode);
-            btn.innerText = "📻 無線電變音特效：開啟中";
-            btn.style.background = "var(--primary)";
-            btn.style.color = "#000";
-        } else {
-            // 還原：Source -> Gain -> Analyser
-            audioSource.connect(gainNode);
-            btn.innerText = "📻 無線電變音特效：已關閉";
-            btn.style.background = "#222";
-            btn.style.color = "#fff";
-        }
+        audioSource.disconnect(); filterNode.disconnect();
+        if (isFilterActive) { audioSource.connect(filterNode); filterNode.connect(gainNode); btn.innerText = "📻 無線電變音特效：開啟中"; btn.style.background = "var(--primary)"; btn.style.color = "#000"; } 
+        else { audioSource.connect(gainNode); btn.innerText = "📻 無線電變音特效：已關閉"; btn.style.background = "#222"; btn.style.color = "#fff"; }
     };
 
-    // ==========================================
-    // ⚔️ 雙向同步掛斷與記憶體清除
-    // ==========================================
     window.hangUp = async function(shouldNotifyCloud = true) {
-        // 若主動掛斷，通知雲端，引發另一端同秒連鎖掛斷
-        if (shouldNotifyCloud && roomId && db) {
-            try { await updateDoc(doc(db, 'audio_rooms', roomId), { status: "hungup" }); } catch(e) {}
-        }
-
+        if (shouldNotifyCloud && roomId && db) { try { await updateDoc(doc(db, 'audio_rooms', roomId), { status: "hungup" }); } catch(e) {} }
         if(peerConnection) { peerConnection.close(); peerConnection = null; }
         if(localStream) { localStream.getTracks().forEach(track => track.stop()); localStream = null; }
         if(roomUnsubscribe) { roomUnsubscribe(); roomUnsubscribe = null; }
         if(iceUnsubscribe) { iceUnsubscribe(); iceUnsubscribe = null; }
+        if(animationId) { cancelAnimationFrame(animationId); animationId = null; }
 
         audioSource = null; gainNode = null; filterNode = null; analyserNode = null; isFilterActive = false;
-
         document.getElementById('remote-audio').srcObject = null;
         document.getElementById('active-panel').style.display = 'none';
         document.getElementById('setup-panel').style.display = 'block';
         document.getElementById('txt-connection-status').innerText = "等待連線建立...";
         document.getElementById('txt-connection-status').style.color = "var(--game-yellow)";
-        document.getElementById('btn-fx-filter').style.background = "#222";
-        document.getElementById('btn-fx-filter').style.color = "#fff";
+        document.getElementById('btn-fx-filter').style.background = "#222"; document.getElementById('btn-fx-filter').style.color = "#fff";
         
-        window.simpleToast("連線已完全掛斷並清除硬體快取");
+        // 恢復重置設定
+        const canvas = document.getElementById('canvas-visualizer');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        window.simpleToast("連線已掛斷");
     };
 
-    // 波形圖渲染
     function startVisualizer() {
         const canvas = document.getElementById('canvas-visualizer');
         const ctx = canvas.getContext('2d');
@@ -358,19 +283,15 @@
         const dataArray = new Uint8Array(bufferLength);
 
         function drawFrame() {
-            if(!analyserNode) return; // 安全鎖：掛斷即停止渲染，防止卡死
-            requestAnimationFrame(drawFrame);
+            if(!analyserNode) return; 
+            animationId = requestAnimationFrame(drawFrame);
             analyserNode.getByteFrequencyData(dataArray);
-
-            ctx.fillStyle = '#050505';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
+            ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, canvas.width, canvas.height);
             const barWidth = (canvas.width / bufferLength) * 2.2;
             let barHeight; let x = 0;
-
             for(let i = 0; i < bufferLength; i++) {
                 barHeight = dataArray[i] / 2.5;
-                ctx.fillStyle = `rgb(0, 212, 255)`; // 科技青色
+                ctx.fillStyle = `rgb(0, 212, 255)`; 
                 ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
                 x += barWidth + 1;
             }
