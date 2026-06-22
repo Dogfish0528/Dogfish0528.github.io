@@ -129,8 +129,6 @@
     /* =========================================================
        📱 RWD 手機與平板響應式設計 (完美雙層架構)
     ========================================================= */
-    
-    /* 第一層：平板與高解析度手機 (橫向/直向) 隱藏頂部擁擠按鈕，改為側滑選單 */
     @media (max-width: 1250px) {
         .navbar { padding: 0 15px; }
         .logo { font-size: 1.1em; }
@@ -150,33 +148,27 @@
         .btn-login { width: 100%; padding: 12px; margin-top: 10px; display: block; }
     }
 
-    /* 第二層：純手機螢幕 (小螢幕卡片變為單欄、視窗全螢幕) */
     @media (max-width: 768px) {
         .main-container { width: 100%; margin-top: 70px; padding: 0 10px; }
         .page-panel { padding: 15px; }
         .page-title { font-size: 1.8em; margin-bottom: 15px; }
         
-        /* 網格自動縮為單欄 */
         .article-grid { grid-template-columns: 1fr; gap: 15px; }
         .material-list { grid-template-columns: 1fr; gap: 15px; }
         
-        /* 彈出視窗縮小內距 */
         .spotify-modal { padding: 0; }
         .modal-content { border-radius: 0; max-height: 100vh; height: 100vh; border: none; }
         .modal-header { padding: 15px 20px; }
         .modal-body { padding: 15px 20px; }
         .modal-footer { padding: 15px 20px; flex-direction: column; }
         
-        /* 按鈕與標題自適應 */
         .btn-action, .btn-blue-dl, .btn-bookmark, .btn-copy { width: 100%; text-align: center; }
         #article-title { font-size: 1.6em !important; }
         
-        /* 編輯器工具列自適應 */
         .sticky-editor-header { top: 0; border-radius: 0; padding: 10px; }
         .rich-editor-toolbar { gap: 5px; }
         .rich-editor-btn { font-size: 0.85em; padding: 5px 10px; }
         
-        /* Wiki 教學頁調整 */
         .wiki-header { padding: 15px; flex-direction: column; align-items: flex-start; }
         .wiki-content { margin: 20px auto; }
         .fs-toolbar { padding: 15px; }
@@ -188,12 +180,10 @@
     window.tempTutorials = []; 
     window.currentArticleData = null;
 
-    // 🌟 手機版選單切換 🌟
     window.toggleMobileMenu = function() {
         document.getElementById('nav-links').classList.toggle('show');
     };
 
-    // 基礎防彈工具
     window.simpleToast = function(msg, type = 'success') {
         const c = document.getElementById('toast-container'); if(!c) return;
         const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg; 
@@ -214,7 +204,6 @@
         window.loadBookmarks();
     });
 
-    // 編輯器改大小與選取邏輯
     window.lastSelectedMedia = null;
     document.addEventListener('click', (e) => {
         if(e.target.closest('.rich-editor-content') && ['IMG', 'VIDEO', 'IFRAME'].includes(e.target.tagName)) {
@@ -323,7 +312,7 @@
         if(!container) return;
         container.innerHTML = '';
         if(window.tempTutorials.length === 0) {
-            container.innerHTML = '<span style="color:#666; font-size:0.9em;">尚未建立任何教學頁面。</span>'; return;
+            container.innerHTML = '<span style="color:#666; font-size:0.9em;">尚未建立 any 教學頁面。</span>'; return;
         }
         container.style.maxHeight = '150px';
         container.style.overflowY = 'auto';
@@ -467,7 +456,7 @@
             <option value="指令" style="color: var(--secondary);">💻 實用指令</option>
             <option value="Win10美化" style="color: var(--beautify-10);">🟦 Win10 美化資源</option>
             <option value="Win11美化" style="color: var(--beautify-11);">🟪 Win11 美化資源</option>
-            <option value="急救資源" style="color: #00d4ff;">🚑 急救指南/問題排解</option>
+            <option value="急救資源" style="color: #00d4ff;">Mild 🏥 急救指南/問題排解</option>
           </select>
         </div>
         <div id="mat-dynamic-fields"></div>
@@ -501,7 +490,7 @@
                 <button class="rich-editor-btn" onclick="window.currentEditorForUpload='mat-rich-editor'; document.getElementById('editor-local-vid-input').click()">📤 本機影片</button>
                 <button class="rich-editor-btn" onclick="window.insertEditorContent('mat-rich-editor', 'yt')">🔴 YT</button>
                 <button class="rich-editor-btn" onclick="window.insertLink('mat-rich-editor')">🔗 連結</button>
-                <button class="rich-editor-btn" onclick="window.insertCodeBlock('mat-rich-editor')" style="color: #1db954; border: 1px solid #1db954; background: rgba(29, 185, 84, 0.1);">📄 複製框</button>
+                <button class="rich-editor-btn" onclick="window.insertCodeBlock('mat-rich-editor')", style="color: #1db954; border: 1px solid #1db954; background: rgba(29, 185, 84, 0.1);">📄 複製框</button>
                 <button class="rich-editor-btn" onclick="window.resizeSelectedMedia('mat-rich-editor')" style="color: #ffb300; border: 1px solid #ffb300; background: rgba(255, 179, 0, 0.1);">📐 改大小</button>
               </div>
           </div>
@@ -623,7 +612,7 @@
   <div class="navbar">
     <div class="logo">
         <button class="hamburger-btn" onclick="window.toggleMobileMenu()">☰</button>
-        <span class="logo-text">Dogfish Studio</span><span class="version-badge">v39.0 平板響應版</span>
+        <span class="logo-text">Dogfish Studio</span><span class="version-badge">v40.0 Wiki優化版</span>
     </div>
     <div class="nav-links" id="nav-links">
       <a href="games.html" class="btn-nav" style="color: #ff1744; font-weight: 900; text-decoration: none;">🎮 遊戲大廳</a>
@@ -699,7 +688,7 @@
     </div>
 
     <div id="page-recovery" class="page-panel">
-      <h2 class="page-title" style="color: #00d4ff;">🚑 系統急救指南</h2>
+      <h2 class="page-title" style="color: #00d4ff;">Mild 🚑 系統急救指南</h2>
       <p style="color: #ccc; margin-bottom: 25px; font-size: 1.1em;">如果您的系統或設備覺得怪怪的，可以在這裡尋找解決方案。</p>
       <div id="recovery-container" class="article-grid"></div>
     </div>
@@ -803,9 +792,26 @@
         localStorage.setItem('dogfish_upload_draft', JSON.stringify(draft));
     };
 
+    // 🌟 全域防留存：一鍵完整洗白清空表單與記憶體 🌟
+    window.clearUploadForm = function() {
+        document.getElementById('mat-name').value = '';
+        document.getElementById('mat-url').value = '';
+        if(document.getElementById('mat-folder')) document.getElementById('mat-folder').value = '';
+        if(document.getElementById('mat-btn-text')) document.getElementById('mat-btn-text').value = '';
+        if(document.getElementById('mat-route-code')) document.getElementById('mat-route-code').value = '';
+        if(document.getElementById('mat-cover')) document.getElementById('mat-cover').value = '';
+        if(document.getElementById('mat-rich-editor')) document.getElementById('mat-rich-editor').innerHTML = '';
+        if(document.getElementById('mat-preview-img')) document.getElementById('mat-preview-img').style.display = 'none';
+        
+        window.tempTutorials = []; // 徹底洗白教學陣列，防範Bug
+        localStorage.removeItem('dogfish_upload_draft'); // 清空本地草稿
+        window.renderTutorialList('mat'); // 刷新洗白後的列表
+    };
+
     window.showUploadModal = function() {
         window.showModal('upload-modal'); 
-        window.tempTutorials = []; 
+        window.clearUploadForm(); // 每次打開前先沖水清空，防殘留
+        
         const draftStr = localStorage.getItem('dogfish_upload_draft');
         if(draftStr) {
             try {
@@ -821,6 +827,9 @@
                 
                 window.tempTutorials = draft.tutorials || [];
             } catch(e){}
+        } else {
+            // 沒草稿時預設渲染
+            window.renderUploadFields('音樂', 'mat');
         }
         window.renderTutorialList('mat');
     };
@@ -830,8 +839,6 @@
         document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active')); 
         const target = document.getElementById(`page-${pageId}`); if(target) target.classList.add('active'); 
         const activeNavBtn = Array.from(document.querySelectorAll('.btn-nav')).find(b => b.getAttribute('onclick')?.includes(pageId)); if (activeNavBtn) activeNavBtn.classList.add('active'); 
-        
-        // 切換頁面時自動收折選單
         document.getElementById('nav-links').classList.remove('show');
     }
 
@@ -943,9 +950,10 @@
         const urlContainer = document.getElementById(`${prefix}-url-container`);
         const tutorialManager = document.getElementById(`${prefix}-tutorial-manager`);
         
+        // 🌟 修正：讓「軟體收集」也能完美開啟 Wiki 教學頁面管理 🌟
         if (type === "軟體收集") {
             if (urlContainer) urlContainer.style.display = 'none';
-            if (tutorialManager) tutorialManager.style.display = 'none';
+            if (tutorialManager) tutorialManager.style.display = 'block'; // 這裡改為 block 啟動 Wiki 系統！
         } else {
             if (urlContainer) urlContainer.style.display = 'flex';
             if (tutorialManager) tutorialManager.style.display = 'block';
@@ -965,7 +973,9 @@
         let safeUploaderName = auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email.split('@')[0]) : '匿名'; 
         try { 
             await addDoc(collection(db, "categorized_materials"), { fileName: name, category: type, fileUrl: rawUrl, coverUrl: cover, coverFit: cFit, coverPos: cPos, routeCode: rCode, btnStyle: btnColor, btnText: btnText, folderName: folder, descriptionHTML: editor ? editor.innerHTML : '', tutorials: window.tempTutorials, uploaderName: safeUploaderName, isHidden: false, timestamp: serverTimestamp() }); 
-            window.simpleToast("✅ 發布成功！"); window.hideModal('upload-modal'); localStorage.removeItem('dogfish_upload_draft'); 
+            window.simpleToast("✅ 發布成功！"); 
+            window.hideModal('upload-modal'); 
+            window.clearUploadForm(); // 🌟 修正：發布成功後立刻呼叫清除洗白，防止殘留 🌟
         } catch (error) { window.simpleToast("❌ 錯誤", "error"); } 
     };
 
@@ -1139,7 +1149,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         const bootScreen = document.getElementById('boot-screen'); const logBox = document.getElementById('boot-log');
-        const logs = ["> INITIALIZING DOGFISH CORE...", "> SYSTEM DEPLOYED... [OK]", "> WELCOME TO DOGFISH STUDIO V39.0"];
+        const logs = ["> INITIALIZING DOGFISH CORE...", "> SYSTEM DEPLOYED... [OK]", "> WELCOME TO DOGFISH STUDIO V40.0"];
         let i = 0; function showLog() { if (i < logs.length) { let p = document.createElement('div'); p.className = 'boot-text'; p.innerText = logs[i]; logBox.appendChild(p); i++; setTimeout(showLog, 150 + Math.random() * 100); } else { setTimeout(() => { bootScreen.style.opacity = 0; setTimeout(() => bootScreen.style.display = 'none', 500); }, 400); } }
         showLog(); initDataListener();
     });
